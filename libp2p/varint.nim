@@ -14,6 +14,7 @@
 ## - LibP2P varint, which is able to encode only 63bits of uint64 number and
 ##   maximum size of encoded value is 9 octets (bytes).
 import bitops
+import errors as e
 
 type
   VarintStatus* {.pure.} = enum
@@ -37,12 +38,46 @@ type
   SomeUVarint* = PBSomeUVarint | LPSomeUVarint
   VarintError* = object of CatchableError
 
+  Varint* = object
+    value*: uint64
+    length*: int8
+
 proc vsizeof*(x: SomeVarint): int {.inline.} =
   ## Returns number of bytes required to encode integer ``x`` as varint.
   if x == cast[type(x)](0):
     result = 1
   else:
     result = (fastLog2(x) + 1 + 7 - 1) div 7
+
+proc getUVarint*[T: PB|LP](vt: typedesc[T],
+                           pbytes: openarray[byte]): Result[Varint, e.Error] =
+  when vt is PB:
+    const MaxBits = 64'u8
+  else:
+    const MaxBits = 63'u8
+
+  var status = e.IncompleteError
+  var shift = 0'u8
+  var outlen = 0'i8
+  var outval = 0'u64
+
+  for i in 0..<len(pbytes):
+    let b = pbytes[i]
+    if shift >= MaxBits:
+      status = e.OverflowError
+      break
+    else:
+      outval = outval or (cast[type(outval)](b and 0x7F'u8) shl shift)
+      shift += 7
+    inc(outlen)
+    if (b and 0x80'u8) == 0'u8:
+      status = e.NoError
+      break
+
+  if status == e.NoError:
+    result.ok(Varint(value: outval, length: outlen))
+  else:
+    result.err(status)
 
 proc getUVarint*[T: PB|LP](vtype: typedesc[T],
                            pbytes: openarray[byte],
@@ -99,6 +134,34 @@ proc getUVarint*[T: PB|LP](vtype: typedesc[T],
     outlen = 0
     outval = cast[type(outval)](0)
 
+proc putUVarint*[T: PB|LP](vt: typedesc[T], pbytes: var openarray[byte],
+                           value: SomeUVarint): Result[int, e.Error] =
+  ## Returns number of bytes used to encode value ``value``.
+  var buffer: array[10, byte]
+  var k = 0
+  var v = value
+
+  when vt is LP:
+    if sizeof(value) == 8 and (value and 0x8000_0000_0000_0000'u64) != 0'u64:
+      result.err(e.OverflowError)
+      return
+
+  if v <= cast[type(value)](0x7F):
+    buffer[0] = cast[byte](value and 0xFF)
+    inc(k)
+  else:
+    while v != cast[type(value)](0):
+      buffer[k] = cast[byte]((v and 0x7F) or 0x80)
+      v = v shr 7
+      inc(k)
+    buffer[k - 1] = buffer[k - 1] and 0x7F'u8
+
+  if len(pbytes) >= k:
+    copyMem(addr pbytes[0], addr buffer[0], k)
+    result.ok(k)
+  else:
+    result.err(e.OverrunError)
+
 proc putUVarint*[T: PB|LP](vtype: typedesc[T],
                            pbytes: var openarray[byte],
                            outlen: var int,
@@ -146,6 +209,19 @@ proc putUVarint*[T: PB|LP](vtype: typedesc[T],
   else:
     result = VarintStatus.Overrun
 
+proc getSVarint*(vt: typedesc[PB],
+                 pbytes: openarray[byte]): Result[Varint, e.Error] {.inline.} =
+  let res = PB.getUVarint(pbytes)
+  if res.isErr():
+    result.err(res.error)
+  else:
+    var value = res.value.value
+    if (value and 1'u64) != 0'u64:
+      value = not(value shr 1)
+    else:
+      value = value shr 1
+    result.ok(Varint(value: value, length: res.value.length))
+
 proc getSVarint*(pbytes: openarray[byte], outsize: var int,
                  outval: var PBSomeSVarint): VarintStatus {.inline.} =
   ## Decode Google ProtoBuf's `signed varint` from buffer ``pbytes`` and store
@@ -176,6 +252,22 @@ proc getSVarint*(pbytes: openarray[byte], outsize: var int,
     else:
       outval = cast[type(outval)](value shr 1)
 
+proc putSVarint*(vt: typedesc[PB], pbytes: var openarray[byte],
+                 value: PBSomeSVarint): Result[int, e.Error] {.inline.} =
+  when sizeof(outval) == 8:
+    var v: uint64 =
+      if value < 0:
+        not(cast[uint64](outval) shl 1)
+      else:
+        cast[uint64](outval) shl 1
+  else:
+    var v: uint32 =
+      if outval < 0:
+        not(cast[uint32](outval) shl 1)
+      else:
+        cast[uint32](outval) shl 1
+  result = PB.putUVarint(pbytes, v)
+
 proc putSVarint*(pbytes: var openarray[byte], outsize: var int,
                  outval: PBSomeSVarint): VarintStatus {.inline.} =
   ## Encode Google ProtoBuf's `signed varint` ``outval`` and store it to array
@@ -204,6 +296,25 @@ proc putSVarint*(pbytes: var openarray[byte], outsize: var int,
         cast[uint32](outval) shl 1
   result = PB.putUVarint(pbytes, outsize, value)
 
+proc encodeVarint*(vt: typedesc[PB],
+                   value: PBSomeVarint): Result[seq[byte], e.Error] {.inline.} =
+  var bytes = newSeqOfCap[byte](10)
+  when sizeof(value) == 4:
+    bytes.setLen(5)
+  else:
+    bytes.setLen(10)
+
+  when type(value) is PBSomeSVarint:
+    let res = PB.putSVarint(bytes, value)
+  else:
+    let res = PB.putUVarint(bytes, value)
+
+  if res.isOk:
+    bytes.setLen(res.value.length)
+    result.ok(bytes)
+  else:
+    result.err(res.error)
+
 proc encodeVarint*(vtype: typedesc[PB],
                    value: PBSomeVarint): seq[byte] {.inline.} =
   ## Encode integer to Google ProtoBuf's `signed/unsigned varint` and returns
@@ -222,6 +333,24 @@ proc encodeVarint*(vtype: typedesc[PB],
     result.setLen(outsize)
   else:
     raise newException(VarintError, "Error '" & $res & "'")
+
+proc encodeVarint*(vt: typedesc[LP],
+                   value: LPSomeVarint): Result[seq[byte], e.Error] {.inline.} =
+  when sizeof(value) == 1:
+    var bytes = newSeq[byte](2)
+  elif sizeof(value) == 2:
+    var bytes = newSeq[byte](3)
+  elif sizeof(value) == 4:
+    var bytes = newSeq[byte](5)
+  else:
+    var bytes = newSeq[byte](9)
+
+  let res = LP.putUVarint(bytes, value)
+  if res.isOk:
+    bytes.setLen(res.value.length)
+    result.ok(bytes)
+  else:
+    result.err(res.error)
 
 proc encodeVarint*(vtype: typedesc[LP],
                    value: LPSomeVarint): seq[byte] {.inline.} =
@@ -243,12 +372,27 @@ proc encodeVarint*(vtype: typedesc[LP],
   else:
     raise newException(VarintError, "Error '" & $res & "'")
 
+proc decodeSVarint2*(data: openarray[byte]): Result[int64, e.Error] {.inline.} =
+  let res = PB.getSVarint(data)
+  if res.isOk:
+    result.ok(cast[int64](res.value.value))
+  else:
+    result.err(res.error)
+
 proc decodeSVarint*(data: openarray[byte]): int {.inline.} =
   ## Decode signed integer from array ``data`` and return it as result.
   var outsize = 0
   let res = getSVarint(data, outsize, result)
   if res != VarintStatus.Success:
     raise newException(VarintError, "Error '" & $res & "'")
+
+proc decodeUVarint2*[T: PB|LP](vt: typedesc[T],
+                    data: openarray[byte]): Result[uint64, e.Error] {.inline.} =
+  let res = vt.getUVarint(data)
+  if res.isOk:
+    result.ok(res.value.value)
+  else:
+    result.err(res.error)
 
 proc decodeUVarint*[T: PB|LP](vtype: typedesc[T],
                               data: openarray[byte]): uint {.inline.} =
