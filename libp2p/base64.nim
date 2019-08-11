@@ -8,14 +8,10 @@
 ## those terms.
 
 ## This module implements BASE64 encoding and decoding procedures.
+import errors
+export errors
 
 type
-  Base64Status* {.pure.} = enum
-    Error,
-    Success,
-    Incorrect,
-    Overrun
-
   Base64Alphabet* = object
     decode*: array[128, int8]
     encode*: array[64, uint8]
@@ -70,24 +66,24 @@ proc decodedLength*(btype: typedesc[Base64Types],
     result = (length * 4 + 3 - 1) div 3
 
 proc encode*(btype: typedesc[Base64Types], inbytes: openarray[byte],
-             outstr: var openarray[char], outlen: var int): Base64Status =
+             outstr: var openarray[char]): Result[int, errors.Error] =
   ## Encode array of bytes ``inbytes`` using BASE64 encoding and store
-  ## result to ``outstr``.
+  ## result to ``outstr``. On success procedure returns number of characters
+  ## stored inside ``outstr``.
   ##
-  ## On success ``Base64Status.Success`` will be returned and ``outlen`` will
-  ## be set to number of characters stored inside of ``outstr``.
-  ##
-  ## If length of ``outstr`` is not enough then ``Base64Status.Overrun`` will
-  ## be returned and ``outlen`` will be set to number of characters required.
+  ## Please note ``len(outstr) >= encodedLength(len(inbytes))``.
   when (btype is Base64) or (btype is Base64Pad):
     const alphabet = B64Alphabet
   elif (btype is Base64Url) or (btype is Base64UrlPad):
     const alphabet = B64UrlAlphabet
 
+  if len(inbytes) == 0:
+    result.ok(0)
+    return
+
   let length = len(inbytes)
   if len(outstr) < btype.encodedLength(length):
-    outlen = btype.encodedLength(length)
-    result = Base64Status.Overrun
+    result.err(errors.OverrunError)
   else:
     var offset = 0
     var i = 0
@@ -124,49 +120,38 @@ proc encode*(btype: typedesc[Base64Types], inbytes: openarray[byte],
         outstr[offset] = '='
         inc(offset)
 
-    outlen = offset
-    result = Base64Status.Success
+    result.ok(offset)
 
 proc encode*(btype: typedesc[Base64Types],
-             inbytes: openarray[byte]): string {.inline.} =
+            inbytes: openarray[byte]): string {.inline.} =
   ## Encode array of bytes ``inbytes`` using BASE64 encoding and return
   ## encoded string.
-  var size = btype.encodedLength(len(inbytes))
-  result = newString(size)
-  if btype.encode(inbytes, result.toOpenArray(0, size - 1),
-                  size) == Base64Status.Success:
-    result.setLen(size)
-  else:
-    result = ""
+  result = newString(btype.encodedLength(len(inbytes)))
+  let res = btype.encode(inbytes, result)
+  # Its impossible to get error here because we allocated buffer with required
+  # length.
+  result.setLen(res.value)
 
 proc decode*[T: byte|char](btype: typedesc[Base64Types], instr: openarray[T],
-             outbytes: var openarray[byte], outlen: var int): Base64Status =
-  ## Decode BASE64 string and store array of bytes to ``outbytes``. On success
-  ## ``Base64Status.Success`` will be returned and ``outlen`` will be set
-  ## to number of bytes stored.
+             outbytes: var openarray[byte]): Result[int, errors.Error] =
+  ## Decode BASE64 encoded string and store result to array of bytes
+  ## ``outbytes``. On success procedure returns number of bytes stored inside
+  ## of ``outbytes``.
   ##
-  ## Length of ``outbytes`` must be equal or more then ``len(instr) + 4``.
-  ##
-  ## If ``instr`` has characters which are not part of BASE64 alphabet, then
-  ## ``Base64Status.Incorrect`` will be returned and ``outlen`` will be set to
-  ## ``0``.
-  ##
-  ## If length of ``outbytes`` is not enough to store decoded bytes, then
-  ## ``Base64Status.Overrun`` will be returned and ``outlen`` will be set to
-  ## number of bytes required.
+  ## Please note ``len(outbytes) >= decodedLength(len(instr))``.
   when (btype is Base64) or (btype is Base64Pad):
     const alphabet = B64Alphabet
   elif (btype is Base64Url) or (btype is Base64UrlPad):
     const alphabet = B64UrlAlphabet
 
   if len(instr) == 0:
-    outlen = 0
-    return Base64Status.Success
+    result.ok(0)
+    return
 
   let length = btype.decodedLength(len(instr))
   if length > len(outbytes):
-    outlen = length
-    return Base64Status.Overrun
+    result.err(errors.OverrunError)
+    return
 
   var inlen = len(instr)
   when (btype is Base64PadTypes):
@@ -182,14 +167,12 @@ proc decode*[T: byte|char](btype: typedesc[Base64Types], instr: openarray[T],
   while i < limit:
     for j in 0..<4:
       if (cast[byte](instr[i + j]) and 0x80'u8) != 0:
-        outlen = 0
-        zeroMem(addr outbytes[0], i + 3)
-        return Base64Status.Incorrect
+        result.err(errors.IncorrectEncodingError)
+        return
       let ch = alphabet.decode[cast[int8](instr[i + j])]
       if ch == -1:
-        outlen = 0
-        zeroMem(addr outbytes[0], i + 3)
-        return Base64Status.Incorrect
+        result.err(errors.IncorrectEncodingError)
+        return
       buffer[j] = cast[byte](ch)
     outbytes[k] = cast[byte]((buffer[0] shl 2) or (buffer[1] shr 4))
     inc(k)
@@ -201,17 +184,17 @@ proc decode*[T: byte|char](btype: typedesc[Base64Types], instr: openarray[T],
 
   if reminder > 0:
     if reminder == 1:
-      outlen = 0
-      return Base64Status.Incorrect
+      result.err(errors.IncorrectEncodingError)
+      return
 
     for j in 0..<reminder:
       if (cast[byte](instr[i + j]) and 0x80'u8) != 0:
-        outlen = 0
-        return Base64Status.Incorrect
+        result.err(errors.IncorrectEncodingError)
+        return
       let ch = alphabet.decode[cast[int8](instr[i + j])]
       if ch == -1:
-        outlen = 0
-        return Base64Status.Incorrect
+        result.err(errors.IncorrectEncodingError)
+        return
       buffer[j] = cast[byte](ch)
 
     if reminder > 1:
@@ -221,18 +204,15 @@ proc decode*[T: byte|char](btype: typedesc[Base64Types], instr: openarray[T],
       outbytes[k] = cast[byte]((buffer[1] shl 4) or (buffer[2] shr 2))
       inc(k)
 
-  outlen = k
-  result = Base64Status.Success
+  result.ok(k)
 
 proc decode*[T: byte|char](btype: typedesc[Base64Types],
-                           instr: openarray[T]): seq[byte] =
+                         instr: openarray[T]): Result[seq[byte], errors.Error] =
   ## Decode BASE64 string ``instr`` and return sequence of bytes as result.
-  if len(instr) == 0:
-    result = newSeq[byte]()
+  var resbytes = newSeq[byte](btype.decodedLength(len(instr)))
+  let res = btype.decode(instr, resbytes)
+  if res.isOk:
+    resbytes.setLen(res.value)
+    result.ok(resbytes)
   else:
-    var length = 0
-    result = newSeq[byte](btype.decodedLength(len(instr)))
-    if btype.decode(instr, result, length) == Base64Status.Success:
-      result.setLen(length)
-    else:
-      raise newException(Base64Error, "Incorrect base64 string")
+    result.err(res.error)

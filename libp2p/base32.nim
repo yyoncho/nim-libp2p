@@ -9,14 +9,10 @@
 
 ## This module implements BASE32 encoding and decoding procedures.
 ## This module supports RFC4648's BASE32.
+import errors
+export errors
 
 type
-  Base32Status* {.pure.} = enum
-    Error,
-    Success,
-    Incorrect,
-    Overrun
-
   Base32Alphabet* = object
     decode*: array[128, int8]
     encode*: array[32, uint8]
@@ -134,13 +130,12 @@ proc convert8to5(inbytes: openarray[byte], outbytes: var openarray[byte],
     result = 5
 
 proc encode*(btype: typedesc[Base32Types], inbytes: openarray[byte],
-             outstr: var openarray[char], outlen: var int): Base32Status =
+             outstr: var openarray[char]): Result[int, errors.Error] =
   ## Encode array of bytes ``inbytes`` using BASE32 encoding and store
-  ## result to ``outstr``. On success ``Base32Status.Success`` will be returned
-  ## and ``outlen`` will be set to number of characters stored inside of
-  ## ``outstr``. If length of ``outstr`` is not enough then
-  ## ``Base32Status.Overrun`` will be returned and ``outlen`` will be set to
-  ## number of characters required.
+  ## result to ``outstr``. On success procedure returns number of characters
+  ## stored inside ``outstr``.
+  ##
+  ## Please note ``len(outstr) >= encodedLength(len(inbytes))``.
   when (btype is Base32Upper) or (btype is Base32UpperPad):
     const alphabet = RFCUpperCaseAlphabet
   elif (btype is Base32Lower) or (btype is Base32LowerPad):
@@ -151,13 +146,13 @@ proc encode*(btype: typedesc[Base32Types], inbytes: openarray[byte],
     const alphabet = HEXLowerCaseAlphabet
 
   if len(inbytes) == 0:
-    outlen = 0
-    return Base32Status.Success
+    result.ok(0)
+    return
 
   let length = btype.encodedLength(len(inbytes))
   if length > len(outstr):
-    outlen = length
-    return Base32Status.Overrun
+    result.err(errors.OverrunError)
+    return
 
   let reminder = len(inbytes) mod 5
   let limit = len(inbytes) - reminder
@@ -181,32 +176,25 @@ proc encode*(btype: typedesc[Base32Types], inbytes: openarray[byte],
       while k < len(outstr):
         outstr[k] = '='
         inc(k)
-  outlen = k
-  result = Base32Status.Success
+  result.ok(k)
 
 proc encode*(btype: typedesc[Base32Types],
-             inbytes: openarray[byte]): string {.inline.} =
+            inbytes: openarray[byte]): string {.inline.} =
   ## Encode array of bytes ``inbytes`` using BASE32 encoding and return
   ## encoded string.
-  if len(inbytes) == 0:
-    result = ""
-  else:
-    var length = 0
-    result = newString(btype.encodedLength(len(inbytes)))
-    if btype.encode(inbytes, result, length) == Base32Status.Success:
-      result.setLen(length)
-    else:
-      result = ""
+  result = newString(btype.encodedLength(len(inbytes)))
+  let res = btype.encode(inbytes, result)
+  # Its impossible to get error here because we allocated buffer with required
+  # length.
+  result.setLen(res.value)
 
 proc decode*[T: byte|char](btype: typedesc[Base32Types], instr: openarray[T],
-             outbytes: var openarray[byte], outlen: var int): Base32Status =
-  ## Decode BASE32 string and store array of bytes to ``outbytes``. On success
-  ## ``Base32Status.Success`` will be returned and ``outlen`` will be set
-  ## to number of bytes stored.
+             outbytes: var openarray[byte]): Result[int, errors.Error] =
+  ## Decode BASE32 encoded string and store result to array of bytes
+  ## ``outbytes``. On success procedure returns number of bytes stored inside
+  ## of ``outbytes``.
   ##
-  ## ## If length of ``outbytes`` is not enough to store decoded bytes, then
-  ## ``Base32Status.Overrun`` will be returned and ``outlen`` will be set to
-  ## number of bytes required.
+  ## Please note ``len(outbytes) >= decodedLength(len(instr))``.
   when (btype is Base32Upper) or (btype is Base32UpperPad):
     const alphabet = RFCUpperCaseAlphabet
   elif (btype is Base32Lower) or (btype is Base32LowerPad):
@@ -217,13 +205,13 @@ proc decode*[T: byte|char](btype: typedesc[Base32Types], instr: openarray[T],
     const alphabet = HEXLowerCaseAlphabet
 
   if len(instr) == 0:
-    outlen = 0
-    return Base32Status.Success
+    result.ok(0)
+    return
 
   let length = btype.decodedLength(len(instr))
   if length > len(outbytes):
-    outlen = length
-    return Base32Status.Overrun
+    result.err(errors.OverrunError)
+    return
 
   var inlen = len(instr)
   when (btype is Base32PadTypes):
@@ -239,12 +227,12 @@ proc decode*[T: byte|char](btype: typedesc[Base32Types], instr: openarray[T],
   while i < limit:
     for j in 0..<8:
       if (cast[byte](instr[i + j]) and 0x80'u8) != 0:
-        outlen = 0
-        return Base32Status.Incorrect
+        result.err(errors.IncorrectEncodingError)
+        return
       let ch = alphabet.decode[cast[int8](instr[i + j])]
       if ch == -1:
-        outlen = 0
-        return Base32Status.Incorrect
+        result.err(errors.IncorrectEncodingError)
+        return
       buffer[j] = cast[byte](ch)
     discard convert8to5(buffer, outbytes.toOpenArray(k, k + 4), 8)
     k += 5
@@ -253,33 +241,28 @@ proc decode*[T: byte|char](btype: typedesc[Base32Types], instr: openarray[T],
   var left = 0
   if reminder != 0:
     if reminder == 1 or reminder == 3 or reminder == 6:
-      outlen = 0
-      return Base32Status.Incorrect
+      result.err(errors.IncorrectEncodingError)
+      return
     for j in 0..<reminder:
       if (cast[byte](instr[i + j]) and 0x80'u8) != 0:
-        outlen = 0
-        result = Base32Status.Incorrect
+        result.err(errors.IncorrectEncodingError)
         return
       let ch = alphabet.decode[cast[int8](instr[i + j])]
       if ch == -1:
-        outlen = 0
-        result = Base32Status.Incorrect
+        result.err(errors.IncorrectEncodingError)
         return
       buffer[j] = cast[byte](ch)
     left = convert8to5(buffer.toOpenArray(0, reminder - 1),
                           outbytes.toOpenArray(k, length - 1), reminder)
-  outlen = k + left
-  result = Base32Status.Success
+  result.ok(k + left)
 
 proc decode*[T: byte|char](btype: typedesc[Base32Types],
-                           instr: openarray[T]): seq[byte] =
+                         instr: openarray[T]): Result[seq[byte], errors.Error] =
   ## Decode BASE32 string ``instr`` and return sequence of bytes as result.
-  if len(instr) == 0:
-    result = newSeq[byte]()
+  var resbytes = newSeq[byte](btype.decodedLength(len(instr)))
+  let res = btype.decode(instr, resbytes)
+  if res.isOk:
+    resbytes.setLen(res.value)
+    result.ok(resbytes)
   else:
-    var length = 0
-    result = newSeq[byte](btype.decodedLength(len(instr)))
-    if btype.decode(instr, result, length) == Base32Status.Success:
-      result.setLen(length)
-    else:
-      raise newException(Base32Error, "Incorrect base32 string")
+    result.err(res.error)

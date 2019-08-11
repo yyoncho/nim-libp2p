@@ -14,8 +14,8 @@
 ## Copyright(C) 2018 Thomas Pornin <pornin@bolet.org>.
 
 import nimcrypto/utils
-import common, minasn1
-export Asn1Status
+import common, minasn1, ../errors
+export errors
 
 const
   DefaultPublicExponent* = 3'u32
@@ -68,13 +68,7 @@ type
     buffer*: seq[byte]
 
   RsaPKI* = RsaPrivateKey | RsaPublicKey | RsaSignature
-  RsaKP* = RsaPrivateKey | RsaKeyPair
-
-  RsaError* = object of CatchableError
-  RsaRngError* = object of RsaError
-  RsaGenError* = object of RsaError
-  RsaKeyIncorrectError* = object of RsaError
-  RsaSignatureError* = object of RsaError
+  RsaKeyOrPair* = RsaPrivateKey | RsaKeyPair
 
 template getStart(bs, os, ls: untyped): untyped =
   let p = cast[uint](os)
@@ -105,8 +99,8 @@ template trimZeroes(b: seq[byte], pt, ptlen: untyped) =
     pt = cast[ptr cuchar](cast[uint](pt) + 1)
     ptlen -= 1
 
-proc random*[T: RsaKP](t: typedesc[T], bits = DefaultKeySize,
-                       pubexp = DefaultPublicExponent): T =
+proc random*[T: RsaKeyOrPair](t: typedesc[T], bits = DefaultKeySize,
+                      pubexp = DefaultPublicExponent): Result[T, errors.Error] =
   ## Generate new random RSA private key using BearSSL's HMAC-SHA256-DRBG
   ## algorithm.
   ##
@@ -117,9 +111,11 @@ proc random*[T: RsaKP](t: typedesc[T], bits = DefaultKeySize,
   var rng: BrHmacDrbgContext
   var keygen: BrRsaKeygen
   var seeder = brPrngSeederSystem(nil)
+  var kp: T
   brHmacDrbgInit(addr rng, addr sha256Vtable, nil, 0)
   if seeder(addr rng.vtable) == 0:
-    raise newException(RsaRngError, "Could not seed RNG")
+    result.err(errors.RandomGeneratorError)
+    return
   keygen = brRsaKeygenGetDefault()
 
   let length = brRsaPrivateKeyBufferSize(bits) +
@@ -130,33 +126,37 @@ proc random*[T: RsaKP](t: typedesc[T], bits = DefaultKeySize,
   let eko = pko + brRsaPublicKeyBufferSize(bits)
 
   when T is RsaKeyPair:
-    result = new RsaKeyPair
+    kp = new RsaKeyPair
   else:
-    result = new RsaPrivateKey
+    kp = new RsaPrivateKey
 
-  result.buffer = newSeq[byte](length)
+  kp.buffer = newSeq[byte](length)
   if keygen(addr rng.vtable,
-            addr result.seck, addr result.buffer[sko],
-            addr result.pubk, addr result.buffer[pko],
+            addr kp.seck, addr kp.buffer[sko],
+            addr kp.pubk, addr kp.buffer[pko],
             cuint(bits), pubexp) == 0:
-    raise newException(RsaGenError, "Could not create private key")
+    result.err(errors.RSAKeyGenerationError)
+    return
 
   let compute = brRsaComputePrivexpGetDefault()
-  let res = compute(addr result.buffer[eko], addr result.seck, pubexp)
+  let res = compute(addr kp.buffer[eko], addr kp.seck, pubexp)
   if res == 0:
-    raise newException(RsaGenError, "Could not create private key")
+    result.err(errors.RSAKeyComputationError)
+    return
 
-  result.pexp = cast[ptr cuchar](addr result.buffer[eko])
-  result.pexplen = res
+  kp.pexp = cast[ptr cuchar](addr kp.buffer[eko])
+  kp.pexplen = res
 
-  trimZeroes(result.buffer, result.seck.p, result.seck.plen)
-  trimZeroes(result.buffer, result.seck.q, result.seck.qlen)
-  trimZeroes(result.buffer, result.seck.dp, result.seck.dplen)
-  trimZeroes(result.buffer, result.seck.dq, result.seck.dqlen)
-  trimZeroes(result.buffer, result.seck.iq, result.seck.iqlen)
-  trimZeroes(result.buffer, result.pubk.n, result.pubk.nlen)
-  trimZeroes(result.buffer, result.pubk.e, result.pubk.elen)
-  trimZeroes(result.buffer, result.pexp, result.pexplen)
+  trimZeroes(kp.buffer, kp.seck.p, kp.seck.plen)
+  trimZeroes(kp.buffer, kp.seck.q, kp.seck.qlen)
+  trimZeroes(kp.buffer, kp.seck.dp, kp.seck.dplen)
+  trimZeroes(kp.buffer, kp.seck.dq, kp.seck.dqlen)
+  trimZeroes(kp.buffer, kp.seck.iq, kp.seck.iqlen)
+  trimZeroes(kp.buffer, kp.pubk.n, kp.pubk.nlen)
+  trimZeroes(kp.buffer, kp.pubk.e, kp.pubk.elen)
+  trimZeroes(kp.buffer, kp.pexp, kp.pexplen)
+
+  result.ok(kp)
 
 proc copy*[T: RsaPKI](key: T): T =
   ## Create copy of RSA private key, public key or signature.
@@ -344,251 +344,288 @@ proc toBytes*(sig: RsaSignature, data: var openarray[byte]): int =
 proc getBytes*(key: RsaPrivateKey): seq[byte] =
   ## Serialize RSA private key ``key`` to ASN.1 DER binary form and
   ## return it.
-  result = newSeq[byte](4096)
+  result = newSeq[byte](8192)
   let length = key.toBytes(result)
-  if length > 0:
-    result.setLen(length)
-  else:
-    raise newException(RsaKeyIncorrectError, "Incorrect private key")
+  result.setLen(length)
 
 proc getBytes*(key: RsaPublicKey): seq[byte] =
   ## Serialize RSA public key ``key`` to ASN.1 DER binary form and
   ## return it.
-  result = newSeq[byte](4096)
+  result = newSeq[byte](8192)
   let length = key.toBytes(result)
-  if length > 0:
-    result.setLen(length)
-  else:
-    raise newException(RsaKeyIncorrectError, "Incorrect private key")
+  result.setLen(length)
 
 proc getBytes*(sig: RsaSignature): seq[byte] =
   ## Serialize RSA signature ``sig`` to raw binary form and return it.
-  result = newSeq[byte](4096)
+  result = newSeq[byte](8192)
   let length = sig.toBytes(result)
-  if length > 0:
-    result.setLen(length)
-  else:
-    raise newException(RsaSignatureError, "Incorrect signature")
+  result.setLen(length)
 
-proc init*(key: var RsaPrivateKey, data: openarray[byte]): Asn1Status =
+proc init*(tkey: typedesc[RsaPrivateKey],
+           data: openarray[byte]): Result[RsaPrivateKey, errors.Error] =
   ## Initialize RSA private key ``key`` from ASN.1 DER binary representation
   ## ``data``.
-  ##
-  ## Procedure returns ``Asn1Status``.
-  var
-    field, rawn, rawpube, rawprie, rawp, rawq, rawdp, rawdq, rawiq: Asn1Field
-    version: uint64
-
   var ab = Asn1Buffer.init(data)
-  result = ab.read(field)
-  if result != Asn1Status.Success:
+
+  let r0 = ab.read()
+  if r0.isErr:
+    result.err(r0.error)
     return
-  if field.kind != Asn1Tag.Sequence:
-    return Asn1Status.Incorrect
-
-  var ib = field.getBuffer()
-
-  result = ib.read(field)
-  if result != Asn1Status.Success:
+  if r0.value.kind != Asn1Tag.Sequence:
+    result.err(errors.RSAIncorrectBinaryFormError)
     return
-  if field.kind != Asn1Tag.Integer:
-    return Asn1Status.Incorrect
 
-  if field.vint != 0'u64:
-    return Asn1Status.Incorrect
+  var ib = r0.value.getBuffer()
 
-  result = ib.read(rawn)
-  if result != Asn1Status.Success:
+  let r1 = ib.read()
+  if r1.isErr:
+    result.err(r1.error)
     return
-  if rawn.kind != Asn1Tag.Integer:
-    return Asn1Status.Incorrect
-
-  result = ib.read(rawpube)
-  if result != Asn1Status.Success:
+  if r1.value.kind != Asn1Tag.Integer:
+    result.err(errors.RSAIncorrectBinaryFormError)
     return
-  if rawpube.kind != Asn1Tag.Integer:
-    return Asn1Status.Incorrect
 
-  result = ib.read(rawprie)
-  if result != Asn1Status.Success:
+  if r1.value.vint != 0'u64:
+    result.err(errors.RSAIncorrectBinaryFormError)
     return
-  if rawprie.kind != Asn1Tag.Integer:
-    return Asn1Status.Incorrect
 
-  result = ib.read(rawp)
-  if result != Asn1Status.Success:
+  let rawn = ib.read()
+  if rawn.isErr:
+    result.err(rawn.error)
     return
-  if rawp.kind != Asn1Tag.Integer:
-    return Asn1Status.Incorrect
-
-  result = ib.read(rawq)
-  if result != Asn1Status.Success:
+  if rawn.value.kind != Asn1Tag.Integer:
+    result.err(errors.RSAIncorrectBinaryFormError)
     return
-  if rawq.kind != Asn1Tag.Integer:
-    return Asn1Status.Incorrect
 
-  result = ib.read(rawdp)
-  if result != Asn1Status.Success:
+  let rawpube = ib.read()
+  if rawpube.isErr:
+    result.err(rawpube.error)
     return
-  if rawdp.kind != Asn1Tag.Integer:
-    return Asn1Status.Incorrect
-
-  result = ib.read(rawdq)
-  if result != Asn1Status.Success:
+  if rawpube.value.kind != Asn1Tag.Integer:
+    result.err(errors.RSAIncorrectBinaryFormError)
     return
-  if rawdq.kind != Asn1Tag.Integer:
-    return Asn1Status.Incorrect
 
-  result = ib.read(rawiq)
-  if result != Asn1Status.Success:
+  let rawprie = ib.read()
+  if rawprie.isErr:
+    result.err(rawprie.error)
     return
-  if rawiq.kind != Asn1Tag.Integer:
-    return Asn1Status.Incorrect
+  if rawprie.value.kind != Asn1Tag.Integer:
+    result.err(errors.RSAIncorrectBinaryFormError)
+    return
 
-  if len(rawn) >= (MinKeySize shr 3) and len(rawp) > 0 and len(rawq) > 0 and
-     len(rawdp) > 0 and len(rawdq) > 0 and len(rawiq) > 0:
-    key = new RsaPrivateKey
+  let rawp = ib.read()
+  if rawp.isErr:
+    result.err(rawp.error)
+    return
+  if rawp.value.kind != Asn1Tag.Integer:
+    result.err(errors.RSAIncorrectBinaryFormError)
+    return
+
+  let rawq = ib.read()
+  if rawq.isErr:
+    result.err(rawq.error)
+    return
+  if rawq.value.kind != Asn1Tag.Integer:
+    result.err(errors.RSAIncorrectBinaryFormError)
+    return
+
+  let rawdp = ib.read()
+  if rawdp.isErr:
+    result.err(rawdp.error)
+    return
+  if rawdp.value.kind != Asn1Tag.Integer:
+    result.err(errors.RSAIncorrectBinaryFormError)
+    return
+
+  let rawdq = ib.read()
+  if rawdq.isErr:
+    result.err(rawdq.error)
+    return
+  if rawdq.value.kind != Asn1Tag.Integer:
+    result.err(errors.RSAIncorrectBinaryFormError)
+    return
+
+  let rawiq = ib.read()
+  if rawdq.isErr:
+    result.err(rawiq.error)
+    return
+  if rawiq.value.kind != Asn1Tag.Integer:
+    result.err(errors.RSAIncorrectBinaryFormError)
+    return
+
+  if len(rawn.value) < (MinKeySize shr 3):
+    result.err(errors.RSAKeyTooSmallError)
+    return
+
+  if len(rawp.value) > 0 and len(rawq.value) > 0 and len(rawdp.value) > 0 and
+     len(rawdq.value) > 0 and len(rawiq.value) > 0:
+    var key = new RsaPrivateKey
     key.buffer = @data
-    key.pubk.n = cast[ptr cuchar](addr key.buffer[rawn.offset])
-    key.pubk.e = cast[ptr cuchar](addr key.buffer[rawpube.offset])
-    key.seck.p = cast[ptr cuchar](addr key.buffer[rawp.offset])
-    key.seck.q = cast[ptr cuchar](addr key.buffer[rawq.offset])
-    key.seck.dp = cast[ptr cuchar](addr key.buffer[rawdp.offset])
-    key.seck.dq = cast[ptr cuchar](addr key.buffer[rawdq.offset])
-    key.seck.iq = cast[ptr cuchar](addr key.buffer[rawiq.offset])
-    key.pexp = cast[ptr cuchar](addr key.buffer[rawprie.offset])
-    key.pubk.nlen = len(rawn)
-    key.pubk.elen = len(rawpube)
-    key.seck.plen = len(rawp)
-    key.seck.qlen = len(rawq)
-    key.seck.dplen = len(rawdp)
-    key.seck.dqlen = len(rawdq)
-    key.seck.iqlen = len(rawiq)
-    key.pexplen = len(rawprie)
-    key.seck.nBitlen = cast[uint32](len(rawn) shl 3)
-    result = Asn1Status.Success
+    key.pubk.n = cast[ptr cuchar](addr key.buffer[rawn.value.offset])
+    key.pubk.e = cast[ptr cuchar](addr key.buffer[rawpube.value.offset])
+    key.seck.p = cast[ptr cuchar](addr key.buffer[rawp.value.offset])
+    key.seck.q = cast[ptr cuchar](addr key.buffer[rawq.value.offset])
+    key.seck.dp = cast[ptr cuchar](addr key.buffer[rawdp.value.offset])
+    key.seck.dq = cast[ptr cuchar](addr key.buffer[rawdq.value.offset])
+    key.seck.iq = cast[ptr cuchar](addr key.buffer[rawiq.value.offset])
+    key.pexp = cast[ptr cuchar](addr key.buffer[rawprie.value.offset])
+    key.pubk.nlen = len(rawn.value)
+    key.pubk.elen = len(rawpube.value)
+    key.seck.plen = len(rawp.value)
+    key.seck.qlen = len(rawq.value)
+    key.seck.dplen = len(rawdp.value)
+    key.seck.dqlen = len(rawdq.value)
+    key.seck.iqlen = len(rawiq.value)
+    key.pexplen = len(rawprie.value)
+    key.seck.nBitlen = cast[uint32](len(rawn.value) shl 3)
+    result.ok(key)
   else:
-    result = Asn1Status.Incorrect
+    result.err(errors.RSAIncorrectBinaryFormError)
 
-proc init*(key: var RsaPublicKey, data: openarray[byte]): Asn1Status =
+proc init*(tkey: typedesc[RsaPublicKey],
+           data: openarray[byte]): Result[RsaPublicKey, errors.Error] =
   ## Initialize RSA public key ``key`` from ASN.1 DER binary representation
   ## ``data``.
-  ##
-  ## Procedure returns ``Asn1Status``.
-  var field, rawn, rawe, oid: Asn1Field
   var ab = Asn1Buffer.init(data)
 
-  result = ab.read(field)
-  if result != Asn1Status.Success:
+  var rfield = ab.read()
+  if rfield.isErr:
+    result.err(rfield.error)
     return
-  if field.kind != Asn1Tag.Sequence:
-    return Asn1Status.Incorrect
-  var ib = field.getBuffer()
-
-  result = ib.read(field)
-  if result != Asn1Status.Success:
+  if rfield.value.kind != Asn1Tag.Sequence:
+    result.err(errors.RSAIncorrectBinaryFormError)
     return
-  if field.kind != Asn1Tag.Sequence:
-    return Asn1Status.Incorrect
-  var ob = field.getBuffer()
 
-  result = ob.read(field)
-  if result != Asn1Status.Success:
+  var ib = rfield.value.getBuffer()
+
+  rfield = ib.read()
+  if rfield.isErr:
+    result.err(rfield.error)
     return
-  if field.kind != Asn1Tag.Oid:
-    return Asn1Status.Incorrect
-  if field != Asn1OidRsaEncryption:
-    return Asn1Status.Incorrect
-
-  result = ob.read(field)
-  if result != Asn1Status.Success:
+  if rfield.value.kind != Asn1Tag.Sequence:
+    result.err(errors.RSAIncorrectBinaryFormError)
     return
-  if field.kind != Asn1Tag.Null:
-    return Asn1Status.Incorrect
 
-  result = ib.read(field)
-  if result != Asn1Status.Success:
+  var ob = rfield.value.getBuffer()
+
+  rfield = ob.read()
+  if rfield.isErr:
+    result.err(rfield.error)
     return
-  if field.kind != Asn1Tag.BitString:
-    return Asn1Status.Incorrect
-  var vb = field.getBuffer()
-
-  result = vb.read(field)
-  if result != Asn1Status.Success:
+  if rfield.value.kind != Asn1Tag.Oid:
+    result.err(errors.RSAIncorrectBinaryFormError)
     return
-  if field.kind != Asn1Tag.Sequence:
-    return Asn1Status.Incorrect
-  var sb = field.getBuffer()
 
-  result = sb.read(rawn)
-  if result != Asn1Status.Success:
+  if not(`==`(rfield.value, Asn1OidRsaEncryption)):
+    result.err(errors.RSAIncorrectBinaryFormError)
     return
-  if rawn.kind != Asn1Tag.Integer:
-    return Asn1Status.Incorrect
 
-  result = sb.read(rawe)
-  if result != Asn1Status.Success:
+  rfield = ob.read()
+  if rfield.isErr:
+    result.err(rfield.error)
     return
-  if rawn.kind != Asn1Tag.Integer:
-    return Asn1Status.Incorrect
+  if rfield.value.kind != Asn1Tag.Null:
+    result.err(errors.RSAIncorrectBinaryFormError)
+    return
 
-  if len(rawn) >= (MinKeySize shr 3) and len(rawe) > 0:
-    key = new RsaPublicKey
+  rfield = ib.read()
+  if rfield.isErr:
+    result.err(rfield.error)
+    return
+  if rfield.value.kind != Asn1Tag.BitString:
+    result.err(errors.RSAIncorrectBinaryFormError)
+    return
+
+  var vb = rfield.value.getBuffer()
+
+  rfield = vb.read()
+  if rfield.isErr:
+    result.err(rfield.error)
+    return
+  if rfield.value.kind != Asn1Tag.Sequence:
+    result.err(errors.RSAIncorrectBinaryFormError)
+    return
+
+  var sb = rfield.value.getBuffer()
+
+  var rawn = sb.read()
+  if rawn.isErr:
+    result.err(rawn.error)
+    return
+  if rawn.value.kind != Asn1Tag.Integer:
+    result.err(errors.RSAIncorrectBinaryFormError)
+    return
+
+  var rawe = sb.read()
+  if rawe.isErr:
+    result.err(rawe.error)
+    return
+  if rawe.value.kind != Asn1Tag.Integer:
+    result.err(errors.RSAIncorrectBinaryFormError)
+    return
+
+  if len(rawn.value) < (MinKeySize shr 3):
+    result.err(errors.RSAKeyTooSmallError)
+    return
+
+  if len(rawe.value) > 0:
+    var key = new RsaPublicKey
     key.buffer = @data
-    key.key.n = cast[ptr cuchar](addr key.buffer[rawn.offset])
-    key.key.e = cast[ptr cuchar](addr key.buffer[rawe.offset])
-    key.key.nlen = len(rawn)
-    key.key.elen = len(rawe)
-    result = Asn1Status.Success
+    key.key.n = cast[ptr cuchar](addr key.buffer[rawn.value.offset])
+    key.key.e = cast[ptr cuchar](addr key.buffer[rawe.value.offset])
+    key.key.nlen = len(rawn.value)
+    key.key.elen = len(rawe.value)
+    result.ok(key)
   else:
-    result = Asn1Status.Incorrect
+    result.err(errors.RSAIncorrectBinaryFormError)
 
-proc init*(sig: var RsaSignature, data: openarray[byte]): Asn1Status =
+proc init*(tsig: typedesc[RsaSignature],
+           data: openarray[byte]): Result[RsaSignature, errors.Error] =
   ## Initialize RSA signature ``sig`` from ASN.1 DER binary representation
   ## ``data``.
-  ##
-  ## Procedure returns ``Asn1Status``.
-  result = Asn1Status.Incorrect
   if len(data) > 0:
-    sig = new RsaSignature
+    var sig = new RsaSignature
     sig.buffer = @data
-    result = Asn1Status.Success
+    result.ok(sig)
+  else:
+    result.err(errors.RSAIncorrectBinaryFormError)
+    return
 
-proc init*[T: RsaPKI](sospk: var T, data: string): Asn1Status {.inline.} =
-  ## Initialize EC `private key`, `public key` or `scalar` ``sospk`` from
-  ## hexadecimal string representation ``data``.
-  ##
-  ## Procedure returns ``Asn1Status``.
-  result = sospk.init(fromHex(data))
+proc init*(tkey: typedesc[RsaPrivateKey],
+           data: string): Result[RsaPrivateKey, errors.Error] {.inline.} =
+  ## Initialize RSA `private key` from hexadecimal string representation
+  ## ``data``.
+  var buffer: seq[byte]
+  try:
+    buffer = fromHex(data)
+  except:
+    result.err(errors.IncorrectHexadecimalError)
+    return
+  result = tkey.init(buffer)
 
-proc init*(t: typedesc[RsaPrivateKey], data: openarray[byte]): RsaPrivateKey =
-  ## Initialize RSA private key from ASN.1 DER binary representation ``data``
-  ## and return constructed object.
-  let res = result.init(data)
-  if res != Asn1Status.Success:
-    raise newException(RsaKeyIncorrectError,
-                       "Incorrect private key (" & $res & ")")
+proc init*(tkey: typedesc[RsaPublicKey],
+           data: string): Result[RsaPublicKey, errors.Error] {.inline.} =
+  ## Initialize RSA `public key` from hexadecimal string representation
+  ## ``data``.
+  var buffer: seq[byte]
+  try:
+    buffer = fromHex(data)
+  except:
+    result.err(errors.IncorrectHexadecimalError)
+    return
+  result = tkey.init(buffer)
 
-proc init*(t: typedesc[RsaPublicKey], data: openarray[byte]): RsaPublicKey =
-  ## Initialize RSA public key from ASN.1 DER binary representation ``data``
-  ## and return constructed object.
-  let res = result.init(data)
-  if res != Asn1Status.Success:
-    raise newException(RsaKeyIncorrectError,
-                       "Incorrect public key (" & $res & ")")
-
-proc init*(t: typedesc[RsaSignature], data: openarray[byte]): RsaSignature =
-  ## Initialize RSA signature from raw binary representation ``data`` and
-  ## return constructed object.
-  let res = result.init(data)
-  if res != Asn1Status.Success:
-    raise newException(RsaKeyIncorrectError,
-                       "Incorrect signature (" & $res & ")")
-
-proc init*[T: RsaPKI](t: typedesc[T], data: string): T {.inline.} =
-  ## Initialize RSA `private key`, `public key` or `signature` from hexadecimal
-  ## string representation ``data`` and return constructed object.
-  result = t.init(fromHex(data))
+proc init*(tsig: typedesc[RsaSignature],
+           data: string): Result[RsaSignature, errors.Error] {.inline.} =
+  ## Initialize RSA `signature` from hexadecimal string representation
+  ## ``data``.
+  var buffer: seq[byte]
+  try:
+    buffer = fromHex(data)
+  except:
+    result.err(errors.IncorrectHexadecimalError)
+    return
+  result = tsig.init(buffer)
 
 proc `$`*(key: RsaPrivateKey): string =
   ## Return string representation of RSA private key.
@@ -697,8 +734,8 @@ proc sign*[T: byte|char](key: RsaPrivateKey,
   var hc: BrHashCompatContext
   var hash: array[32, byte]
   var impl = BrRsaPkcs1SignGetDefault()
-  result = new RsaSignature
-  result.buffer = newSeq[byte]((key.seck.nBitlen + 7) shr 3)
+  var sig = new RsaSignature
+  sig.buffer = newSeq[byte]((key.seck.nBitlen + 7) shr 3)
   var kv = addr sha256Vtable
   kv.init(addr hc.vtable)
   if len(message) > 0:
@@ -709,9 +746,10 @@ proc sign*[T: byte|char](key: RsaPrivateKey,
   var oid = RsaOidSha256
   let res = impl(cast[ptr cuchar](addr oid[0]),
                  cast[ptr cuchar](addr hash[0]), len(hash),
-                 addr key.seck, cast[ptr cuchar](addr result.buffer[0]))
-  if res == 0:
-    raise newException(RsaSignatureError, "Signature generation error")
+                 addr key.seck, cast[ptr cuchar](addr sig.buffer[0]))
+  # We ignore error here, because we supplied all the buffers and values
+  # properly.
+  result = sig
 
 proc verify*[T: byte|char](sig: RsaSignature, message: openarray[T],
                            pubkey: RsaPublicKey): bool {.inline.} =

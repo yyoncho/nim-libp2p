@@ -295,51 +295,47 @@ suite "EC NIST-P256/384/521 test suite":
 
   test "[secp256r1] Private key serialize/deserialize test":
     for i in 0..<TestsCount:
-      var rkey1, rkey2: EcPrivateKey
       var skey2 = newSeq[byte](256)
       var key = EcPrivateKey.random(Secp256r1)
-      var skey1 = key.getBytes()
+      check key.isOk == true
+      var skey1 = key.value.getBytes()
+      check key.value.toBytes(skey2) > 0
+      var rkey1 = EcPrivateKey.init(skey1)
+      var rkey2 = EcPrivateKey.init(skey2)
       check:
-        key.toBytes(skey2) > 0
-      check:
-        rkey1.init(skey1) == Asn1Status.Success
-        rkey2.init(skey2) == Asn1Status.Success
-      var rkey3 = EcPrivateKey.init(skey1)
-      var rkey4 = EcPrivateKey.init(skey2)
-      check:
-        rkey1 == key
-        rkey2 == key
-        rkey3 == key
-        rkey4 == key
+        rkey1.isOk == true
+        rkey2.isOk == true
+        rkey1.value == key.value
+        rkey2.value == key.value
 
   test "[secp256r1] Public key serialize/deserialize test":
     for i in 0..<TestsCount:
-      var rkey1, rkey2: EcPublicKey
       var skey2 = newSeq[byte](256)
       var pair = EcKeyPair.random(Secp256r1)
-      var skey1 = pair.pubkey.getBytes()
+      check pair.isOk == true
+      var skey1 = pair.value.pubkey.getBytes()
+      check pair.value.pubkey.toBytes(skey2) > 0
+      var rkey1 = EcPublicKey.init(skey1)
+      var rkey2 = EcPublicKey.init(skey2)
       check:
-        pair.pubkey.toBytes(skey2) > 0
-        rkey1.init(skey1) == Asn1Status.Success
-        rkey2.init(skey2) == Asn1Status.Success
-      var rkey3 = EcPublicKey.init(skey1)
-      var rkey4 = EcPublicKey.init(skey2)
-      check:
-        rkey1 == pair.pubkey
-        rkey2 == pair.pubkey
-        rkey3 == pair.pubkey
-        rkey4 == pair.pubkey
+        rkey1.isOk == true
+        rkey2.isOk == true
+        rkey1.value == pair.value.pubkey
+        rkey2.value == pair.value.pubkey
 
   test "[secp256r1] ECDHE test":
     for i in 0..<TestsCount:
       var kp1 = EcKeyPair.random(Secp256r1)
       var kp2 = EcKeyPair.random(Secp256r1)
-      var shared1 = kp2.pubkey.scalarMul(kp1.seckey)
-      var shared2 = kp1.pubkey.scalarMul(kp2.seckey)
       check:
-        isNil(shared1) == false
-        isNil(shared2) == false
-        shared1 == shared2
+        kp1.isOk == true
+        kp2.isOk == true
+      var shared1 = kp2.value.pubkey.scalarMul(kp1.value.seckey)
+      var shared2 = kp1.value.pubkey.scalarMul(kp2.value.seckey)
+      check:
+        shared1.isOk == true
+        shared2.isOk == true
+        shared1.value == shared2.value
 
   test "[secp256r1] ECDHE test vectors":
     for i in 0..<3:
@@ -347,25 +343,35 @@ suite "EC NIST-P256/384/521 test suite":
       var key2 = fromHex(stripSpaces(ECDHEPrivateKeys[i * 2 + 1]))
       var seckey1 = EcPrivateKey.initRaw(key1)
       var seckey2 = EcPrivateKey.initRaw(key2)
-      var pubkey1 = seckey1.getKey()
-      var pubkey2 = seckey2.getKey()
-      var secret1 = getSecret(pubkey2, seckey1)
-      var secret2 = getSecret(pubkey1, seckey2)
+      check:
+        seckey1.isOk == true
+        seckey2.isOk == true
+      var pubkey1 = seckey1.value.getKey()
+      var pubkey2 = seckey2.value.getKey()
+      var secret1 = getSecret(pubkey2, seckey1.value)
+      var secret2 = getSecret(pubkey1, seckey2.value)
+      check:
+        secret1.isOk == true
+        secret2.isOk == true
       var expsecret = fromHex(stripSpaces(ECDHESecrets[i]))
       check:
-        secret1 == expsecret
-        secret2 == expsecret
+        secret1.value == expsecret
+        secret2.value == expsecret
 
   test "[secp256r1] ECDSA test vectors":
     for i in 0..<2:
       var sk = EcPrivateKey.init(stripSpaces(SignatureSecKeys[i]))
       var expectpk = EcPublicKey.init(stripSpaces(SignaturePubKeys[i]))
-      var checkpk = sk.getKey()
-      check expectpk == checkpk
-      var checksig = sk.sign(SignatureMessages[i])
+      check:
+        sk.isOk == true
+        expectpk.isOk == true
+      var checkpk = sk.value.getKey()
+      check checkpk == expectpk.value
+      var checksig = sk.value.sign(SignatureMessages[i])
       var expectsig = EcSignature.init(stripSpaces(SignatureVectors[i]))
       check:
-        checksig == expectsig
+        expectsig.isOk == true
+        checksig == expectsig.value
         checksig.verify(SignatureMessages[i], checkpk) == true
       let error = len(checksig.buffer) - 1
       checksig.buffer[error] = not(checksig.buffer[error])
@@ -374,79 +380,85 @@ suite "EC NIST-P256/384/521 test suite":
   test "[secp256r1] ECDSA non-deterministic test vectors":
     var sk = EcPrivateKey.init(stripSpaces(NDPrivateKeys[0]))
     var pk = EcPublicKey.init(stripSpaces(NDPublicKeys[0]))
-    var checkpk = sk.getKey()
-    check pk == checkpk
+    check:
+      sk.isOk == true
+      pk.isOk == true
+    var checkpk = sk.value.getKey()
+    check checkpk == pk.value
     for i in 0..<6:
       var message = NDMessages[i]
       var checksig = EcSignature.init(stripSpaces(NDSignatures[i]))
-      check checksig.verify(message, pk) == true
-      let error = len(checksig.buffer) - 1
-      checksig.buffer[error] = not(checksig.buffer[error])
-      check checksig.verify(message, pk) == false
+      check:
+        checksig.isOk == true
+        checksig.value.verify(message, pk.value) == true
+      let error = len(checksig.value.buffer) - 1
+      checksig.value.buffer[error] = not(checksig.value.buffer[error])
+      check checksig.value.verify(message, pk.value) == false
 
   test "[secp256r1] Generate/Sign/Serialize/Deserialize/Verify test":
     var message = "message to sign"
     for i in 0..<TestsCount:
       var kp = EcKeyPair.random(Secp256r1)
-      var sig = kp.seckey.sign(message)
-      var sersk = kp.seckey.getBytes()
-      var serpk = kp.pubkey.getBytes()
+      check kp.isOk == true
+      var sig = kp.value.seckey.sign(message)
+      var sersk = kp.value.seckey.getBytes()
+      var serpk = kp.value.pubkey.getBytes()
       var sersig = sig.getBytes()
       var seckey = EcPrivateKey.init(sersk)
       var pubkey = EcPublicKey.init(serpk)
       var csig = EcSignature.init(sersig)
-      check csig.verify(message, pubkey) == true
-      let error = len(csig.buffer) - 1
-      csig.buffer[error] = not(csig.buffer[error])
-      check csig.verify(message, pubkey) == false
+      check:
+        seckey.isOk == true
+        pubkey.isOk == true
+        csig.isOk == true
+        csig.value.verify(message, pubkey.value) == true
+      let error = len(csig.value.buffer) - 1
+      csig.value.buffer[error] = not(csig.value.buffer[error])
+      check csig.value.verify(message, pubkey.value) == false
 
   test "[secp384r1] Private key serialize/deserialize test":
     for i in 0..<TestsCount:
-      var rkey1, rkey2: EcPrivateKey
       var skey2 = newSeq[byte](256)
       var key = EcPrivateKey.random(Secp384r1)
-      var skey1 = key.getBytes()
+      check key.isOk == true
+      var skey1 = key.value.getBytes()
+      check key.value.toBytes(skey2) > 0
+      var rkey1 = EcPrivateKey.init(skey1)
+      var rkey2 = EcPrivateKey.init(skey2)
       check:
-        key.toBytes(skey2) > 0
-      check:
-        rkey1.init(skey1) == Asn1Status.Success
-        rkey2.init(skey2) == Asn1Status.Success
-      var rkey3 = EcPrivateKey.init(skey1)
-      var rkey4 = EcPrivateKey.init(skey2)
-      check:
-        rkey1 == key
-        rkey2 == key
-        rkey3 == key
-        rkey4 == key
+        rkey1.isOk == true
+        rkey2.isOk == true
+        rkey1.value == key.value
+        rkey2.value == key.value
 
   test "[secp384r1] Public key serialize/deserialize test":
     for i in 0..<TestsCount:
-      var rkey1, rkey2: EcPublicKey
       var skey2 = newSeq[byte](256)
       var pair = EcKeyPair.random(Secp384r1)
-      var skey1 = pair.pubkey.getBytes()
+      check pair.isOk == true
+      var skey1 = pair.value.pubkey.getBytes()
+      check pair.value.pubkey.toBytes(skey2) > 0
+      var rkey1 = EcPublicKey.init(skey1)
+      var rkey2 = EcPublicKey.init(skey2)
       check:
-        pair.pubkey.toBytes(skey2) > 0
-        rkey1.init(skey1) == Asn1Status.Success
-        rkey2.init(skey2) == Asn1Status.Success
-      var rkey3 = EcPublicKey.init(skey1)
-      var rkey4 = EcPublicKey.init(skey2)
-      check:
-        rkey1 == pair.pubkey
-        rkey2 == pair.pubkey
-        rkey3 == pair.pubkey
-        rkey4 == pair.pubkey
+        rkey1.isOk == true
+        rkey2.isOk == true
+        rkey1.value == pair.value.pubkey
+        rkey2.value == pair.value.pubkey
 
   test "[secp384r1] ECDHE test":
     for i in 0..<TestsCount:
       var kp1 = EcKeyPair.random(Secp384r1)
       var kp2 = EcKeyPair.random(Secp384r1)
-      var shared1 = kp2.pubkey.scalarMul(kp1.seckey)
-      var shared2 = kp1.pubkey.scalarMul(kp2.seckey)
       check:
-        isNil(shared1) == false
-        isNil(shared2) == false
-        shared1 == shared2
+        kp1.isOk == true
+        kp2.isOk == true
+      var shared1 = kp2.value.pubkey.scalarMul(kp1.value.seckey)
+      var shared2 = kp1.value.pubkey.scalarMul(kp2.value.seckey)
+      check:
+        shared1.isOk == true
+        shared2.isOk == true
+        shared1.value == shared2.value
 
   test "[secp384r1] ECDHE test vectors":
     for i in 3..<6:
@@ -454,25 +466,35 @@ suite "EC NIST-P256/384/521 test suite":
       var key2 = fromHex(stripSpaces(ECDHEPrivateKeys[i * 2 + 1]))
       var seckey1 = EcPrivateKey.initRaw(key1)
       var seckey2 = EcPrivateKey.initRaw(key2)
-      var pubkey1 = seckey1.getKey()
-      var pubkey2 = seckey2.getKey()
-      var secret1 = getSecret(pubkey2, seckey1)
-      var secret2 = getSecret(pubkey1, seckey2)
+      check:
+        seckey1.isOk == true
+        seckey2.isOk == true
+      var pubkey1 = seckey1.value.getKey()
+      var pubkey2 = seckey2.value.getKey()
+      var secret1 = getSecret(pubkey2, seckey1.value)
+      var secret2 = getSecret(pubkey1, seckey2.value)
+      check:
+        secret1.isOk == true
+        secret2.isOk == true
       var expsecret = fromHex(stripSpaces(ECDHESecrets[i]))
       check:
-        secret1 == expsecret
-        secret2 == expsecret
+        secret1.value == expsecret
+        secret2.value == expsecret
 
   test "[secp384r1] ECDSA test vectors":
     for i in 2..<4:
       var sk = EcPrivateKey.init(stripSpaces(SignatureSecKeys[i]))
       var expectpk = EcPublicKey.init(stripSpaces(SignaturePubKeys[i]))
-      var checkpk = sk.getKey()
-      check expectpk == checkpk
-      var checksig = sk.sign(SignatureMessages[i])
+      check:
+        sk.isOk == true
+        expectpk.isOk == true
+      var checkpk = sk.value.getKey()
+      check expectpk.value == checkpk
+      var checksig = sk.value.sign(SignatureMessages[i])
       var expectsig = EcSignature.init(stripSpaces(SignatureVectors[i]))
       check:
-        checksig == expectsig
+        expectsig.isOk == true
+        checksig == expectsig.value
         checksig.verify(SignatureMessages[i], checkpk) == true
       let error = len(checksig.buffer) - 1
       checksig.buffer[error] = not(checksig.buffer[error])
@@ -481,105 +503,122 @@ suite "EC NIST-P256/384/521 test suite":
   test "[secp384r1] ECDSA non-deterministic test vectors":
     var sk = EcPrivateKey.init(stripSpaces(NDPrivateKeys[1]))
     var pk = EcPublicKey.init(stripSpaces(NDPublicKeys[1]))
-    var checkpk = sk.getKey()
-    check pk == checkpk
+    check:
+      sk.isOk == true
+      pk.isOk == true
+    var checkpk = sk.value.getKey()
+    check pk.value == checkpk
     for i in 6..<12:
       var message = NDMessages[i]
       var checksig = EcSignature.init(stripSpaces(NDSignatures[i]))
-      check checksig.verify(message, pk) == true
-      let error = len(checksig.buffer) - 1
-      checksig.buffer[error] = not(checksig.buffer[error])
-      check checksig.verify(message, pk) == false
+      check:
+        checksig.isOk == true
+        checksig.value.verify(message, pk.value) == true
+      let error = len(checksig.value.buffer) - 1
+      checksig.value.buffer[error] = not(checksig.value.buffer[error])
+      check checksig.value.verify(message, pk.value) == false
 
   test "[secp384r1] Generate/Sign/Serialize/Deserialize/Verify test":
     var message = "message to sign"
     for i in 0..<TestsCount:
       var kp = EcKeyPair.random(Secp384r1)
-      var sig = kp.seckey.sign(message)
-      var sersk = kp.seckey.getBytes()
-      var serpk = kp.pubkey.getBytes()
+      check kp.isOk == true
+      var sig = kp.value.seckey.sign(message)
+      var sersk = kp.value.seckey.getBytes()
+      var serpk = kp.value.pubkey.getBytes()
       var sersig = sig.getBytes()
       var seckey = EcPrivateKey.init(sersk)
       var pubkey = EcPublicKey.init(serpk)
       var csig = EcSignature.init(sersig)
-      check csig.verify(message, pubkey) == true
-      let error = len(csig.buffer) - 1
-      csig.buffer[error] = not(csig.buffer[error])
-      check csig.verify(message, pubkey) == false
+      check:
+        seckey.isOk == true
+        pubkey.isOk == true
+        csig.isOk == true
+        csig.value.verify(message, pubkey.value) == true
+      let error = len(csig.value.buffer) - 1
+      csig.value.buffer[error] = not(csig.value.buffer[error])
+      check csig.value.verify(message, pubkey.value) == false
 
   test "[secp521r1] Private key serialize/deserialize test":
     for i in 0..<TestsCount:
-      var rkey1, rkey2: EcPrivateKey
       var skey2 = newSeq[byte](256)
       var key = EcPrivateKey.random(Secp521r1)
-      var skey1 = key.getBytes()
+      check key.isOk == true
+      var skey1 = key.value.getBytes()
+      check key.value.toBytes(skey2) > 0
+      var rkey1 = EcPrivateKey.init(skey1)
+      var rkey2 = EcPrivateKey.init(skey2)
       check:
-        key.toBytes(skey2) > 0
-      check:
-        rkey1.init(skey1) == Asn1Status.Success
-        rkey2.init(skey2) == Asn1Status.Success
-      var rkey3 = EcPrivateKey.init(skey1)
-      var rkey4 = EcPrivateKey.init(skey2)
-      check:
-        rkey1 == key
-        rkey2 == key
-        rkey3 == key
-        rkey4 == key
+        rkey1.isOk == true
+        rkey2.isOk == true
+        rkey1.value == key.value
+        rkey2.value == key.value
 
   test "[secp521r1] Public key serialize/deserialize test":
     for i in 0..<TestsCount:
-      var rkey1, rkey2: EcPublicKey
       var skey2 = newSeq[byte](256)
       var pair = EcKeyPair.random(Secp521r1)
-      var skey1 = pair.pubkey.getBytes()
+      check pair.isOk == true
+      var skey1 = pair.value.pubkey.getBytes()
       check:
-        pair.pubkey.toBytes(skey2) > 0
-        rkey1.init(skey1) == Asn1Status.Success
-        rkey2.init(skey2) == Asn1Status.Success
-      var rkey3 = EcPublicKey.init(skey1)
-      var rkey4 = EcPublicKey.init(skey2)
+        pair.value.pubkey.toBytes(skey2) > 0
+      var rkey1 = EcPublicKey.init(skey1)
+      var rkey2 = EcPublicKey.init(skey2)
       check:
-        rkey1 == pair.pubkey
-        rkey2 == pair.pubkey
-        rkey3 == pair.pubkey
-        rkey4 == pair.pubkey
+        rkey1.isOk == true
+        rkey2.isOk == true
+        rkey1.value == pair.value.pubkey
+        rkey2.value == pair.value.pubkey
 
   test "[secp521r1] ECDHE test":
     for i in 0..<TestsCount:
       var kp1 = EcKeyPair.random(Secp521r1)
       var kp2 = EcKeyPair.random(Secp521r1)
-      var shared1 = kp2.pubkey.scalarMul(kp1.seckey)
-      var shared2 = kp1.pubkey.scalarMul(kp2.seckey)
       check:
-        isNil(shared1) == false
-        isNil(shared2) == false
-        shared1 == shared2
+        kp1.isOk == true
+        kp2.isOk == true
+      var shared1 = kp2.value.pubkey.scalarMul(kp1.value.seckey)
+      var shared2 = kp1.value.pubkey.scalarMul(kp2.value.seckey)
+      check:
+        shared1.isOk == true
+        shared2.isOk == true
+        shared1.value == shared2.value
 
-  test "[secp384r1] ECDHE test vectors":
+  test "[secp521r1] ECDHE test vectors":
     for i in 6..<9:
       var key1 = fromHex(stripSpaces(ECDHEPrivateKeys[i * 2]))
       var key2 = fromHex(stripSpaces(ECDHEPrivateKeys[i * 2 + 1]))
       var seckey1 = EcPrivateKey.initRaw(key1)
       var seckey2 = EcPrivateKey.initRaw(key2)
-      var pubkey1 = seckey1.getKey()
-      var pubkey2 = seckey2.getKey()
-      var secret1 = getSecret(pubkey2, seckey1)
-      var secret2 = getSecret(pubkey1, seckey2)
+      check:
+        seckey1.isOk == true
+        seckey2.isOk == true
+      var pubkey1 = seckey1.value.getKey()
+      var pubkey2 = seckey2.value.getKey()
+      var secret1 = getSecret(pubkey2, seckey1.value)
+      var secret2 = getSecret(pubkey1, seckey2.value)
+      check:
+        secret1.isOk == true
+        secret2.isOk == true
       var expsecret = fromHex(stripSpaces(ECDHESecrets[i]))
       check:
-        secret1 == expsecret
-        secret2 == expsecret
+        secret1.value == expsecret
+        secret2.value == expsecret
 
   test "[secp521r1] ECDSA test vectors":
     for i in 4..<6:
       var sk = EcPrivateKey.init(stripSpaces(SignatureSecKeys[i]))
       var expectpk = EcPublicKey.init(stripSpaces(SignaturePubKeys[i]))
-      var checkpk = sk.getKey()
-      check expectpk == checkpk
-      var checksig = sk.sign(SignatureMessages[i])
+      check:
+        sk.isOk == true
+        expectpk.isOk == true
+      var checkpk = sk.value.getKey()
+      check expectpk.value == checkpk
+      var checksig = sk.value.sign(SignatureMessages[i])
       var expectsig = EcSignature.init(stripSpaces(SignatureVectors[i]))
       check:
-        checksig == expectsig
+        expectsig.isOk == true
+        checksig == expectsig.value
         checksig.verify(SignatureMessages[i], checkpk) == true
       let error = len(checksig.buffer) - 1
       checksig.buffer[error] = not(checksig.buffer[error])
@@ -588,28 +627,39 @@ suite "EC NIST-P256/384/521 test suite":
   test "[secp521r1] ECDSA non-deterministic test vectors":
     var sk = EcPrivateKey.init(stripSpaces(NDPrivateKeys[2]))
     var pk = EcPublicKey.init(stripSpaces(NDPublicKeys[2]))
-    var checkpk = sk.getKey()
-    check pk == checkpk
+    check:
+      sk.isOk == true
+      pk.isOk == true
+    var checkpk = sk.value.getKey()
+    check pk.value == checkpk
     for i in 12..<18:
       var message = NDMessages[i]
       var checksig = EcSignature.init(stripSpaces(NDSignatures[i]))
-      check checksig.verify(message, pk) == true
-      let error = len(checksig.buffer) - 1
-      checksig.buffer[error] = not(checksig.buffer[error])
-      check checksig.verify(message, pk) == false
+      check:
+        checksig.isOk == true
+        checksig.value.verify(message, pk.value) == true
+      let error = len(checksig.value.buffer) - 1
+      checksig.value.buffer[error] = not(checksig.value.buffer[error])
+      check checksig.value.verify(message, pk.value) == false
 
   test "[secp521r1] Generate/Sign/Serialize/Deserialize/Verify test":
     var message = "message to sign"
     for i in 0..<TestsCount:
       var kp = EcKeyPair.random(Secp521r1)
-      var sig = kp.seckey.sign(message)
-      var sersk = kp.seckey.getBytes()
-      var serpk = kp.pubkey.getBytes()
+      check kp.isOk == true
+      var sig = kp.value.seckey.sign(message)
+      var sersk = kp.value.seckey.getBytes()
+      var serpk = kp.value.pubkey.getBytes()
       var sersig = sig.getBytes()
       var seckey = EcPrivateKey.init(sersk)
       var pubkey = EcPublicKey.init(serpk)
+      check:
+        seckey.isOk == true
+        pubkey.isOk == true
       var csig = EcSignature.init(sersig)
-      check csig.verify(message, pubkey) == true
-      let error = len(csig.buffer) - 1
-      csig.buffer[error] = not(csig.buffer[error])
-      check csig.verify(message, pubkey) == false
+      check:
+        csig.isOk == true
+        csig.value.verify(message, pubkey.value) == true
+      let error = len(csig.value.buffer) - 1
+      csig.value.buffer[error] = not(csig.value.buffer[error])
+      check csig.value.verify(message, pubkey.value) == false

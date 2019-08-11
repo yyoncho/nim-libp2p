@@ -8,7 +8,8 @@
 ## those terms.
 
 ## This module implements minimal Google's ProtoBuf primitives.
-import ../varint
+import ../varint, ../errors
+export errors
 
 const
   MaxMessageSize* = 1'u shl 22
@@ -82,7 +83,7 @@ proc vsizeof*(field: ProtoField): int {.inline.} =
   else:
     discard
 
-proc initProtoField*(index: int, value: SomeVarint): ProtoField =
+proc init*(t: typedesc[ProtoField], index: int, value: SomeVarint): ProtoField =
   ## Initialize ProtoField with integer value.
   result = ProtoField(kind: Varint, index: index)
   when type(value) is uint64:
@@ -90,21 +91,23 @@ proc initProtoField*(index: int, value: SomeVarint): ProtoField =
   else:
     result.vint = cast[uint64](value)
 
-proc initProtoField*(index: int, value: openarray[byte]): ProtoField =
+proc init*(t: typedesc[ProtoField], index: int,
+           value: openarray[byte]): ProtoField =
   ## Initialize ProtoField with bytes array.
   result = ProtoField(kind: Length, index: index)
   if len(value) > 0:
     result.vbuffer = newSeq[byte](len(value))
     copyMem(addr result.vbuffer[0], unsafeAddr value[0], len(value))
 
-proc initProtoField*(index: int, value: string): ProtoField =
+proc init*(t: typedesc[ProtoField], index: int, value: string): ProtoField =
   ## Initialize ProtoField with string.
   result = ProtoField(kind: Length, index: index)
   if len(value) > 0:
     result.vbuffer = newSeq[byte](len(value))
     copyMem(addr result.vbuffer[0], unsafeAddr value[0], len(value))
 
-proc initProtoField*(index: int, value: ProtoBuffer): ProtoField {.inline.} =
+proc init*(t: typedesc[ProtoField], index: int,
+           value: ProtoBuffer): ProtoField {.inline.} =
   ## Initialize ProtoField with nested message stored in ``value``.
   ##
   ## Note: This procedure performs shallow copy of ``value`` sequence.
@@ -112,14 +115,15 @@ proc initProtoField*(index: int, value: ProtoBuffer): ProtoField {.inline.} =
   if len(value.buffer) > 0:
     shallowCopy(result.vbuffer, value.buffer)
 
-proc initProtoBuffer*(data: seq[byte], offset = 0,
-                      options: set[ProtoFlags] = {}): ProtoBuffer =
+proc init*(t: typedesc[ProtoBuffer], data: seq[byte], offset = 0,
+           options: set[ProtoFlags] = {}): ProtoBuffer =
   ## Initialize ProtoBuffer with shallow copy of ``data``.
   shallowCopy(result.buffer, data)
   result.offset = offset
   result.options = options
 
-proc initProtoBuffer*(options: set[ProtoFlags] = {}): ProtoBuffer =
+proc init*(t: typedesc[ProtoBuffer],
+           options: set[ProtoFlags] = {}): ProtoBuffer =
   ## Initialize ProtoBuffer with new sequence of capacity ``cap``.
   result.buffer = newSeqOfCap[byte](128)
   result.options = options
@@ -131,19 +135,16 @@ proc initProtoBuffer*(options: set[ProtoFlags] = {}): ProtoBuffer =
 
 proc write*(pb: var ProtoBuffer, field: ProtoField) =
   ## Encode protobuf's field ``field`` and store it to protobuf's buffer ``pb``.
-  var length = 0
-  var res: VarintStatus
   pb.buffer.setLen(len(pb.buffer) + vsizeof(field))
-  res = PB.putUVarint(pb.toOpenArray(), length, protoHeader(field))
-  doAssert(res == VarintStatus.Success)
-  pb.offset += length
+  var length = PB.putUVarint(pb.toOpenArray(), protoHeader(field))
+  # We do not care about error here, because ProtoBuffer's version of varint
+  # properly supports `uint64` and we control output buffer.
+  pb.offset += length.value
   case field.kind
   of ProtoFieldKind.Varint:
-    res = PB.putUVarint(pb.toOpenArray(), length, field.vint)
-    doAssert(res == VarintStatus.Success)
-    pb.offset += length
+    length = PB.putUVarint(pb.toOpenArray(), field.vint)
+    pb.offset += length.value
   of ProtoFieldKind.Fixed64:
-    doAssert(pb.isEnough(8))
     var value = cast[uint64](field.vfloat64)
     pb.buffer[pb.offset] = byte(value and 0xFF'u32)
     pb.buffer[pb.offset + 1] = byte((value shr 8) and 0xFF'u32)
@@ -155,7 +156,6 @@ proc write*(pb: var ProtoBuffer, field: ProtoField) =
     pb.buffer[pb.offset + 7] = byte((value shr 56) and 0xFF'u32)
     pb.offset += 8
   of ProtoFieldKind.Fixed32:
-    doAssert(pb.isEnough(4))
     var value = cast[uint32](field.vfloat32)
     pb.buffer[pb.offset] = byte(value and 0xFF'u32)
     pb.buffer[pb.offset + 1] = byte((value shr 8) and 0xFF'u32)
@@ -163,10 +163,8 @@ proc write*(pb: var ProtoBuffer, field: ProtoField) =
     pb.buffer[pb.offset + 3] = byte((value shr 24) and 0xFF'u32)
     pb.offset += 4
   of ProtoFieldKind.Length:
-    res = PB.putUVarint(pb.toOpenArray(), length, uint(len(field.vbuffer)))
-    doAssert(res == VarintStatus.Success)
-    pb.offset += length
-    doAssert(pb.isEnough(len(field.vbuffer)))
+    length = PB.putUVarint(pb.toOpenArray(), uint(len(field.vbuffer)))
+    pb.offset += length.value
     if len(field.vbuffer) > 0:
       copyMem(addr pb.buffer[pb.offset], unsafeAddr field.vbuffer[0],
               len(field.vbuffer))
@@ -176,103 +174,175 @@ proc write*(pb: var ProtoBuffer, field: ProtoField) =
 
 proc finish*(pb: var ProtoBuffer) =
   ## Prepare protobuf's buffer ``pb`` for writing to stream.
-  doAssert(len(pb.buffer) > 0)
   if WithVarintLength in pb.options:
     let size = uint(len(pb.buffer) - 10)
     let pos = 10 - vsizeof(size)
-    var usedBytes = 0
-    let res = PB.putUVarint(pb.buffer.toOpenArray(pos, 9), usedBytes, size)
-    doAssert(res == VarintStatus.Success)
+    let res = PB.putUVarint(pb.buffer.toOpenArray(pos, 9), size)
+    # We do not care about error here, because ProtoBuffer's version of varint
+    # properly supports `uint64` and we control output buffer.
     pb.offset = pos
   else:
     pb.offset = 0
 
-proc getVarintValue*(data: var ProtoBuffer, field: int,
-                     value: var SomeVarint): int =
+proc getVarintValue*(data: var ProtoBuffer, it: type[SomeInteger],
+                     field: int): auto =
   ## Get value of `Varint` type.
-  var length = 0
-  var header = 0'u64
+  result = Result[it, errors.Error](isOk: false)
   var soffset = data.offset
 
-  if not data.isEmpty() and
-     PB.getUVarint(data.toOpenArray(), length, header) == VarintStatus.Success:
-    data.offset += length
-    if header == protoHeader(field, Varint):
-      if not data.isEmpty():
-        when type(value) is int32 or type(value) is int64 or type(value) is int:
-          let res = getSVarint(data.toOpenArray(), length, value)
-        else:
-          let res = PB.getUVarint(data.toOpenArray(), length, value)
-        if res == VarintStatus.Success:
-          data.offset += length
-          result = length
-          return
-  # Restore offset on error
-  data.offset = soffset
+  if data.isEmpty():
+    result.err(errors.IncompleteError)
+    return
 
-proc getLengthValue*[T: string|seq[byte]](data: var ProtoBuffer, field: int,
-                                          buffer: var T): int =
+  let header = PB.getUVarint(data.toOpenArray())
+  if header.isErr:
+    data.offset = soffset
+    result.err(errors.VarintError)
+    return
+
+  data.offset += header.value.length
+  if header.value.value != protoHeader(field, Varint):
+    data.offset = soffset
+    result.err(errors.ProtobufIncorrectFieldError)
+    return
+
+  if data.isEmpty():
+    data.offset = soffset
+    result.err(errors.IncompleteError)
+    return
+
+  when T is SomeSignedInt:
+    let res = PB.getSVarint(data.toOpenArray())
+  else:
+    let res = PB.getUVarint(data.toOpenArray())
+
+  if res.isErr:
+    data.offset = soffset
+    result.err(errors.VarintError)
+    return
+
+  if isOverflow[it](res.value.value):
+    data.offset = soffset
+    result.err(errors.OverflowError)
+  else:
+    data.offset += res.value.length
+    result.ok(cast[it](res.value.value))
+
+proc getLengthValue*(data: var ProtoBuffer, sst: type[seq[byte]|string],
+                     field: int): auto =
   ## Get value of `Length` type.
-  var length = 0
-  var header = 0'u64
-  var ssize = 0'u64
+  result = Result[sst, errors.Error](isOk: false)
   var soffset = data.offset
-  result = -1
-  buffer.setLen(0)
-  if not data.isEmpty() and
-     PB.getUVarint(data.toOpenArray(), length, header) == VarintStatus.Success:
-    data.offset += length
-    if header == protoHeader(field, Length):
-      if not data.isEmpty() and
-         PB.getUVarint(data.toOpenArray(), length, ssize) == VarintStatus.Success:
-        data.offset += length
-        if ssize <= MaxMessageSize and data.isEnough(int(ssize)):
-          buffer.setLen(ssize)
-          # Protobuf allow zero-length values.
-          if ssize > 0'u64:
-            copyMem(addr buffer[0], addr data.buffer[data.offset], ssize)
-          result = int(ssize)
-          data.offset += int(ssize)
-          return
-  # Restore offset on error
-  data.offset = soffset
 
-proc getBytes*(data: var ProtoBuffer, field: int,
-               buffer: var seq[byte]): int {.inline.} =
+  when sst is seq[byte]:
+    var buffer = newSeq[byte](0)
+  else:
+    var buffer = newString(0)
+
+  if data.isEmpty():
+    result.err(errors.IncompleteError)
+    return
+
+  let header = PB.getUVarint(data.toOpenArray())
+  if header.isErr:
+    data.offset = soffset
+    result.err(errors.VarintError)
+    return
+
+  data.offset += header.value.length
+  if header.value.value != protoHeader(field, Length):
+    data.offset = soffset
+    result.err(errors.ProtobufIncorrectFieldError)
+    return
+
+  if data.isEmpty():
+    data.offset = soffset
+    result.err(errors.IncompleteError)
+    return
+
+  let res = PB.getUVarint(data.toOpenArray())
+  if res.isErr:
+    data.offset = soffset
+    result.err(errors.VarintError)
+    return
+
+  data.offset += res.value.length
+  if res.value.value > uint64(MaxMessageSize):
+    data.offset = soffset
+    result.err(errors.ProtobufFieldSizeTooLargeError)
+    return
+
+  if not(data.isEnough(int(res.value.value))):
+    data.offset = soffset
+    result.err(errors.IncompleteError)
+    return
+
+  buffer.setLen(res.value.value)
+  if res.value.value > 0'u64:
+    copyMem(addr buffer[0], addr data.buffer[data.offset], res.value.value)
+  data.offset += int(res.value.value)
+  result.ok(buffer)
+
+proc getBytes*(data: var ProtoBuffer,
+               field: int): Result[seq[byte], errors.Error] {.inline.} =
   ## Get value of `Length` type as bytes.
-  result = getLengthValue(data, field, buffer)
+  result = getLengthValue(data, seq[byte], field)
 
-proc getString*(data: var ProtoBuffer, field: int,
-                buffer: var string): int {.inline.} =
+proc getString*(data: var ProtoBuffer,
+                field: int): Result[string, errors.Error] {.inline.} =
   ## Get value of `Length` type as string.
-  result = getLengthValue(data, field, buffer)
+  result = getLengthValue(data, string, field)
 
-proc enterSubmessage*(pb: var ProtoBuffer): int =
+proc enterSubmessage*(data: var ProtoBuffer): Result[int, errors.Error] =
   ## Processes protobuf's sub-message and adjust internal offset to enter
-  ## inside of sub-message. Returns field index of sub-message field or
-  ## ``0`` on error.
-  var length = 0
-  var header = 0'u64
-  var msize = 0'u64
-  var soffset = pb.offset
+  ## inside of sub-message. Returns field index of sub-message field.
+  var soffset = data.offset
 
-  if not pb.isEmpty() and
-     PB.getUVarint(pb.toOpenArray(), length, header) == VarintStatus.Success:
-    pb.offset += length
-    if (header and 0x07'u64) == cast[uint64](ProtoFieldKind.Length):
-      if not pb.isEmpty() and
-         PB.getUVarint(pb.toOpenArray(), length, msize) == VarintStatus.Success:
-        pb.offset += length
-        if msize <= MaxMessageSize and pb.isEnough(int(msize)):
-          pb.length = int(msize)
-          result = int(header shr 3)
-          return
-  # Restore offset on error
-  pb.offset = soffset
+  if data.isEmpty():
+    result.err(errors.IncompleteError)
+    return
 
-proc skipSubmessage*(pb: var ProtoBuffer) =
+  var header = PB.getUVarint(data.toOpenArray())
+  if header.isErr:
+    result.err(errors.VarintError)
+    return
+
+  data.offset += header.value.length
+  if (header.value.value and 0x07'u64) != cast[uint64](ProtoFieldKind.Length):
+    data.offset = soffset
+    result.err(errors.ProtobufIncorrectFieldError)
+    return
+
+  if data.isEmpty():
+    data.offset = soffset
+    result.err(errors.IncompleteError)
+    return
+
+  let res = PB.getUVarint(data.toOpenArray())
+  if res.isErr:
+    result.err(errors.VarintError)
+    return
+
+  if res.value.value > uint64(MaxMessageSize):
+    data.offset = soffset
+    result.err(errors.ProtobufFieldSizeTooLargeError)
+    return
+
+  if not(data.isEnough(int(res.value.value))):
+    data.offset = soffset
+    result.err(errors.IncompleteError)
+    return
+
+  data.offset += int(res.value.length)
+  data.length = int(res.value.value)
+  result.ok(int(header.value.value shr 3))
+
+proc skipSubmessage*(pb: var ProtoBuffer): Result[int, errors.Error] =
   ## Skip current protobuf's sub-message and adjust internal offset to the
   ## end of sub-message.
-  doAssert(pb.length != 0)
+  if pb.length == 0:
+    result.err(errors.IncorrectError)
+    return
   pb.offset += pb.length
+  result.ok(pb.length)
   pb.length = 0

@@ -1,6 +1,6 @@
 import unittest
 import nimcrypto/utils
-import ../libp2p/multihash
+import ../libp2p/multihash, ../libp2p/errors
 
 const
   RustTestVectors = [
@@ -83,6 +83,8 @@ suite "MultiHash test suite":
       var mh1 = MultiHash.digest(item[0], bmsg)
       var mh2 = MultiHash.init(stripSpaces(item[2]))
       check:
-        hex(mh1) == stripSpaces(item[2])
-        hex(mh1) == hex(mh2)
-        mh1 == mh2
+        mh1.isOk == true
+        mh2.isOk == true
+        hex(mh1.value) == stripSpaces(item[2])
+        hex(mh1.value) == hex(mh2.value)
+        mh1.value == mh2.value

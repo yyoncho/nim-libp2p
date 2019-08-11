@@ -9,7 +9,8 @@
 
 ## This module implements variable buffer.
 import strutils
-import varint, errors as e
+import varint, errors
+export errors
 
 type
   VBuffer* = object
@@ -95,7 +96,7 @@ proc init*(bt: typedesc[VBuffer]): VBuffer =
 #   vb.offset += length
 
 proc writeVarint*(vb: var VBuffer,
-                  value: LPSomeUVarint): Result[int, e.Error] =
+                  value: LPSomeUVarint): Result[int, errors.Error] =
   ## Write ``value`` as variable unsigned integer. Procedure returns number of
   ## bytes written.
   var length = 0
@@ -122,7 +123,7 @@ proc writeVarint*(vb: var VBuffer,
 #     vb.offset += len(value)
 
 proc writeSeq*[T: byte|char](vb: var VBuffer,
-                             value: openarray[T]): Result[int, e.Error] =
+                             value: openarray[T]): Result[int, errors.Error] =
   ## Write array ``value`` to buffer ``vb``, value will be prefixed with
   ## varint length of the array. Procedure returns number of bytes written.
   var length = 0
@@ -150,7 +151,7 @@ proc writeSeq*[T: byte|char](vb: var VBuffer,
 #     vb.offset += len(value)
 
 proc writeArray*[T: byte|char](vb: var VBuffer,
-                               value: openarray[T]): Result[int, e.Error] =
+                               value: openarray[T]): Result[int, errors.Error] =
   ## Write array ``value`` to buffer ``vb``, value will NOT be prefixed with
   ## varint length of the array. Procedure returns number of bytes written.
   var length = 0
@@ -165,14 +166,14 @@ proc finish*(vb: var VBuffer) =
   vb.offset = 0
 
 proc peekVarint*(vb: var VBuffer,
-                 value: var LPSomeUVarint): Result[int, e.Error] =
+                 value: var LPSomeUVarint): Result[int, errors.Error] =
   ## Peek unsigned integer from buffer ``vb`` and store result to ``value``.
   ##
   ## This procedure will not adjust internal offset.
   ##
   ## Returns number of bytes peeked from ``vb`` or ``-1`` on error.
   if vb.isEmpty():
-    result.err(e.EndOfBufferError)
+    result.err(errors.EndOfBufferError)
   else:
     let res = LP.getUVarint(toOpenArray(vb.buffer, vb.offset,
                                         len(vb.buffer) - 1))
@@ -180,10 +181,10 @@ proc peekVarint*(vb: var VBuffer,
       value = type(value)(res.value.value)
       result.ok(res.value.length)
     else:
-      result.err(e.VarintError)
+      result.err(errors.VarintError)
 
 proc peekSeq*[T: string|seq[byte]](vb: var VBuffer,
-                                   value: var T): Result[int, e.Error] =
+                                   value: var T): Result[int, errors.Error] =
   ## Peek length prefixed array from buffer ``vb`` and store result to
   ## ``value``.
   ##
@@ -193,12 +194,12 @@ proc peekSeq*[T: string|seq[byte]](vb: var VBuffer,
   value.setLen(0)
 
   if vb.isEmpty():
-    result.err(e.EndOfBufferError)
+    result.err(errors.EndOfBufferError)
   else:
     let res = LP.getUVarint(toOpenArray(vb.buffer, vb.offset,
                                         len(vb.buffer) - 1))
     if res.isErr():
-      result.err(e.VarintError)
+      result.err(errors.VarintError)
     else:
       let size = res.value.value
       vb.offset += res.value.length
@@ -208,11 +209,11 @@ proc peekSeq*[T: string|seq[byte]](vb: var VBuffer,
           copyMem(addr value[0], addr vb.buffer[vb.offset], size)
         result.ok(res.value.length + size)
       else:
-        result.err(e.EndOfBufferError)
+        result.err(errors.EndOfBufferError)
       vb.offset -= res.value.length
 
 proc peekArray*[T: char|byte](vb: var VBuffer,
-                              value: var openarray[T]): Result[int, e.Error] =
+                           value: var openarray[T]): Result[int, errors.Error] =
   ## Peek array from buffer ``vb`` and store result to ``value``.
   ##
   ## This procedure will not adjust internal offset.
@@ -225,12 +226,12 @@ proc peekArray*[T: char|byte](vb: var VBuffer,
       copyMem(addr value[0], addr vb.buffer[vb.offset], length)
       result.ok(length)
     else:
-      result.err(e.EndOfBufferError)
+      result.err(errors.EndOfBufferError)
   else:
     result.ok(0)
 
 proc readVarint*(vb: var VBuffer,
-                 value: var LPSomeUVarint): Result[int, e.Error] {.inline.} =
+               value: var LPSomeUVarint): Result[int, errors.Error] {.inline.} =
   ## Read unsigned integer from buffer ``vb`` and store result to ``value``.
   ##
   ## Returns number of bytes consumed from ``vb`` or ``-1`` on error.
@@ -242,7 +243,7 @@ proc readVarint*(vb: var VBuffer,
     result.err(res.error)
 
 proc readSeq*[T: string|seq[byte]](vb: var VBuffer,
-                                value: var T): Result[int, e.Error] {.inline.} =
+                           value: var T): Result[int, errors.Error] {.inline.} =
   ## Read length prefixed array from buffer ``vb`` and store result to
   ## ``value``.
   ##

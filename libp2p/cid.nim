@@ -9,12 +9,10 @@
 
 ## This module implementes CID (Content IDentifier).
 import tables
-import multibase, multicodec, multihash, vbuffer, varint, base58
+import multibase, multicodec, multihash, vbuffer, varint, base58, errors
+export errors
 
 type
-  CidStatus* {.pure.} = enum
-    Error, Success, Incorrect, Overrun
-
   CidVersion* = enum
     CIDvIncorrect, CIDv0, CIDv1, CIDvReserved
 
@@ -23,8 +21,6 @@ type
     mcodec*: MultiCodec
     hpos*: int
     data*: VBuffer
-
-  CidError* = object of CatchableError
 
 const
   ContentIdsList = [
@@ -65,71 +61,87 @@ proc initCidCodeTable(): Table[int, MultiCodec] {.compileTime.} =
 const
   CodeContentIds = initCidCodeTable()
 
-proc decode(data: openarray[byte], cid: var Cid): CidStatus =
+proc decode(data: openarray[byte]): Result[Cid, errors.Error] {.inline.} =
   if len(data) == 34:
     if data[0] == 0x12'u8 and data[1] == 0x20'u8:
-      cid.cidver = CIDv0
-      cid.mcodec = multiCodec("dag-pb")
-      cid.hpos = 0
-      cid.data = initVBuffer(data)
-      result = CidStatus.Success
-  if cid.cidver == CIDvIncorrect:
-    var version, codec: uint64
-    var res, offset: int
-    var vb = initVBuffer(data)
-    if vb.isEmpty():
-      return CidStatus.Incorrect
-    res = vb.readVarint(version)
-    if res == -1:
-      return CidStatus.Incorrect
-    offset += res
-    if version != 1'u64:
-      return CidStatus.Incorrect
-    res = vb.readVarint(codec)
-    if res == -1:
-      return CidStatus.Incorrect
-    offset += res
-    var mcodec = CodeContentIds.getOrDefault(cast[int](codec),
-                                             InvalidMultiCodec)
-    if mcodec == InvalidMultiCodec:
-      return CidStatus.Incorrect
-    if not MultiHash.validate(vb.buffer.toOpenArray(vb.offset,
-                                                    len(vb.buffer) - 1)):
-      return CidStatus.Incorrect
-    vb.finish()
-    cid.cidver = CIDv1
-    cid.mcodec = mcodec
-    cid.hpos = offset
-    cid.data = vb
-    result = CidStatus.Success
+      result.ok(Cid(cidver: CIDv0, mcodec: multiCodec("dag-pb"), hpos: 0,
+                    data: VBuffer.init(data)))
+      return
 
-proc decode(data: openarray[char], cid: var Cid): CidStatus =
+  var version, codec: uint64
+  var offset: int
+  var vb = VBuffer.init(data)
+  if vb.isEmpty():
+    result.err(errors.CidIncorrectError)
+    return
+
+  let r0 = vb.readVarint(version)
+  if r0.isErr:
+    result.err(errors.CidIncorrectError)
+    return
+  offset += r0.value
+  if version != 1'u64:
+    result.err(errors.CidIncorrectError)
+    return
+
+  let r1 = vb.readVarint(codec)
+  if r1.isErr:
+    result.err(errors.CidIncorrectError)
+    return
+  offset += r1.value
+  var mcodec = CodeContentIds.getOrDefault(cast[int](codec),
+                                           InvalidMultiCodec)
+  if mcodec == InvalidMultiCodec:
+    result.err(errors.CidIncorrectError)
+    return
+
+  if not MultiHash.validate(vb.buffer.toOpenArray(vb.offset,
+                                                  len(vb.buffer) - 1)):
+    result.err(errors.CidIncorrectError)
+    return
+
+  vb.finish()
+  result.ok(Cid(cidver: CIDv1, mcodec: mcodec, hpos: offset, data: vb))
+
+proc decode(data: openarray[char]): Result[Cid, errors.Error] {.inline.} =
   var buffer: seq[byte]
   var plen = 0
   if len(data) < 2:
-    return CidStatus.Incorrect
+    result.err(errors.CidIncorrectError)
+    return
+
   if len(data) == 46:
     if data[0] == 'Q' and data[1] == 'm':
       buffer = newSeq[byte](BTCBase58.decodedLength(len(data)))
-      if BTCBase58.decode(data, buffer, plen) != Base58Status.Success:
-        return CidStatus.Incorrect
-      buffer.setLen(plen)
-  if len(buffer) == 0:
-    let length = MultiBase.decodedLength(data[0], len(data))
-    if length == -1:
-      return CidStatus.Incorrect
-    buffer = newSeq[byte](length)
-    if MultiBase.decode(data, buffer, plen) != MultiBaseStatus.Success:
-      return CidStatus.Incorrect
-    buffer.setLen(plen)
-    if buffer[0] == 0x12'u8:
-      return CidStatus.Incorrect
-  result = decode(buffer, cid)
+      let res = BTCBase58.decode(data, buffer)
+      if res.isErr:
+        result.err(errors.CidIncorrectError)
+        return
+      buffer.setLen(res.value)
+      result = decode(buffer)
+      return
+
+  let r0 = MultiBase.decodedLength(data[0], len(data))
+  if r0.isErr:
+    result.err(errors.CidIncorrectError)
+    return
+
+  buffer = newSeq[byte](r0.value)
+  let r1 = MultiBase.decode(data, buffer)
+  if r1.isErr:
+    result.err(errors.CidIncorrectError)
+    return
+
+  buffer.setLen(r1.value)
+  if buffer[0] == 0x12'u8:
+    result.err(errors.CidIncorrectError)
+    return
+
+  result = decode(buffer)
 
 proc validate*(ctype: typedesc[Cid], data: openarray[byte]): bool =
   ## Returns ``true`` is data has valid binary CID representation.
   var version, codec: uint64
-  var res: VarintStatus
   if len(data) < 2:
     return false
   let last = len(data) - 1
@@ -137,18 +149,25 @@ proc validate*(ctype: typedesc[Cid], data: openarray[byte]): bool =
     if data[0] == 0x12'u8 and data[1] == 0x20'u8:
       return true
   var offset = 0
-  var length = 0
-  res = LP.getUVarint(data.toOpenArray(offset, last), length, version)
-  if res != VarintStatus.Success:
+
+  let r0 = LP.getUVarint(data.toOpenArray(offset, last))
+  if r0.isErr:
     return false
+  version = r0.value.value
+  offset += r0.value.length
   if version != 1'u64:
     return false
-  offset += length
   if offset >= len(data):
     return false
-  res = LP.getUVarint(data.toOpenArray(offset, last), length, codec)
-  if res != VarintStatus.Success:
+
+  let r1 = LP.getUVarint(data.toOpenArray(offset, last))
+  if r1.isErr:
     return false
+  codec = r1.value.value
+  offset += r1.value.length
+  if offset >= len(data):
+    return false
+
   var mcodec = CodeContentIds.getOrDefault(cast[int](codec), InvalidMultiCodec)
   if mcodec == InvalidMultiCodec:
     return false
@@ -156,30 +175,29 @@ proc validate*(ctype: typedesc[Cid], data: openarray[byte]): bool =
     return false
   result = true
 
-proc mhash*(cid: Cid): MultiHash =
+proc mhash*(cid: Cid): Result[MultiHash, errors.Error] =
   ## Returns MultiHash part of CID.
   if cid.cidver notin {CIDv0, CIDv1}:
-    raise newException(CidError, "Incorrect CID!")
+    result.err(CidIncorrectError)
+    return
   result = MultiHash.init(cid.data.buffer.toOpenArray(cid.hpos,
                                                       len(cid.data) - 1))
 
 proc contentType*(cid: Cid): MultiCodec =
   ## Returns content type part of CID
-  if cid.cidver notin {CIDv0, CIDv1}:
-    raise newException(CidError, "Incorrect CID!")
   result = cid.mcodec
 
 proc version*(cid: Cid): CidVersion =
   ## Returns CID version
   result = cid.cidver
 
-proc init*[T: char|byte](ctype: typedesc[Cid], data: openarray[T]): Cid =
+proc init*[T: char|byte](ctype: typedesc[Cid],
+                         data: openarray[T]): Result[Cid, errors.Error] =
   ## Create new content identifier using array of bytes or string ``data``.
-  if decode(data, result) != CidStatus.Success:
-    raise newException(CidError, "Incorrect CID!")
+  result = decode(data)
 
 proc init*(ctype: typedesc[Cid], version: CidVersion, content: MultiCodec,
-           hash: MultiHash): Cid =
+           hash: MultiHash): Result[Cid, errors.Error] =
   ## Create new content identifier using content type ``content`` and
   ## MultiHash ``hash`` using version ``version``.
   ##
@@ -187,46 +205,48 @@ proc init*(ctype: typedesc[Cid], version: CidVersion, content: MultiCodec,
   ## Cid.init(CIDv0, multiCodec("dag-pb"), MultiHash.digest("sha2-256", data))
   ##
   ## All other encodings and hashes are not supported by CIDv0.
-  result.cidver = version
-  
+  var cid: Cid
+
   if version == CIDv0:
     if content != multiCodec("dag-pb"):
-      raise newException(CidError,
-                         "CIDv0 supports only `dag-pb` content type!")
-    result.data = initVBuffer()
+      result.err(CidIncorrectContentType)
+      return
     if hash.mcodec != multiCodec("sha2-256"):
-      raise newException(CidError,
-                         "CIDv0 supports only `sha2-256` hash digest!")
-    result.mcodec = content
-    result.data.write(hash)
-    result.data.finish()
+      result.err(CidIncorrectHashType)
+      return
+    var vb = VBuffer.init()
+    discard vb.write(hash)
+    vb.finish()
+    result.ok(Cid(cidver: CIDv0, mcodec: content, hpos: 0, data: vb))
   elif version == CIDv1:
     let mcodec = CodeContentIds.getOrDefault(cast[int](content),
                                              InvalidMultiCodec)
     if mcodec == InvalidMultiCodec:
-      raise newException(CidError, "Incorrect content type")
-    result.mcodec = mcodec
-    result.data = initVBuffer()
-    result.data.writeVarint(cast[uint64](1))
-    result.data.write(mcodec)
-    result.hpos = len(result.data.buffer)
-    result.data.write(hash)
-    result.data.finish()
+      result.err(CidIncorrectContentType)
+      return
+    var vb = VBuffer.init()
+    discard vb.writeVarint(1'u64)
+    discard vb.write(mcodec)
+    let hpos = len(vb.buffer)
+    discard vb.write(hash)
+    vb.finish()
+    result.ok(Cid(cidver: CIDv1, mcodec: mcodec, hpos: hpos, data: vb))
   else:
-    raise newException(CidError, "CID version is not supported" & $version)
+    result.err(errors.CidIncorrectVersion)
+    return
 
 proc `==`*(a: Cid, b: Cid): bool =
   ## Compares content identifiers ``a`` and ``b``, returns ``true`` if hashes
   ## are equal, ``false`` otherwise.
   if a.mcodec == b.mcodec:
     var ah, bh: MultiHash
-    if MultiHash.decode(a.data.buffer.toOpenArray(a.hpos,
-                                                  len(a.data) - 1), ah) == -1:
+    let r0 = MultiHash.decode(a.data.buffer.toOpenArray(a.hpos,
+                                                        len(a.data) - 1))
+    let r1 = MultiHash.decode(b.data.buffer.toOpenArray(b.hpos,
+                                                        len(b.data) - 1))
+    if r0.isErr or r1.isErr:
       return false
-    if MultiHash.decode(b.data.buffer.toOpenArray(b.hpos,
-                                                  len(b.data) - 1), bh) == -1:
-      return false
-    result = (ah == bh)
+    result = (r0.value == r1.value)
 
 proc base58*(cid: Cid): string =
   ## Get BASE58 encoded string representation of content identifier ``cid``.
@@ -244,12 +264,12 @@ proc repr*(cid: Cid): string =
   result.add("/")
   result.add($(cid.mhash()))
 
-proc write*(vb: var VBuffer, cid: Cid) {.inline.} =
+proc write*(vb: var VBuffer, cid: Cid): Result[int, errors.Error] {.inline.} =
   ## Write CID value ``cid`` to buffer ``vb``.
-  vb.writeArray(cid.data.buffer)
+  result = vb.writeArray(cid.data.buffer)
 
 proc encode*(mbtype: typedesc[MultiBase], encoding: string,
-             cid: Cid): string {.inline.} =
+             cid: Cid): Result[string, errors.Error] {.inline.} =
   ## Get MultiBase encoded representation of ``cid`` using encoding
   ## ``encoding``.
   result = MultiBase.encode(encoding, cid.data.buffer)
@@ -259,4 +279,4 @@ proc `$`*(cid: Cid): string =
   if cid.cidver == CIDv0:
     result = BTCBase58.encode(cid.data.buffer)
   elif cid.cidver == CIDv1:
-    result = Multibase.encode("base58btc", cid.data.buffer)
+    result = MultiBase.Base58Btc.encode(cid.data.buffer)

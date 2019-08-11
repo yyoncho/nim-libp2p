@@ -22,21 +22,20 @@
 ## 2. MURMUR
 import tables
 import nimcrypto/[sha, sha2, keccak, blake2, hash, utils]
-import varint, vbuffer, base58, multicodec, multibase
+import varint, vbuffer, base58, multicodec, multibase, errors
 
 # This is workaround for Nim `import` bug.
-export sha, sha2, keccak, blake2, hash, utils
+export sha, sha2, keccak, blake2, hash, utils, errors
 
 const
   MaxHashSize* = 128
 
 type
-  MHashCoderProc* = proc(data: openarray[byte],
-                         output: var openarray[byte]) {.nimcall, gcsafe.}
   MHash* = object
     mcodec*: MultiCodec
     size*: int
-    coder*: MHashCoderProc
+    coder*: proc(data: openarray[byte],
+                 output: var openarray[byte]) {.nimcall, gcsafe.}
 
   MultiHash* = object
     data*: VBuffer
@@ -44,111 +43,124 @@ type
     size*: int
     dpos*: int
 
-  MultiHashError* = object of CatchableError
-
 proc identhash(data: openarray[byte], output: var openarray[byte]) =
-  if len(output) > 0:
-    var length = if len(data) > len(output): len(output)
-                 else: len(data)
+  let outlen = len(output)
+  let inlen = len(data)
+  if outlen > 0:
+    let length = if inlen > outlen: outlen else: inlen
     copyMem(addr output[0], unsafeAddr data[0], length)
 
 proc sha1hash(data: openarray[byte], output: var openarray[byte]) =
-  if len(output) > 0:
+  let outlen = len(output)
+  let inlen = sha1.sizeDigest
+  if outlen > 0:
     var digest = sha1.digest(data)
-    var length = if sha1.sizeDigest > len(output): len(output)
-                 else: sha1.sizeDigest
+    let length = if inlen > outlen: outlen else: inlen
     copyMem(addr output[0], addr digest.data[0], length)
 
 proc dblsha2_256hash(data: openarray[byte], output: var openarray[byte]) =
-  if len(output) > 0:
+  let outlen = len(output)
+  let inlen = sha256.sizeDigest
+  if outlen > 0:
     var digest1 = sha256.digest(data)
     var digest2 = sha256.digest(digest1.data)
-    var length = if sha256.sizeDigest > len(output): len(output)
-                 else: sha256.sizeDigest
+    let length = if inlen > outlen: outlen else: inlen
     copyMem(addr output[0], addr digest2.data[0], length)
 
 proc blake2Bhash(data: openarray[byte], output: var openarray[byte]) =
-  if len(output) > 0:
+  let outlen = len(output)
+  let inlen = blake2_512.sizeDigest
+  if outlen > 0:
     var digest = blake2_512.digest(data)
-    var length = if blake2_512.sizeDigest > len(output): len(output)
-                 else: blake2_512.sizeDigest
+    let length = if inlen > outlen: outlen else: inlen
     copyMem(addr output[0], addr digest.data[0], length)
 
 proc blake2Shash(data: openarray[byte], output: var openarray[byte]) =
-  if len(output) > 0:
+  let outlen = len(output)
+  let inlen = blake2_256.sizeDigest
+  if outlen > 0:
     var digest = blake2_256.digest(data)
-    var length = if blake2_256.sizeDigest > len(output): len(output)
-                 else: blake2_256.sizeDigest
+    let length = if inlen > outlen: outlen else: inlen
     copyMem(addr output[0], addr digest.data[0], length)
 
 proc sha2_256hash(data: openarray[byte], output: var openarray[byte]) =
-  if len(output) > 0:
+  let outlen = len(output)
+  let inlen = sha256.sizeDigest
+  if outlen > 0:
     var digest = sha256.digest(data)
-    var length = if sha256.sizeDigest > len(output): len(output)
-                 else: sha256.sizeDigest
+    let length = if inlen > outlen: outlen else: inlen
     copyMem(addr output[0], addr digest.data[0], length)
 
 proc sha2_512hash(data: openarray[byte], output: var openarray[byte]) =
-  if len(output) > 0:
+  let outlen = len(output)
+  let inlen = sha512.sizeDigest
+  if outlen > 0:
     var digest = sha512.digest(data)
-    var length = if sha512.sizeDigest > len(output): len(output)
-                 else: sha512.sizeDigest
+    let length = if inlen > outlen: outlen else: inlen
     copyMem(addr output[0], addr digest.data[0], length)
 
 proc sha3_224hash(data: openarray[byte], output: var openarray[byte]) =
-  if len(output) > 0:
+  let outlen = len(output)
+  let inlen = sha3_224.sizeDigest
+  if outlen > 0:
     var digest = sha3_224.digest(data)
-    var length = if sha3_224.sizeDigest > len(output): len(output)
-                 else: sha3_224.sizeDigest
+    let length = if inlen > outlen: outlen else: inlen
     copyMem(addr output[0], addr digest.data[0], length)
 
 proc sha3_256hash(data: openarray[byte], output: var openarray[byte]) =
-  if len(output) > 0:
+  let outlen = len(output)
+  let inlen = sha3_256.sizeDigest
+  if outlen > 0:
     var digest = sha3_256.digest(data)
-    var length = if sha3_256.sizeDigest > len(output): len(output)
-                 else: sha3_256.sizeDigest
+    let length = if inlen > outlen: outlen else: inlen
     copyMem(addr output[0], addr digest.data[0], length)
 
 proc sha3_384hash(data: openarray[byte], output: var openarray[byte]) =
-  if len(output) > 0:
+  let outlen = len(output)
+  let inlen = sha3_384.sizeDigest
+  if outlen > 0:
     var digest = sha3_384.digest(data)
-    var length = if sha3_384.sizeDigest > len(output): len(output)
-                 else: sha3_384.sizeDigest
+    let length = if inlen > outlen: outlen else: inlen
     copyMem(addr output[0], addr digest.data[0], length)
 
 proc sha3_512hash(data: openarray[byte], output: var openarray[byte]) =
-  if len(output) > 0:
+  let outlen = len(output)
+  let inlen = sha3_512.sizeDigest
+  if outlen > 0:
     var digest = sha3_512.digest(data)
-    var length = if sha3_512.sizeDigest > len(output): len(output)
-                 else: sha3_512.sizeDigest
+    let length = if inlen > outlen: outlen else: inlen
     copyMem(addr output[0], addr digest.data[0], length)
 
 proc keccak_224hash(data: openarray[byte], output: var openarray[byte]) =
-  if len(output) > 0:
+  let outlen = len(output)
+  let inlen = keccak224.sizeDigest
+  if outlen > 0:
     var digest = keccak224.digest(data)
-    var length = if keccak224.sizeDigest > len(output): len(output)
-                 else: keccak224.sizeDigest
+    let length = if inlen > outlen: outlen else: inlen
     copyMem(addr output[0], addr digest.data[0], length)
 
 proc keccak_256hash(data: openarray[byte], output: var openarray[byte]) =
-  if len(output) > 0:
+  let outlen = len(output)
+  let inlen = keccak256.sizeDigest
+  if outlen > 0:
     var digest = keccak256.digest(data)
-    var length = if keccak256.sizeDigest > len(output): len(output)
-                 else: keccak256.sizeDigest
+    let length = if inlen > outlen: outlen else: inlen
     copyMem(addr output[0], addr digest.data[0], length)
 
 proc keccak_384hash(data: openarray[byte], output: var openarray[byte]) =
-  if len(output) > 0:
+  let outlen = len(output)
+  let inlen = keccak384.sizeDigest
+  if outlen > 0:
     var digest = keccak384.digest(data)
-    var length = if keccak384.sizeDigest > len(output): len(output)
-                 else: keccak384.sizeDigest
+    let length = if inlen > outlen: outlen else: inlen
     copyMem(addr output[0], addr digest.data[0], length)
 
 proc keccak_512hash(data: openarray[byte], output: var openarray[byte]) =
-  if len(output) > 0:
+  let outlen = len(output)
+  let inlen = keccak512.sizeDigest
+  if outlen > 0:
     var digest = keccak512.digest(data)
-    var length = if keccak512.sizeDigest > len(output): len(output)
-                 else: keccak512.sizeDigest
+    let length = if inlen > outlen: outlen else: inlen
     copyMem(addr output[0], addr digest.data[0], length)
 
 proc shake_128hash(data: openarray[byte], output: var openarray[byte]) =
@@ -316,161 +328,197 @@ proc initMultiHashCodeTable(): Table[MultiCodec, MHash] {.compileTime.} =
 const
   CodeHashes = initMultiHashCodeTable()
 
-proc digestImplWithHash(hash: MHash, data: openarray[byte]): MultiHash =
+proc digestImplWithHash(hash: MHash,
+                       data: openarray[byte]): Result[MultiHash, errors.Error] =
   var buffer: array[MaxHashSize, byte]
-  result.data = initVBuffer()
-  result.mcodec = hash.mcodec
-  result.data.write(hash.mcodec)
-  if hash.size == 0:
-    result.data.writeVarint(uint(len(data)))
-    result.dpos = len(result.data.buffer)
-    result.data.writeArray(data)
-    result.size = len(data)
-  else:
-    result.data.writeVarint(uint(hash.size))
-    result.dpos = len(result.data.buffer)
-    hash.coder(data, buffer.toOpenArray(0, hash.size - 1))
-    result.data.writeArray(buffer.toOpenArray(0, hash.size - 1))
-    result.size = hash.size
-  result.data.finish()
+  var mh = MultiHash()
 
-proc digestImplWithoutHash(hash: MHash, data: openarray[byte]): MultiHash =
-  result.data = initVBuffer()
-  result.mcodec = hash.mcodec
-  result.size = len(data)
-  result.data.write(hash.mcodec)
-  result.data.writeVarint(uint(len(data)))
-  result.dpos = len(result.data.buffer)
-  result.data.writeArray(data)
-  result.data.finish()
+  mh.data = VBuffer.init()
+  mh.mcodec = hash.mcodec
+  let r0 = mh.data.write(hash.mcodec)
+  if r0.isErr:
+    result.err(errors.BufferWriteError)
+    return
+  if hash.size == 0:
+    if mh.data.writeVarint(uint64(len(data))).isErr:
+      result.err(errors.BufferWriteError)
+      return
+    mh.dpos = len(mh.data.buffer)
+    if mh.data.writeArray(data).isErr:
+      result.err(errors.BufferWriteError)
+      return
+    mh.size = len(data)
+  else:
+    if mh.data.writeVarint(uint64(hash.size)).isErr:
+      result.err(errors.BufferWriteError)
+      return
+    mh.dpos = len(mh.data.buffer)
+    hash.coder(data, buffer.toOpenArray(0, hash.size - 1))
+    if mh.data.writeArray(buffer.toOpenArray(0, hash.size - 1)).isErr:
+      result.err(errors.BufferWriteError)
+      return
+    mh.size = hash.size
+  mh.data.finish()
+  result.ok(mh)
+
+proc digestImplWithoutHash(hash: MHash,
+                       data: openarray[byte]): Result[MultiHash, errors.Error] =
+  var mh = MultiHash()
+
+  mh.data = VBuffer.init()
+  mh.mcodec = hash.mcodec
+  mh.size = len(data)
+  if mh.data.write(hash.mcodec).isErr:
+    result.err(errors.BufferWriteError)
+    return
+  if mh.data.writeVarint(uint64(len(data))).isErr:
+    result.err(errors.BufferWriteError)
+    return
+  mh.dpos = len(mh.data.buffer)
+  if mh.data.writeArray(data).isErr:
+    result.err(errors.BufferWriteError)
+    return
+  mh.data.finish()
+  result.ok(mh)
 
 proc digest*(mhtype: typedesc[MultiHash], hashname: string,
-             data: openarray[byte]): MultiHash {.inline.} =
+            data: openarray[byte]): Result[MultiHash, errors.Error] {.inline.} =
   ## Perform digest calculation using hash algorithm with name ``hashname`` on
   ## data array ``data``.
   let mc = MultiCodec.codec(hashname)
   if mc == InvalidMultiCodec:
-    raise newException(MultihashError, "Incorrect hash name")
+    result.err(errors.MultiHashIncorrectHashError)
+    return
   let hash = CodeHashes.getOrDefault(mc)
   if isNil(hash.coder):
-    raise newException(MultihashError, "Hash not supported")
+    result.err(errors.NoSupportError)
+    return
   result = digestImplWithHash(hash, data)
 
 proc digest*(mhtype: typedesc[MultiHash], hashcode: int,
-             data: openarray[byte]): MultiHash {.inline.} =
+            data: openarray[byte]): Result[MultiHash, errors.Error] {.inline.} =
   ## Perform digest calculation using hash algorithm with code ``hashcode`` on
   ## data array ``data``.
   let hash = CodeHashes.getOrDefault(hashcode)
   if isNil(hash.coder):
-    raise newException(MultihashError, "Hash not supported")
+    result.err(errors.NoSupportError)
+    return
   result = digestImplWithHash(hash, data)
 
 proc init*[T](mhtype: typedesc[MultiHash], hashname: string,
-                mdigest: MDigest[T]): MultiHash {.inline.} =
+              mdigest: MDigest[T]): Result[MultiHash, errors.Error] {.inline.} =
   ## Create MultiHash from nimcrypto's `MDigest` object and hash algorithm name
   ## ``hashname``.
   let mc = MultiCodec.codec(hashname)
   if mc == InvalidMultiCodec:
-    raise newException(MultihashError, "Incorrect hash name")
+    result.err(errors.MultiHashIncorrectHashError)
+    return
   let hash = CodeHashes.getOrDefault(mc)
   if isNil(hash.coder):
-    raise newException(MultihashError, "Hash not supported")
+    result.err(errors.NoSupportError)
+    return
   if hash.size != len(mdigest.data):
-    raise newException(MultiHashError, "Incorrect MDigest[T] size")
+    result.err(errors.MultiHashInputSizeError)
+    return
   result = digestImplWithoutHash(hash, mdigest.data)
 
 proc init*[T](mhtype: typedesc[MultiHash], hashcode: MultiCodec,
-              mdigest: MDigest[T]): MultiHash {.inline.} =
+              mdigest: MDigest[T]): Result[MultiHash, errors.Error] {.inline.} =
   ## Create MultiHash from nimcrypto's `MDigest` and hash algorithm code
   ## ``hashcode``.
   let hash = CodeHashes.getOrDefault(hashcode)
   if isNil(hash.coder):
-    raise newException(MultihashError, "Hash not supported")
+    result.err(errors.NoSupportError)
+    return
   if (hash.size != 0) and (hash.size != len(mdigest.data)):
-    raise newException(MultiHashError, "Incorrect MDigest[T] size")
+    result.err(errors.MultiHashInputSizeError)
+    return
   result = digestImplWithoutHash(hash, mdigest.data)
 
 proc init*(mhtype: typedesc[MultiHash], hashname: string,
-           bdigest: openarray[byte]): MultiHash {.inline.} =
+         bdigest: openarray[byte]): Result[MultiHash, errors.Error] {.inline.} =
   ## Create MultiHash from array of bytes ``bdigest`` and hash algorithm code
   ## ``hashcode``.
   let mc = MultiCodec.codec(hashname)
   if mc == InvalidMultiCodec:
-    raise newException(MultihashError, "Incorrect hash name")
+    result.err(errors.MultiHashIncorrectHashError)
+    return
   let hash = CodeHashes.getOrDefault(mc)
   if isNil(hash.coder):
-    raise newException(MultihashError, "Hash not supported")
+    result.err(errors.NoSupportError)
+    return
   if (hash.size != 0) and (hash.size != len(bdigest)):
-    raise newException(MultiHashError, "Incorrect bdigest size")
+    result.err(errors.MultiHashInputSizeError)
+    return
   result = digestImplWithoutHash(hash, bdigest)
 
 proc init*(mhtype: typedesc[MultiHash], hashcode: MultiCodec,
-           bdigest: openarray[byte]): MultiHash {.inline.} =
+         bdigest: openarray[byte]): Result[MultiHash, errors.Error] {.inline.} =
   ## Create MultiHash from array of bytes ``bdigest`` and hash algorithm code
   ## ``hashcode``.
   let hash = CodeHashes.getOrDefault(hashcode)
   if isNil(hash.coder):
-    raise newException(MultihashError, "Hash not supported")
+    result.err(errors.NoSupportError)
+    return
   if (hash.size != 0) and (hash.size != len(bdigest)):
-    raise newException(MultiHashError, "Incorrect bdigest size")
+    result.err(errors.MultiHashInputSizeError)
+    return
   result = digestImplWithoutHash(hash, bdigest)
 
-proc decode*(mhtype: typedesc[MultiHash], data: openarray[byte],
-             mhash: var MultiHash): int =
+proc decode*(mhtype: typedesc[MultiHash],
+             data: openarray[byte]): Result[MultiHash, errors.Error] =
   ## Decode MultiHash value from array of bytes ``data``.
   ##
-  ## On success decoded MultiHash will be stored into ``mhash`` and number of
-  ## bytes consumed will be returned.
-  ##
-  ## On error ``-1`` will be returned.
+  ## On success decoded MultiHash will be returned.
   var code, size: uint64
   var res, dpos: int
   if len(data) < 2:
-    return -1
-  var vb = initVBuffer(data)
+    result.err(MultiHashIncorrectHashError)
+    return
+  var vb = VBuffer.init(data)
   if vb.isEmpty():
-    return -1
-  res = vb.readVarint(code)
-  if res == -1:
-    return -1
-  dpos += res
-  res = vb.readVarint(size)
-  if res == -1:
-    return -1
-  dpos += res
+    result.err(MultiHashIncorrectHashError)
+    return
+  let r0 = vb.readVarint(code)
+  if r0.isErr:
+    result.err(MultiHashIncorrectHashError)
+    return
+  dpos += r0.value
+  let r1 = vb.readVarint(size)
+  if r1.isErr:
+    result.err(MultiHashIncorrectHashError)
+    return
+  dpos += r1.value
   if size > 0x7FFF_FFFF'u64:
-    return -1
-  let hash = CodeHashes.getOrDefault(MultiCodec(code))
-  if isNil(hash.coder):
-    return -1
-  if (hash.size != 0) and (hash.size != int(size)):
-    return -1
+    result.err(MultiHashIncorrectHashError)
+    return
+
   if not vb.isEnough(int(size)):
-    return -1
-  mhash = MultiHash.init(MultiCodec(code),
-                         vb.buffer.toOpenArray(vb.offset,
-                                               vb.offset + int(size) - 1))
-  result = vb.offset + int(size)
+    result.err(MultiHashIncorrectHashError)
+    return
+  result = MultiHash.init(MultiCodec(code),
+                          vb.buffer.toOpenArray(vb.offset,
+                                                vb.offset + int(size) - 1))
 
 proc validate*(mhtype: typedesc[MultiHash], data: openarray[byte]): bool =
   ## Returns ``true`` if array of bytes ``data`` has correct MultiHash inside.
   var code, size: uint64
-  var res: VarintStatus
   if len(data) < 2:
     return false
   let last = len(data) - 1
   var offset = 0
-  var length = 0
-  res = LP.getUVarint(data.toOpenArray(offset, last), length, code)
-  if res != VarintStatus.Success:
+  let r0 = LP.getUVarint(data.toOpenArray(offset, last))
+  if r0.isErr:
     return false
-  offset += length
+  code = r0.value.value
+  offset += r0.value.length
   if offset >= len(data):
     return false
-  res = LP.getUVarint(data.toOpenArray(offset, last), length, size)
-  if res != VarintStatus.Success:
+  let r1 = LP.getUVarint(data.toOpenArray(offset, last))
+  if r1.isErr:
     return false
-  offset += length
+  size = r1.value.value
+  offset += r1.value.length
   if size > 0x7FFF_FFFF'u64:
     return false
   let hash = CodeHashes.getOrDefault(cast[MultiCodec](code))
@@ -483,21 +531,29 @@ proc validate*(mhtype: typedesc[MultiHash], data: openarray[byte]): bool =
   result = true
 
 proc init*(mhtype: typedesc[MultiHash],
-           data: openarray[byte]): MultiHash {.inline.} =
+           data: openarray[byte]): Result[MultiHash, errors.Error] {.inline.} =
   ## Create MultiHash from bytes array ``data``.
-  if MultiHash.decode(data, result) == -1:
-    raise newException(MultihashError, "Incorrect MultiHash binary format")
+  result = MultiHash.decode(data)
 
-proc init*(mhtype: typedesc[MultiHash], data: string): MultiHash {.inline.} =
+proc init*(mhtype: typedesc[MultiHash],
+           data: string): Result[MultiHash, errors.Error] {.inline.} =
   ## Create MultiHash from hexadecimal string representation ``data``.
-  if MultiHash.decode(fromHex(data), result) == -1:
-    raise newException(MultihashError, "Incorrect MultiHash binary format")
+  var inbytes: seq[byte]
+  try:
+    inbytes = fromHex(data)
+  except:
+    result.err(MultiHashIncorrectHashError)
+    return
+  result = MultiHash.decode(inbytes)
 
 proc init58*(mhtype: typedesc[MultiHash],
-             data: string): MultiHash {.inline.} =
+             data: string): Result[MultiHash, errors.Error] {.inline.} =
   ## Create MultiHash from BASE58 encoded string representation ``data``.
-  if MultiHash.decode(Base58.decode(data), result) == -1:
-    raise newException(MultihashError, "Incorrect MultiHash binary format")
+  let r0 = Base58.decode(data)
+  if r0.isErr:
+    result.err(MultiHashIncorrectHashError)
+    return
+  result = MultiHash.decode(r0.value)
 
 proc cmp(a: openarray[byte], b: openarray[byte]): bool {.inline.} =
   if len(a) != len(b):
@@ -551,12 +607,13 @@ proc `$`*(mh: MultiHash): string =
                                                 mh.dpos + mh.size - 1))
   result = $(mh.mcodec) & "/" & digest
 
-proc write*(vb: var VBuffer, mh: MultiHash) {.inline.} =
+proc write*(vb: var VBuffer,
+            mh: MultiHash): Result[int, errors.Error] {.inline.} =
   ## Write MultiHash value ``mh`` to buffer ``vb``.
-  vb.writeArray(mh.data.buffer)
+  result = vb.writeArray(mh.data.buffer)
 
 proc encode*(mbtype: typedesc[MultiBase], encoding: string,
-             mh: MultiHash): string {.inline.} =
+             mh: MultiHash): Result[string, errors.Error] {.inline.} =
   ## Get MultiBase encoded representation of ``mh`` using encoding
   ## ``encoding``.
   result = MultiBase.encode(encoding, mh.data.buffer)

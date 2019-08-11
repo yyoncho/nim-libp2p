@@ -269,209 +269,211 @@ suite "RSA 512/1024/2048/4096 test suite":
 
   test "[rsa512] Private key serialize/deserialize test":
     for i in 0..<TestsCount:
-      var rkey1, rkey2: RsaPrivateKey
       var skey2 = newSeq[byte](4096)
       var key = RsaPrivateKey.random(512)
-      var skey1 = key.getBytes()
-      check key.toBytes(skey2) > 0
+      check key.isOk == true
+      var skey1 = key.value.getBytes()
+      check key.value.toBytes(skey2) > 0
+      var rkey1 = RsaPrivateKey.init(skey1)
+      var rkey2 = RsaPrivateKey.init(skey2)
       check:
-        rkey1.init(skey1) == Asn1Status.Success
-        rkey2.init(skey2) == Asn1Status.Success
-      var rkey3 = RsaPrivateKey.init(skey1)
-      var rkey4 = RsaPrivateKey.init(skey2)
-      check:
-        rkey1 == key
-        rkey2 == key
-        rkey3 == key
-        rkey4 == key
+        rkey1.isOk == true
+        rkey2.isOk == true
+        rkey1.value == key.value
+        rkey2.value == key.value
 
   test "[rsa1024] Private key serialize/deserialize test":
     for i in 0..<TestsCount:
-      var rkey1, rkey2: RsaPrivateKey
       var skey2 = newSeq[byte](4096)
       var key = RsaPrivateKey.random(1024)
-      var skey1 = key.getBytes()
-      check key.toBytes(skey2) > 0
+      check key.isOk == true
+      var skey1 = key.value.getBytes()
+      check key.value.toBytes(skey2) > 0
+      var rkey1 = RsaPrivateKey.init(skey1)
+      var rkey2 = RsaPrivateKey.init(skey2)
       check:
-        rkey1.init(skey1) == Asn1Status.Success
-        rkey2.init(skey2) == Asn1Status.Success
-      var rkey3 = RsaPrivateKey.init(skey1)
-      var rkey4 = RsaPrivateKey.init(skey2)
-      check:
-        rkey1 == key
-        rkey2 == key
-        rkey3 == key
-        rkey4 == key
+        rkey1.isOk == true
+        rkey2.isOk == true
+        rkey1.value == key.value
+        rkey2.value == key.value
 
   test "[rsa2048] Private key serialize/deserialize test":
-    var rkey1, rkey2: RsaPrivateKey
     var skey2 = newSeq[byte](4096)
     var key = RsaPrivateKey.random(2048)
-    var skey1 = key.getBytes()
-    check key.toBytes(skey2) > 0
+    check key.isOk == true
+    var skey1 = key.value.getBytes()
+    check key.value.toBytes(skey2) > 0
+    var rkey1 = RsaPrivateKey.init(skey1)
+    var rkey2 = RsaPrivateKey.init(skey2)
     check:
-      rkey1.init(skey1) == Asn1Status.Success
-      rkey2.init(skey2) == Asn1Status.Success
-    var rkey3 = RsaPrivateKey.init(skey1)
-    var rkey4 = RsaPrivateKey.init(skey2)
-    check:
-      rkey1 == key
-      rkey2 == key
-      rkey3 == key
-      rkey4 == key
+      rkey1.isOk == true
+      rkey2.isOk == true
+      rkey1.value == key.value
+      rkey2.value == key.value
 
   test "[rsa4096] Private key serialize/deserialize test":
     # This test is too slow to run in debug mode.
     when defined(release):
-      var rkey1, rkey2: RsaPrivateKey
       var skey2 = newSeq[byte](4096)
       var key = RsaPrivateKey.random(4096)
-      var skey1 = key.getBytes()
-      check key.toBytes(skey2) > 0
+      check key.isOk == true
+      var skey1 = key.value.getBytes()
+      check key.value.toBytes(skey2) > 0
+      var rkey1 = RsaPrivateKey.init(skey1)
+      var rkey2 = RsaPrivateKey.init(skey2)
       check:
-        rkey1.init(skey1) == Asn1Status.Success
-        rkey2.init(skey2) == Asn1Status.Success
-      var rkey3 = RsaPrivateKey.init(skey1)
-      var rkey4 = RsaPrivateKey.init(skey2)
-      check:
-        rkey1 == key
-        rkey2 == key
-        rkey3 == key
-        rkey4 == key
+        rkey1.isOk == true
+        rkey2.isOk == true
+        rkey1.value == key.value
+        rkey2.value == key.value
+    else:
+      skip()
 
   test "[rsa512] Public key serialize/deserialize test":
     for i in 0..<TestsCount:
-      var rkey1, rkey2: RsaPublicKey
       var skey2 = newSeq[byte](4096)
       var pair = RsaKeyPair.random(512)
-      var skey1 = pair.pubkey().getBytes()
+      check pair.isOk == true
+      var skey1 = pair.value.pubkey().getBytes()
+      check pair.value.pubkey.toBytes(skey2) > 0
+      var rkey1 = RsaPublicKey.init(skey1)
+      var rkey2 = RsaPublicKey.init(skey2)
       check:
-        pair.pubkey.toBytes(skey2) > 0
-        rkey1.init(skey1) == Asn1Status.Success
-        rkey2.init(skey2) == Asn1Status.Success
-      var rkey3 = RsaPublicKey.init(skey1)
-      var rkey4 = RsaPublicKey.init(skey2)
-      check:
-        rkey1 == pair.pubkey
-        rkey2 == pair.pubkey
-        rkey3 == pair.pubkey
-        rkey4 == pair.pubkey
+        rkey1.isOk == true
+        rkey2.isOk == true
+        rkey1.value == pair.value.pubkey
+        rkey2.value == pair.value.pubkey
 
   test "[rsa1024] Public key serialize/deserialize test":
     for i in 0..<TestsCount:
-      var rkey1, rkey2: RsaPublicKey
       var skey2 = newSeq[byte](4096)
       var pair = RsaKeyPair.random(1024)
-      var skey1 = pair.pubkey.getBytes()
+      check pair.isOk == true
+      var skey1 = pair.value.pubkey.getBytes()
+      check pair.value.pubkey.toBytes(skey2) > 0
+      var rkey1 = RsaPublicKey.init(skey1)
+      var rkey2 = RsaPublicKey.init(skey2)
       check:
-        pair.pubkey.toBytes(skey2) > 0
-        rkey1.init(skey1) == Asn1Status.Success
-        rkey2.init(skey2) == Asn1Status.Success
-      var rkey3 = RsaPublicKey.init(skey1)
-      var rkey4 = RsaPublicKey.init(skey2)
-      check:
-        rkey1 == pair.pubkey
-        rkey2 == pair.pubkey
-        rkey3 == pair.pubkey
-        rkey4 == pair.pubkey
+        rkey1.isOk == true
+        rkey2.isOk == true
+        rkey1.value == pair.value.pubkey
+        rkey2.value == pair.value.pubkey
 
   test "[rsa2048] Public key serialize/deserialize test":
-    var rkey1, rkey2: RsaPublicKey
     var skey2 = newSeq[byte](4096)
     var pair = RsaKeyPair.random(2048)
-    var skey1 = pair.pubkey.getBytes()
+    check pair.isOk == true
+    var skey1 = pair.value.pubkey.getBytes()
+    check pair.value.pubkey.toBytes(skey2) > 0
+    var rkey1 = RsaPublicKey.init(skey1)
+    var rkey2 = RsaPublicKey.init(skey2)
     check:
-      pair.pubkey.toBytes(skey2) > 0
-      rkey1.init(skey1) == Asn1Status.Success
-      rkey2.init(skey2) == Asn1Status.Success
-    var rkey3 = RsaPublicKey.init(skey1)
-    var rkey4 = RsaPublicKey.init(skey2)
-    check:
-      rkey1 == pair.pubkey
-      rkey2 == pair.pubkey
-      rkey3 == pair.pubkey
-      rkey4 == pair.pubkey
+      rkey1.isOk == true
+      rkey2.isOk == true
+      rkey1.value == pair.value.pubkey
+      rkey2.value == pair.value.pubkey
 
   test "[rsa4096] Public key serialize/deserialize test":
     when defined(release):
-      var rkey1, rkey2: RsaPublicKey
       var skey2 = newSeq[byte](4096)
       var pair = RsaKeyPair.random(4096)
-      var skey1 = pair.pubkey.getBytes()
+      check pair.isOk == true
+      var skey1 = pair.value.pubkey.getBytes()
+      check pair.value.pubkey.toBytes(skey2) > 0
+      var rkey1 = RsaPublicKey.init(skey1)
+      var rkey2 = RsaPublicKey.init(skey2)
       check:
-        pair.pubkey.toBytes(skey2) > 0
-        rkey1.init(skey1) == Asn1Status.Success
-        rkey2.init(skey2) == Asn1Status.Success
-      var rkey3 = RsaPublicKey.init(skey1)
-      var rkey4 = RsaPublicKey.init(skey2)
-      check:
-        rkey1 == pair.pubkey
-        rkey2 == pair.pubkey
-        rkey3 == pair.pubkey
-        rkey4 == pair.pubkey
+        rkey1.isOk == true
+        rkey2.isOk == true
+        rkey1.value == pair.value.pubkey
+        rkey2.value == pair.value.pubkey
+    else:
+      skip()
 
   test "[rsa512] Generate/Sign/Serialize/Deserialize/Verify test":
     var message = "message to sign"
     for i in 0..<TestsCount:
       var kp = RsaKeyPair.random(512)
-      var sig = kp.seckey.sign(message)
-      var sersk = kp.seckey.getBytes()
-      var serpk = kp.pubkey.getBytes()
+      check kp.isOk == true
+      var sig = kp.value.seckey.sign(message)
+      var sersk = kp.value.seckey.getBytes()
+      var serpk = kp.value.pubkey.getBytes()
       var sersig = sig.getBytes()
       var seckey = RsaPrivateKey.init(sersk)
       var pubkey = RsaPublicKey.init(serpk)
       var csig = RsaSignature.init(sersig)
-      check csig.verify(message, pubkey) == true
-      let error = len(csig.buffer) - 1
-      csig.buffer[error] = not(csig.buffer[error])
-      check csig.verify(message, pubkey) == false
+      check:
+        seckey.isOk == true
+        pubkey.isOk == true
+        csig.isOk == true
+        csig.value.verify(message, pubkey.value) == true
+      let error = len(csig.value.buffer) - 1
+      csig.value.buffer[error] = not(csig.value.buffer[error])
+      check csig.value.verify(message, pubkey.value) == false
 
   test "[rsa1024] Generate/Sign/Serialize/Deserialize/Verify test":
     var message = "message to sign"
     for i in 0..<TestsCount:
       var kp = RsaKeyPair.random(1024)
-      var sig = kp.seckey.sign(message)
-      var sersk = kp.seckey.getBytes()
-      var serpk = kp.pubkey.getBytes()
+      check kp.isOk == true
+      var sig = kp.value.seckey.sign(message)
+      var sersk = kp.value.seckey.getBytes()
+      var serpk = kp.value.pubkey.getBytes()
       var sersig = sig.getBytes()
       var seckey = RsaPrivateKey.init(sersk)
       var pubkey = RsaPublicKey.init(serpk)
       var csig = RsaSignature.init(sersig)
-      check csig.verify(message, pubkey) == true
-      let error = len(csig.buffer) - 1
-      csig.buffer[error] = not(csig.buffer[error])
-      check csig.verify(message, pubkey) == false
+      check:
+        seckey.isOk == true
+        pubkey.isOk == true
+        csig.isOk == true
+        csig.value.verify(message, pubkey.value) == true
+      let error = len(csig.value.buffer) - 1
+      csig.value.buffer[error] = not(csig.value.buffer[error])
+      check csig.value.verify(message, pubkey.value) == false
 
   test "[rsa2048] Generate/Sign/Serialize/Deserialize/Verify test":
     var message = "message to sign"
     var kp = RsaKeyPair.random(2048)
-    var sig = kp.seckey.sign(message)
-    var sersk = kp.seckey.getBytes()
-    var serpk = kp.pubkey.getBytes()
+    check kp.isOk == true
+    var sig = kp.value.seckey.sign(message)
+    var sersk = kp.value.seckey.getBytes()
+    var serpk = kp.value.pubkey.getBytes()
     var sersig = sig.getBytes()
     var seckey = RsaPrivateKey.init(sersk)
     var pubkey = RsaPublicKey.init(serpk)
     var csig = RsaSignature.init(sersig)
-    check csig.verify(message, pubkey) == true
-    let error = len(csig.buffer) - 1
-    csig.buffer[error] = not(csig.buffer[error])
-    check csig.verify(message, pubkey) == false
+    check:
+      seckey.isOk == true
+      pubkey.isOk == true
+      csig.isOk == true
+      csig.value.verify(message, pubkey.value) == true
+    let error = len(csig.value.buffer) - 1
+    csig.value.buffer[error] = not(csig.value.buffer[error])
+    check csig.value.verify(message, pubkey.value) == false
 
   test "[rsa4096] Generate/Sign/Serialize/Deserialize/Verify test":
     when defined(release):
       var message = "message to sign"
-      var kp = RsaKeyPair.random(2048)
-      var sig = kp.seckey.sign(message)
-      var sersk = kp.seckey.getBytes()
-      var serpk = kp.pubkey.getBytes()
+      var kp = RsaKeyPair.random(4096)
+      check kp.isOk == true
+      var sig = kp.value.seckey.sign(message)
+      var sersk = kp.value.seckey.getBytes()
+      var serpk = kp.value.pubkey.getBytes()
       var sersig = sig.getBytes()
       var seckey = RsaPrivateKey.init(sersk)
       var pubkey = RsaPublicKey.init(serpk)
       var csig = RsaSignature.init(sersig)
-      check csig.verify(message, pubkey) == true
-      let error = len(csig.buffer) - 1
-      csig.buffer[error] = not(csig.buffer[error])
-      check csig.verify(message, pubkey) == false
+      check:
+        seckey.isOk == true
+        pubkey.isOk == true
+        csig.isOk == true
+        csig.value.verify(message, pubkey.value) == true
+      let error = len(csig.value.buffer) - 1
+      csig.value.buffer[error] = not(csig.value.buffer[error])
+      check csig.value.verify(message, pubkey.value) == false
+    else:
+      skip()
 
   test "[rsa512] Test vectors":
     var prvser = fromHex(stripSpaces(PrivateKeys[0]))
@@ -479,22 +481,25 @@ suite "RSA 512/1024/2048/4096 test suite":
     var seckey = RsaPrivateKey.init(prvser)
     var pubkey = RsaPublicKey.init(pubser)
     check:
-      seckey.getBytes() == prvser
-    var cpubkey = seckey.getKey()
+      seckey.isOk == true
+      pubkey.isOk == true
+      seckey.value.getBytes() == prvser
+    var cpubkey = seckey.value.getKey()
     check:
-      pubkey == cpubkey
-      pubkey.getBytes() == cpubkey.getBytes()
-      pubkey.getBytes() == pubser
+      pubkey.value == cpubkey
+      pubkey.value.getBytes() == cpubkey.getBytes()
+      pubkey.value.getBytes() == pubser
 
     for i in 0..1:
       var sigser = fromHex(stripSpaces(Signatures[i]))
       var sig = RsaSignature.init(sigser)
-      var csig = seckey.sign(Messages[i])
+      check sig.isOk == true
+      var csig = seckey.value.sign(Messages[i])
       check:
-        sig == csig
-        sig.getBytes() == csig.getBytes()
-        csig.verify(Messages[i], pubkey) == true
-        csig.verify(Messages[(i + 1) mod 2], pubkey) == false
+        sig.value == csig
+        sig.value.getBytes() == csig.getBytes()
+        csig.verify(Messages[i], pubkey.value) == true
+        csig.verify(Messages[(i + 1) mod 2], pubkey.value) == false
 
   test "[rsa1024] Test vectors":
     var prvser = fromHex(stripSpaces(PrivateKeys[1]))
@@ -502,22 +507,25 @@ suite "RSA 512/1024/2048/4096 test suite":
     var seckey = RsaPrivateKey.init(prvser)
     var pubkey = RsaPublicKey.init(pubser)
     check:
-      seckey.getBytes() == prvser
-    var cpubkey = seckey.getKey()
+      seckey.isOk == true
+      pubkey.isOk == true
+      seckey.value.getBytes() == prvser
+    var cpubkey = seckey.value.getKey()
     check:
-      pubkey == cpubkey
-      pubkey.getBytes() == cpubkey.getBytes()
-      pubkey.getBytes() == pubser
+      pubkey.value == cpubkey
+      pubkey.value.getBytes() == cpubkey.getBytes()
+      pubkey.value.getBytes() == pubser
 
     for i in 0..1:
       var sigser = fromHex(stripSpaces(Signatures[2 + i]))
       var sig = RsaSignature.init(sigser)
-      var csig = seckey.sign(Messages[2 + i])
+      check sig.isOk == true
+      var csig = seckey.value.sign(Messages[2 + i])
       check:
-        sig == csig
-        sig.getBytes() == csig.getBytes()
-        csig.verify(Messages[2 + i], pubkey) == true
-        csig.verify(Messages[2 + (i + 1) mod 2], pubkey) == false
+        sig.value == csig
+        sig.value.getBytes() == csig.getBytes()
+        csig.verify(Messages[2 + i], pubkey.value) == true
+        csig.verify(Messages[2 + (i + 1) mod 2], pubkey.value) == false
 
   test "[rsa2048] Test vectors":
     var prvser = fromHex(stripSpaces(PrivateKeys[2]))
@@ -525,22 +533,25 @@ suite "RSA 512/1024/2048/4096 test suite":
     var seckey = RsaPrivateKey.init(prvser)
     var pubkey = RsaPublicKey.init(pubser)
     check:
-      seckey.getBytes() == prvser
-    var cpubkey = seckey.getKey()
+      seckey.isOk == true
+      pubkey.isOk == true
+      seckey.value.getBytes() == prvser
+    var cpubkey = seckey.value.getKey()
     check:
-      pubkey == cpubkey
-      pubkey.getBytes() == cpubkey.getBytes()
-      pubkey.getBytes() == pubser
+      pubkey.value == cpubkey
+      pubkey.value.getBytes() == cpubkey.getBytes()
+      pubkey.value.getBytes() == pubser
 
     for i in 0..1:
       var sigser = fromHex(stripSpaces(Signatures[4 + i]))
       var sig = RsaSignature.init(sigser)
-      var csig = seckey.sign(Messages[4 + i])
+      check sig.isOk == true
+      var csig = seckey.value.sign(Messages[4 + i])
       check:
-        sig == csig
-        sig.getBytes() == csig.getBytes()
-        csig.verify(Messages[4 + i], pubkey) == true
-        csig.verify(Messages[4 + (i + 1) mod 2], pubkey) == false
+        sig.value == csig
+        sig.value.getBytes() == csig.getBytes()
+        csig.verify(Messages[4 + i], pubkey.value) == true
+        csig.verify(Messages[4 + (i + 1) mod 2], pubkey.value) == false
 
   test "[rsa4096] Test vectors":
     var prvser = fromHex(stripSpaces(PrivateKeys[3]))
@@ -548,19 +559,22 @@ suite "RSA 512/1024/2048/4096 test suite":
     var seckey = RsaPrivateKey.init(prvser)
     var pubkey = RsaPublicKey.init(pubser)
     check:
-      seckey.getBytes() == prvser
-    var cpubkey = seckey.getKey()
+      seckey.isOk == true
+      pubkey.isOk == true
+      seckey.value.getBytes() == prvser
+    var cpubkey = seckey.value.getKey()
     check:
-      pubkey == cpubkey
-      pubkey.getBytes() == cpubkey.getBytes()
-      pubkey.getBytes() == pubser
+      pubkey.value == cpubkey
+      pubkey.value.getBytes() == cpubkey.getBytes()
+      pubkey.value.getBytes() == pubser
 
     for i in 0..1:
       var sigser = fromHex(stripSpaces(Signatures[6 + i]))
       var sig = RsaSignature.init(sigser)
-      var csig = seckey.sign(Messages[6 + i])
+      check sig.isOk == true
+      var csig = seckey.value.sign(Messages[6 + i])
       check:
-        sig == csig
-        sig.getBytes() == csig.getBytes()
-        csig.verify(Messages[6 + i], pubkey) == true
-        csig.verify(Messages[6 + (i + 1) mod 2], pubkey) == false
+        sig.value == csig
+        sig.value.getBytes() == csig.getBytes()
+        csig.verify(Messages[6 + i], pubkey.value) == true
+        csig.verify(Messages[6 + (i + 1) mod 2], pubkey.value) == false

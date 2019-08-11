@@ -9,7 +9,8 @@
 
 ## This module implements MultiCodec.
 import tables, hashes
-import varint, vbuffer
+import varint, vbuffer, errors
+export errors
 
 {.deadCodeElim: on.}
 
@@ -230,7 +231,6 @@ const MultiCodecList = [
 
 type
   MultiCodec* = distinct int
-  MultiCodecError* = object of CatchableError
 
 const
   InvalidMultiCodec* = MultiCodec(-1)
@@ -251,26 +251,16 @@ const
 
 proc multiCodec*(name: string): MultiCodec {.compileTime.} =
   ## Generate MultiCodec from string ``name`` at compile time.
-  var code = NameCodecs.getOrDefault(name, -1)
-  if code == -1:
-    raise newException(MultiCodecError,
-                       "MultiCodec `" & name & "` not supported!")
-  result = MultiCodec(code)
+  result = MultiCodec(NameCodecs.getOrDefault(name, -1))
 
 proc multiCodec*(code: int): MultiCodec {.compileTime.} =
   ## Generate MultiCodec from integer ``code`` at compile time.
   var name = CodeCodecs.getOrDefault(code, "")
-  if name == "":
-    raise newException(MultiCodecError,
-                       "MultiCodec with code " & $code & " not supported!")
-  result = MultiCodec(code)
+  result = if name == "": InvalidMultiCodec else: MultiCodec(code)
 
-proc `$`*(mc: MultiCodec): string =
+proc `$`*(mc: MultiCodec): string {.inline.} =
   ## Returns string representation of MultiCodec ``mc``.
-  result = CodeCodecs.getOrDefault(int(mc), "")
-  if result == "":
-    raise newException(MultiCodecError,
-                       "MultiCodec with code " & $int(mc) & " not supported!")
+  result = CodeCodecs.getOrDefault(int(mc), "<no support>")
 
 proc `==`*(mc: MultiCodec, name: string): bool {.inline.} =
   ## Compares MultiCodec ``mc`` with string ``name``.
@@ -305,12 +295,12 @@ proc codec*(mt: typedesc[MultiCodec], code: int): MultiCodec {.inline.} =
   ## Return MultiCodec from integer representation ``code``.
   ## If ``code`` is not valid multicodec code, then ``InvalidMultiCodec`` will
   ## be returned.
-  let res = CodeCodecs.getOrDefault(code, "")
-  if res == "":
+  if CodeCodecs.getOrDefault(code, "") == "":
     result = InvalidMultiCodec
   else:
     result = MultiCodec(code)
 
-proc write*(vb: var VBuffer, mc: MultiCodec) {.inline.} =
+proc write*(vb: var VBuffer,
+            mc: MultiCodec): Result[int, errors.Error] {.inline.} =
   ## Write MultiCodec to buffer ``vb``.
-  vb.writeVarint(cast[uint](mc))
+  result = vb.writeVarint(cast[uint64](mc))

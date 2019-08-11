@@ -86,21 +86,24 @@ suite "Variable integer test suite":
     for i in 0..<len(PBedgeValues):
       check vsizeof(PBedgeValues[i]) == PBedgeSizes[i]
 
+  test "isOverflow() edge cases test":
+    check:
+      isOverflow[int8](-129'i64) == true
+      isOverflow[int8](128'i64) == true
+      isOverflow[int16](-32769'i64) == true
+      isOverflow[int16](32768'i64) == true
+      isOverflow[int32](-2147483649'i64) == true
+      isOverflow[int32](2147483648'i64) == true
+      isOverflow[uint8](256'u64) == true
+      isOverflow[uint16](65536'u64) == true
+      isOverflow[uint32](4294967296'u64) == true
+
   test "[ProtoBuf] Success edge cases test":
     var buffer = newSeq[byte]()
     var length = 0
     var value = 0'u64
     for i in 0..<len(PBedgeValues):
       buffer.setLen(PBedgeSizes[i])
-
-      zeroMem(addr buffer[0], len(buffer))
-      value = 0'u64
-
-      check:
-        PB.putUVarint(buffer, length, PBedgeValues[i]) == VarintStatus.Success
-        PB.getUVarint(buffer, length, value) == VarintStatus.Success
-        value == PBedgeValues[i]
-        toHex(buffer) == PBedgeExpects[i]
 
       zeroMem(addr buffer[0], len(buffer))
       value = 0'u64
@@ -120,13 +123,6 @@ suite "Variable integer test suite":
 
       if len(buffer) > 0:
         zeroMem(addr buffer[0], len(buffer))
-      let res1 = PB.putUVarint(buffer, length, PBedgeValues[i])
-      check:
-        res1 == VarintStatus.Overrun
-        length == PBedgeSizes[i]
-
-      if len(buffer) > 0:
-        zeroMem(addr buffer[0], len(buffer))
       let res2 = PB.putUVarint(buffer, PBedgeValues[i])
       check:
         res2.isErr == true
@@ -137,15 +133,6 @@ suite "Variable integer test suite":
     var length = 0
     var value = 0'u64
     for i in 0..<len(PBedgeValues):
-      buffer.setLen(PBedgeSizes[i])
-      zeroMem(addr buffer[0], len(buffer))
-
-      check:
-        PB.putUVarint(buffer, length, PBedgeValues[i]) == VarintStatus.Success
-      buffer.setLen(len(buffer) - 1)
-      check:
-        PB.getUVarint(buffer, length, value) == VarintStatus.Incomplete
-
       buffer.setLen(PBedgeSizes[i])
       zeroMem(addr buffer[0], len(buffer))
 
@@ -164,9 +151,11 @@ suite "Variable integer test suite":
       if PBedgeSizes[i] > 5:
         var value = 0'u32
         buffer.setLen(PBedgeSizes[i])
+        check PB.putUVarint(buffer, PBedgeValues[i]).isOk == true
+        let res = PB.decodeUVarint(uint32, buffer)
         check:
-          PB.putUVarint(buffer, length, PBedgeValues[i]) == VarintStatus.Success
-          PB.getUVarint(buffer, length, value) == VarintStatus.Overflow
+          res.isErr == true
+          res.error == errors.OverflowError
 
   test "[ProtoBuf] Integer Overflow 64bit test":
     var buffer = newSeq[byte]()
@@ -174,15 +163,6 @@ suite "Variable integer test suite":
     for i in 0..<len(PBedgeValues):
       if PBedgeSizes[i] > 9:
         var value = 0'u64
-        buffer.setLen(PBedgeSizes[i] + 1)
-        zeroMem(addr buffer[0], len(buffer))
-        check:
-          PB.putUVarint(buffer, length, PBedgeValues[i]) == VarintStatus.Success
-        buffer[9] = buffer[9] or 0x80'u8
-        buffer[10] = 0x01'u8
-        check:
-          PB.getUVarint(buffer, length, value) == VarintStatus.Overflow
-
         buffer.setLen(PBedgeSizes[i] + 1)
         zeroMem(addr buffer[0], len(buffer))
         check:
@@ -204,15 +184,6 @@ suite "Variable integer test suite":
       zeroMem(addr buffer[0], len(buffer))
       value = 0'u64
 
-      check:
-        LP.putUVarint(buffer, length, LPedgeValues[i]) == VarintStatus.Success
-        LP.getUVarint(buffer, length, value) == VarintStatus.Success
-        value == LPedgeValues[i]
-        toHex(buffer) == LPedgeExpects[i]
-
-      zeroMem(addr buffer[0], len(buffer))
-      value = 0'u64
-
       check LP.putUVarint(buffer, LPedgeValues[i]).isOk == true
       let res = LP.getUVarint(buffer)
       check:
@@ -228,13 +199,6 @@ suite "Variable integer test suite":
 
       if len(buffer) > 0:
         zeroMem(addr buffer[0], len(buffer))
-      let res1 = LP.putUVarint(buffer, length, LPedgeValues[i])
-      check:
-        res1 == VarintStatus.Overrun
-        length == LPedgeSizes[i]
-
-      if len(buffer) > 0:
-        zeroMem(addr buffer[0], len(buffer))
       let res2 = LP.putUVarint(buffer, PBedgeValues[i])
       check:
         res2.isErr == true
@@ -246,17 +210,9 @@ suite "Variable integer test suite":
     var value = 0'u64
     for i in 0..<len(LPedgeValues):
       buffer.setLen(LPedgeSizes[i])
-      check:
-        LP.putUVarint(buffer, length, LPedgeValues[i]) == VarintStatus.Success
-      buffer.setLen(len(buffer) - 1)
-      check:
-        LP.getUVarint(buffer, length, value) == VarintStatus.Incomplete
-
-      buffer.setLen(LPedgeSizes[i])
       zeroMem(addr buffer[0], len(buffer))
 
-      check:
-        LP.putUVarint(buffer, LPedgeValues[i]).isOk == true
+      check LP.putUVarint(buffer, LPedgeValues[i]).isOk == true
       buffer.setLen(len(buffer) - 1)
       let res = LP.getUVarint(buffer)
       check:
@@ -270,9 +226,11 @@ suite "Variable integer test suite":
       if LPedgeSizes[i] > 5:
         var value = 0'u32
         buffer.setLen(LPedgeSizes[i])
+        check LP.putUVarint(buffer, LPedgeValues[i]).isOk == true
+        let res = LP.decodeUVarint(uint32, buffer)
         check:
-          LP.putUVarint(buffer, length, LPedgeValues[i]) == VarintStatus.Success
-          LP.getUVarint(buffer, length, value) == VarintStatus.Overflow
+          res.isErr == true
+          res.error == errors.OverflowError
 
   test "[LibP2P] Integer Overflow 64bit test":
     var buffer = newSeq[byte]()
@@ -281,17 +239,8 @@ suite "Variable integer test suite":
       if LPedgeSizes[i] > 8:
         var value = 0'u64
         buffer.setLen(LPedgeSizes[i] + 1)
-        check:
-          LP.putUVarint(buffer, length, LPedgeValues[i]) == VarintStatus.Success
-        buffer[8] = buffer[8] or 0x80'u8
-        buffer[9] = 0x01'u8
-        check:
-          LP.getUVarint(buffer, length, value) == VarintStatus.Overflow
-
-        buffer.setLen(LPedgeSizes[i] + 1)
         zeroMem(addr buffer[0], len(buffer))
-        check:
-          LP.putUVarint(buffer, LPedgeValues[i]).isOk == true
+        check LP.putUVarint(buffer, LPedgeValues[i]).isOk == true
         buffer[8] = buffer[9] or 0x80'u8
         buffer[9] = 0x01'u8
         let res = LP.getUVarint(buffer)
@@ -302,13 +251,6 @@ suite "Variable integer test suite":
   test "[LibP2P] Over 63bit test":
     var buffer = newSeq[byte](10)
     var length = 0
-    check:
-      LP.putUVarint(buffer, length,
-                    0x7FFF_FFFF_FFFF_FFFF'u64) == VarintStatus.Success
-      LP.putUVarint(buffer, length,
-                    0x8000_0000_0000_0000'u64) == VarintStatus.Overflow
-      LP.putUVarint(buffer, length,
-                    0xFFFF_FFFF_FFFF_FFFF'u64) == VarintStatus.Overflow
     let r1 = LP.putUVarint(buffer, 0x7FFF_FFFF_FFFF_FFFF'u64)
     let r2 = LP.putUVarint(buffer, 0x8000_0000_0000_0000'u64)
     let r3 = LP.putUVarint(buffer, 0xFFFF_FFFF_FFFF_FFFF'u64)

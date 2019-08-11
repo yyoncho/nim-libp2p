@@ -110,19 +110,20 @@ suite "Ed25519 test suite":
       var rkey1, rkey2: EdPrivateKey
       var skey2 = newSeq[byte](256)
       var key = EdPrivateKey.random()
-      var skey1 = key.getBytes()
+      check key.isOk == true
+      var skey1 = key.value.getBytes()
       check:
-        key.toBytes(skey2) > 0
+        key.value.toBytes(skey2) > 0
       check:
         rkey1.init(skey1) == true
         rkey2.init(skey2) == true
       var rkey3 = EdPrivateKey.init(skey1)
       var rkey4 = EdPrivateKey.init(skey2)
       check:
-        rkey1 == key
-        rkey2 == key
-        rkey3 == key
-        rkey4 == key
+        rkey1 == key.value
+        rkey2 == key.value
+        rkey3.value == key.value
+        rkey4.value == key.value
       rkey1.clear()
       rkey2.clear()
       check:
@@ -134,18 +135,19 @@ suite "Ed25519 test suite":
       var rkey1, rkey2: EdPublicKey
       var skey2 = newSeq[byte](256)
       var pair = EdKeyPair.random()
-      var skey1 = pair.pubkey.getBytes()
+      check pair.isOk == true
+      var skey1 = pair.value.pubkey.getBytes()
       check:
-        pair.pubkey.toBytes(skey2) > 0
+        pair.value.pubkey.toBytes(skey2) > 0
         rkey1.init(skey1) == true
         rkey2.init(skey2) == true
       var rkey3 = EdPublicKey.init(skey1)
       var rkey4 = EdPublicKey.init(skey2)
       check:
-        rkey1 == pair.pubkey
-        rkey2 == pair.pubkey
-        rkey3 == pair.pubkey
-        rkey4 == pair.pubkey
+        rkey1 == pair.value.pubkey
+        rkey2 == pair.value.pubkey
+        rkey3.value == pair.value.pubkey
+        rkey4.value == pair.value.pubkey
       rkey1.clear()
       rkey2.clear()
       check:
@@ -156,13 +158,19 @@ suite "Ed25519 test suite":
     for i in 0..<5:
       var key = EdPrivateKey.init(stripSpaces(SecretKeys[i]))
       var exppub = EdPublicKey.init(stripSpaces(PublicKeys[i]))
-      var pubkey = key.getKey()
-      check pubkey == exppub
+      check:
+        key.isOk == true
+        exppub.isOk == true
+      var pubkey = key.value.getKey()
+      check pubkey == exppub.value
       var msg = fromHex(stripSpaces(Messages[i]))
-      var sig = key.sign(msg)
+      var sig = key.value.sign(msg)
       var expsig = EdSignature.init(fromHex(stripSpaces(Signatures[i])))
-      check sig == expsig
-      check sig.verify(msg, pubkey) == true
+      check:
+        expsig.isOk == true
+        sig == expsig.value
+        sig.verify(msg, pubkey) == true
+
       sig.data[32] = not(sig.data[32])
       check sig.verify(msg, pubkey) == false
 
@@ -170,14 +178,20 @@ suite "Ed25519 test suite":
     var message = "message to sign"
     for i in 0..<TestsCount:
       var kp = EdKeyPair.random()
-      var sig = kp.seckey.sign(message)
-      var sersk = kp.seckey.getBytes()
-      var serpk = kp.pubkey.getBytes()
+      check kp.isOk == true
+      var sig = kp.value.seckey.sign(message)
+      var sersk = kp.value.seckey.getBytes()
+      var serpk = kp.value.pubkey.getBytes()
       var sersig = sig.getBytes()
       var seckey = EdPrivateKey.init(sersk)
       var pubkey = EdPublicKey.init(serpk)
       var csig = EdSignature.init(sersig)
-      check csig.verify(message, pubkey) == true
-      let error = len(csig.data) - 1
-      csig.data[error] = not(csig.data[error])
-      check csig.verify(message, pubkey) == false
+      check:
+        seckey.isOk == true
+        pubkey.isOk == true
+        csig.isOk == true
+        csig.value.verify(message, pubkey.value) == true
+
+      let error = len(csig.value.data) - 1
+      csig.value.data[error] = not(csig.value.data[error])
+      check csig.value.verify(message, pubkey.value) == false

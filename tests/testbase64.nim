@@ -1,5 +1,5 @@
 import unittest
-import ../libp2p/base64
+import ../libp2p/base64, ../libp2p/errors
 
 const TVBasePadding = [
   ["f", "Zg=="],
@@ -26,41 +26,55 @@ suite "BASE64 encoding test suite":
     var encoded = newString(16)
     var decoded = newSeq[byte](16)
 
-    var o1, o2, o3, o4: int
-    var e1 = Base64.encode(empty1)
-    var e2 = Base64Url.encode(empty1)
-    var e3 = Base64Pad.encode(empty1)
-    var e4 = Base64UrlPad.encode(empty1)
+    let e1 = Base64.encode(empty1)
+    let e2 = Base64Url.encode(empty1)
+    let e3 = Base64Pad.encode(empty1)
+    let e4 = Base64UrlPad.encode(empty1)
+    let e5 = Base64.encode(empty1, encoded)
+    let e6 = Base64Url.encode(empty1, encoded)
+    let e7 = Base64Pad.encode(empty1, encoded)
+    let e8 = Base64UrlPad.encode(empty1, encoded)
+
     check:
-      Base64.encode(empty1, encoded, o1) == Base64Status.Success
-      Base64Url.encode(empty1, encoded, o2) == Base64Status.Success
-      Base64Pad.encode(empty1, encoded, o3) == Base64Status.Success
-      Base64UrlPad.encode(empty1, encoded, o4) == Base64Status.Success
+      e5.isOk == true
+      e6.isOk == true
+      e7.isOk == true
+      e8.isOk == true
       len(e1) == 0
       len(e2) == 0
       len(e3) == 0
       len(e4) == 0
-      o1 == 0
-      o2 == 0
-      o3 == 0
-      o4 == 0
-    var d1 = Base64.decode("")
-    var d2 = Base64Url.decode("")
-    var d3 = Base64Pad.decode("")
-    var d4 = Base64UrlPad.decode("")
+      e5.value == 0
+      e6.value == 0
+      e7.value == 0
+      e8.value == 0
+
+    let d1 = Base64.decode("")
+    let d2 = Base64Url.decode("")
+    let d3 = Base64Pad.decode("")
+    let d4 = Base64UrlPad.decode("")
+    let d5 = Base64.decode(empty2, decoded)
+    let d6 = Base64Url.decode(empty2, decoded)
+    let d7 = Base64Pad.decode(empty2, decoded)
+    let d8 = Base64UrlPad.decode(empty2, decoded)
+
     check:
-      Base64.decode(empty2, decoded, o1) == Base64Status.Success
-      Base64Url.decode(empty2, decoded, o2) == Base64Status.Success
-      Base64Pad.decode(empty2, decoded, o3) == Base64Status.Success
-      Base64UrlPad.decode(empty2, decoded, o4) == Base64Status.Success
-      len(d1) == 0
-      len(d2) == 0
-      len(d3) == 0
-      len(d4) == 0
-      o1 == 0
-      o2 == 0
-      o3 == 0
-      o4 == 0
+      d1.isOk == true
+      d2.isOk == true
+      d3.isOk == true
+      d4.isOk == true
+      d5.isOk == true
+      d6.isOk == true
+      d7.isOk == true
+      d8.isOk == true
+      len(d1.value) == 0
+      len(d2.value) == 0
+      len(d3.value) == 0
+      len(d4.value) == 0
+      d5.value == 0
+      d6.value == 0
+      d7.value == 0
+      d8.value == 0
 
   test "Zero test":
     var s = newString(256)
@@ -70,7 +84,9 @@ suite "BASE64 encoding test suite":
     for i in 0..255:
       var a = Base64.encode(buffer.toOpenArray(0, i))
       var b = Base64.decode(a)
-      check b == buffer[0..i]
+      check:
+        b.isOk == true
+        b.value == buffer[0..i]
 
   test "Leading zero test":
     var buffer: array[256, byte]
@@ -79,84 +95,79 @@ suite "BASE64 encoding test suite":
       var a = Base64.encode(buffer)
       var b = Base64.decode(a)
       check:
-        equalMem(addr buffer[0], addr b[0], 256) == true
+        b.isOk == true
+        equalMem(addr buffer[0], addr b.value[0], 256) == true
+
+  proc testVector(bt64: typedesc[Base64Types],
+                  vectors: array[6, array[2, string]]): bool =
+    for item in vectors:
+      let plain = cast[seq[byte]](item[0])
+      let expect = item[1]
+
+      var e1 = bt64.encode(plain)
+      var e2 = newString(bt64.encodedLength(len(plain)))
+      var e3 = bt64.encode(plain, e2)
+
+      if e3.isErr:
+        return false
+
+      e2.setLen(e3.value)
+
+      if (e1 != expect) or (e2 != expect):
+        return false
+
+      var d1 = bt64.decode(expect)
+      var d2 = newSeq[byte](bt64.decodedLength(len(expect)))
+      var d3 = bt64.decode(expect, d2)
+
+      if d1.isErr or d3.isErr:
+        return false
+
+      d2.setLen(d3.value)
+
+      if (d1.value != plain) or (d2 != plain):
+        return false
+
+      return true
 
   test "BASE64 padding test vectors":
-    for item in TVBasePadding:
-      let plain = cast[seq[byte]](item[0])
-      let expect = item[1]
-      var elen = 0
-      var dlen = 0
-
-      var e1 = Base64Pad.encode(plain)
-      var e2 = newString(Base64Pad.encodedLength(len(plain)))
-      check:
-        Base64Pad.encode(plain, e2, elen) == Base64Status.Success
-      e2.setLen(elen)
-      check:
-        e1 == expect
-        e2 == expect
-
-      var d1 = Base64Pad.decode(expect)
-      var d2 = newSeq[byte](Base64Pad.decodedLength(len(expect)))
-      check:
-        Base64Pad.decode(expect, d2, dlen) == Base64Status.Success
-      d2.setLen(dlen)
-      check:
-        d1 == plain
-        d2 == plain
+    check Base64Pad.testVector(TVBasePadding) == true
 
   test "BASE64 no padding test vectors":
-    for item in TVBaseNoPadding:
-      let plain = cast[seq[byte]](item[0])
-      let expect = item[1]
-      var elen = 0
-      var dlen = 0
-
-      var e1 = Base64.encode(plain)
-      var e2 = newString(Base64.encodedLength(len(plain)))
-      check:
-        Base64.encode(plain, e2, elen) == Base64Status.Success
-      e2.setLen(elen)
-      check:
-        e1 == expect
-        e2 == expect
-
-      var d1 = Base64.decode(expect)
-      var d2 = newSeq[byte](Base64.decodedLength(len(expect)))
-      check:
-        Base64.decode(expect, d2, dlen) == Base64Status.Success
-      d2.setLen(dlen)
-      check:
-        d1 == plain
-        d2 == plain
+    check Base64.testVector(TVBaseNoPadding) == true
 
   test "Buffer Overrun test":
     var encres = ""
-    var encsize = 0
     var decres: seq[byte] = @[]
-    var decsize = 0
+    let r1 = Base64.encode([0'u8], encres)
+    let r2 = Base64.decode("AA", decres)
     check:
-      Base64.encode([0'u8], encres, encsize) == Base64Status.Overrun
-      encsize == Base64.encodedLength(1)
-      Base64.decode("AA", decres, decsize) == Base64Status.Overrun
-      decsize == Base64.decodedLength(2)
+      r1.isErr == true
+      r2.isErr == true
+      r1.error == errors.OverrunError
+      r2.error == errors.OverrunError
 
   test "Incorrect test":
     var decres = newSeq[byte](10)
-    var decsize = 0
+    let r1 = Base64.decode("A", decres)
+    let r2 = Base64.decode("AAAAA", decres)
+    let r3 = Base64.decode("!", decres)
+    let r4 = Base64.decode("!!", decres)
+    let r5 = Base64.decode("AA==", decres)
+    let r6 = Base64.decode("_-", decres)
+    let r7 = Base64Url.decode("/+", decres)
     check:
-      Base64.decode("A", decres, decsize) == Base64Status.Incorrect
-      decsize == 0
-      Base64.decode("AAAAA", decres, decsize) == Base64Status.Incorrect
-      decsize == 0
-      Base64.decode("!", decres, decsize) == Base64Status.Incorrect
-      decsize == 0
-      Base64.decode("!!", decres, decsize) == Base64Status.Incorrect
-      decsize == 0
-      Base64.decode("AA==", decres, decsize) == Base64Status.Incorrect
-      decsize == 0
-      Base64.decode("_-", decres, decsize) == Base64Status.Incorrect
-      decsize == 0
-      Base64Url.decode("/+", decres, decsize) == Base64Status.Incorrect
-      decsize == 0
+      r1.isErr == true
+      r2.isErr == true
+      r3.isErr == true
+      r4.isErr == true
+      r5.isErr == true
+      r6.isErr == true
+      r7.isErr == true
+      r1.error == errors.IncorrectEncodingError
+      r2.error == errors.IncorrectEncodingError
+      r3.error == errors.IncorrectEncodingError
+      r4.error == errors.IncorrectEncodingError
+      r5.error == errors.IncorrectEncodingError
+      r6.error == errors.IncorrectEncodingError
+      r7.error == errors.IncorrectEncodingError

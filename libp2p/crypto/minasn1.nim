@@ -10,6 +10,9 @@
 ## This module implements minimal ASN.1 encoding/decoding primitives.
 import endians
 import nimcrypto/utils
+import ../errors
+
+export errors
 
 type
   Asn1Status* {.pure.} = enum
@@ -39,6 +42,10 @@ type
     Oid,
     Sequence,
     Context
+
+  Asn1TagClass* = object
+    tag*: int
+    klass*: Asn1Class
 
   Asn1Buffer* = object of RootObj
     ## ASN.1's message representation object
@@ -421,98 +428,156 @@ proc asn1EncodeContextTag*(dest: var openarray[byte], value: openarray[byte],
     copyMem(addr dest[1], addr buffer[0], lenlen)
     copyMem(addr dest[1 + lenlen], unsafeAddr value[0], len(value))
 
-proc getLength(ab: var Asn1Buffer, length: var uint64): Asn1Status =
+# proc getLength(ab: var Asn1Buffer, length: var uint64): Asn1Status =
+#   ## Decode length part of ASN.1 TLV triplet.
+#   result = Asn1Status.Incomplete
+#   if not ab.isEmpty():
+#     let b = ab.buffer[ab.offset]
+#     if (b and 0x80'u8) == 0x00'u8:
+#       length = cast[uint64](b)
+#       ab.offset += 1
+#       result = Asn1Status.Success
+#       return
+#     if b == 0x80'u8:
+#       length = 0'u64
+#       result = Asn1Status.Indefinite
+#       return
+#     if b == 0xFF'u8:
+#       length = 0'u64
+#       result = Asn1Status.Incorrect
+#       return
+#     let octets = cast[uint64](b and 0x7F'u8)
+#     if octets > 8'u64:
+#       length = 0'u64
+#       result = Asn1Status.Overflow
+#       return
+#     length = 0'u64
+#     if ab.isEnough(int(octets)):
+#       for i in 0..<int(octets):
+#         length = (length shl 8) or cast[uint64](ab.buffer[ab.offset + i + 1])
+#       ab.offset = ab.offset + int(octets) + 1
+#       result = Asn1Status.Success
+
+proc getLength(ab: var Asn1Buffer): Result[uint64, errors.Error] =
   ## Decode length part of ASN.1 TLV triplet.
-  result = Asn1Status.Incomplete
-  if not ab.isEmpty():
-    let b = ab.buffer[ab.offset]
-    if (b and 0x80'u8) == 0x00'u8:
-      length = cast[uint64](b)
-      ab.offset += 1
-      result = Asn1Status.Success
-      return
-    if b == 0x80'u8:
-      length = 0'u64
-      result = Asn1Status.Indefinite
-      return
-    if b == 0xFF'u8:
-      length = 0'u64
-      result = Asn1Status.Incorrect
-      return
-    let octets = cast[uint64](b and 0x7F'u8)
-    if octets > 8'u64:
-      length = 0'u64
-      result = Asn1Status.Overflow
-      return
-    length = 0'u64
-    if ab.isEnough(int(octets)):
-      for i in 0..<int(octets):
-        length = (length shl 8) or cast[uint64](ab.buffer[ab.offset + i + 1])
-      ab.offset = ab.offset + int(octets) + 1
-      result = Asn1Status.Success
+  if ab.isEmpty():
+    result.err(errors.IncompleteError)
+    return
 
-proc getTag(ab: var Asn1Buffer, tag: var int,
-            klass: var Asn1Class): Asn1Status =
-  ## Decode tag part of ASN.1 TLV triplet.
-  result = Asn1Status.Incomplete
-  if not ab.isEmpty():
-    let b = ab.buffer[ab.offset]
-    var c = int((b and 0xC0'u8) shr 6)
-    if c >= 0 and c < 4:
-      klass = cast[Asn1Class](c)
-    else:
-      return Asn1Status.Incorrect
-    tag = int(b and 0x3F)
+  let b = ab.buffer[ab.offset]
+  if (b and 0x80'u8) == 0x00'u8:
     ab.offset += 1
-    result = Asn1Status.Success
+    result.ok(uint64(b))
+    return
+  if b == 0x80'u8:
+    result.err(errors.IndefiniteError)
+    return
+  if b == 0xFF'u8:
+    result.err(errors.IncorrectError)
+    return
+  let octets = cast[uint64](b and 0x7F'u8)
+  if octets > 8'u64:
+    result.err(errors.OverflowError)
+    return
 
-proc read*(ab: var Asn1Buffer, field: var Asn1Field): Asn1Status =
+  var length = 0'u64
+  if not ab.isEnough(int(octets)):
+    result.err(errors.IncompleteError)
+    return
+
+  for i in 0..<int(octets):
+    length = (length shl 8) or cast[uint64](ab.buffer[ab.offset + i + 1])
+  ab.offset = ab.offset + int(octets) + 1
+  result.ok(length)
+
+# proc getTag(ab: var Asn1Buffer, tag: var int,
+#             klass: var Asn1Class): Asn1Status =
+#   ## Decode tag part of ASN.1 TLV triplet.
+#   result = Asn1Status.Incomplete
+#   if not ab.isEmpty():
+#     let b = ab.buffer[ab.offset]
+#     var c = int((b and 0xC0'u8) shr 6)
+#     if c >= 0 and c < 4:
+#       klass = cast[Asn1Class](c)
+#     else:
+#       return Asn1Status.Incorrect
+#     tag = int(b and 0x3F)
+#     ab.offset += 1
+#     result = Asn1Status.Success
+
+proc getTag(ab: var Asn1Buffer): Result[Asn1TagClass, errors.Error] =
+  ## Decode tag part of ASN.1 TLV triplet.
+  if ab.isEmpty():
+    result.err(errors.IncompleteError)
+    return
+
+  var klass: Asn1Class
+  var tag: int
+  let b = ab.buffer[ab.offset]
+  var c = int((b and 0xC0'u8) shr 6)
+  if c >= 0 and c < 4:
+    klass = cast[Asn1Class](c)
+  else:
+    result.err(errors.IncorrectError)
+    return
+  tag = int(b and 0x3F)
+  ab.offset += 1
+  result.ok(Asn1TagClass(tag: tag, klass: klass))
+
+proc read*(ab: var Asn1Buffer): Result[Asn1Field, errors.Error] =
   ## Decode value part of ASN.1 TLV triplet.
   var
-    tag, ttag, offset: int
+    ttag, offset: int
     length, tlength: uint64
-    klass: Asn1Class
-    res: Asn1Status
     inclass: bool
+    field: Asn1Field
 
   inclass = false
   while true:
     offset = ab.offset
-    result = ab.getTag(tag, klass)
-    if result != Asn1Status.Success:
+    let r0 = ab.getTag()
+    if r0.isErr:
+      result.err(r0.error)
       break
+
+    var klass = r0.value.klass
+    var tag = r0.value.tag
 
     if klass == Asn1Class.ContextSpecific:
       if inclass:
-        result = Asn1Status.Incorrect
+        result.err(errors.IncorrectError)
         break
       inclass = true
       ttag = tag
-      result = ab.getLength(tlength)
-      if result != Asn1Status.Success:
+      let r1 = ab.getLength()
+      if r1.isErr:
+        result.err(r1.error)
         break
+      tlength = r1.value
 
     elif klass == Asn1Class.Universal:
-      result = ab.getLength(length)
-      if result != Asn1Status.Success:
+      let r1 = ab.getLength()
+      if r1.isErr:
+        result.err(r1.error)
         break
-
       if inclass:
-        if length >= tlength:
-          result = Asn1Status.Incorrect
+        if r1.value >= tlength:
+          result.err(errors.IncorrectError)
           break
+
+      length = r1.value
 
       if cast[byte](tag) == Asn1Tag.Boolean.code():
         # BOOLEAN
         if length != 1:
-          result = Asn1Status.Incorrect
+          result.err(errors.IncorrectError)
           break
         if not ab.isEnough(cast[int](length)):
-          result = Asn1Status.Incomplete
+          result.err(errors.IncompleteError)
           break
         let b = ab.buffer[ab.offset]
         if b != 0xFF'u8 and b != 0x00'u8:
-          result = Asn1Status.Incorrect
+          result.err(errors.IncorrectError)
           break
         field = Asn1Field(kind: Asn1Tag.Boolean, klass: klass,
                           index: ttag, offset: cast[int](ab.offset),
@@ -520,12 +585,12 @@ proc read*(ab: var Asn1Buffer, field: var Asn1Field): Asn1Status =
         shallowCopy(field.buffer, ab.buffer)
         field.vbool = (b == 0xFF'u8)
         ab.offset += 1
-        result = Asn1Status.Success
+        result.ok(field)
         break
       elif cast[byte](tag) == Asn1Tag.Integer.code():
         # INTEGER
         if not ab.isEnough(cast[int](length)):
-          result = Asn1Status.Incomplete
+          result.err(errors.IncompleteError)
           break
         if ab.buffer[ab.offset] == 0x00'u8:
           length -= 1
@@ -537,14 +602,14 @@ proc read*(ab: var Asn1Buffer, field: var Asn1Field): Asn1Status =
         if length <= 8:
           for i in 0..<int(length):
             field.vint = (field.vint shl 8) or
-                         cast[uint64](ab.buffer[ab.offset + i])
+                          cast[uint64](ab.buffer[ab.offset + i])
         ab.offset += cast[int](length)
-        result = Asn1Status.Success
+        result.ok(field)
         break
       elif cast[byte](tag) == Asn1Tag.BitString.code():
         # BIT STRING
         if not ab.isEnough(cast[int](length)):
-          result = Asn1Status.Incomplete
+          result.err(errors.IncompleteError)
           break
         field = Asn1Field(kind: Asn1Tag.BitString, klass: klass,
                           index: ttag, offset: cast[int](ab.offset + 1),
@@ -552,64 +617,209 @@ proc read*(ab: var Asn1Buffer, field: var Asn1Field): Asn1Status =
         shallowCopy(field.buffer, ab.buffer)
         field.ubits = cast[int](((length - 1) shl 3) - ab.buffer[ab.offset])
         ab.offset += cast[int](length)
-        result = Asn1Status.Success
+        result.ok(field)
         break
       elif cast[byte](tag) == Asn1Tag.OctetString.code():
         # OCT STRING
         if not ab.isEnough(cast[int](length)):
-          result = Asn1Status.Incomplete
+          result.err(errors.IncompleteError)
           break
         field = Asn1Field(kind: Asn1Tag.OctetString, klass: klass,
                           index: ttag, offset: cast[int](ab.offset),
                           length: cast[int](length))
         shallowCopy(field.buffer, ab.buffer)
         ab.offset += cast[int](length)
-        result = Asn1Status.Success
+        result.ok(field)
         break
       elif cast[byte](tag) == Asn1Tag.Null.code():
         # NULL
         if length != 0:
-          result = Asn1Status.Incorrect
+          result.err(errors.IncorrectError)
           break
         field = Asn1Field(kind: Asn1Tag.Null, klass: klass,
                           index: ttag, offset: cast[int](ab.offset),
                           length: 0)
         shallowCopy(field.buffer, ab.buffer)
         ab.offset += cast[int](length)
-        result = Asn1Status.Success
+        result.ok(field)
         break
       elif cast[byte](tag) == Asn1Tag.Oid.code():
         # OID
         if not ab.isEnough(cast[int](length)):
-          result = Asn1Status.Incomplete
+          result.err(errors.IncompleteError)
           break
         field = Asn1Field(kind: Asn1Tag.Oid, klass: klass,
                           index: ttag, offset: cast[int](ab.offset),
                           length: cast[int](length))
         shallowCopy(field.buffer, ab.buffer)
         ab.offset += cast[int](length)
-        result = Asn1Status.Success
+        result.ok(field)
         break
       elif cast[byte](tag) == Asn1Tag.Sequence.code():
         # SEQUENCE
         if not ab.isEnough(cast[int](length)):
-          result = Asn1Status.Incomplete
+          result.err(errors.IncompleteError)
           break
         field = Asn1Field(kind: Asn1Tag.Sequence, klass: klass,
                           index: ttag, offset: cast[int](ab.offset),
                           length: cast[int](length))
         shallowCopy(field.buffer, ab.buffer)
         ab.offset += cast[int](length)
-        result = Asn1Status.Success
+        result.ok(field)
         break
       else:
-        result = Asn1Status.NoSupport
+        result.err(errors.NoSupportError)
         break
       inclass = false
       ttag = 0
     else:
-      result = Asn1Status.NoSupport
+      result.err(errors.NoSupportError)
       break
+
+# proc read*(ab: var Asn1Buffer, field: var Asn1Field): Asn1Status =
+#   ## Decode value part of ASN.1 TLV triplet.
+#   var
+#     tag, ttag, offset: int
+#     length, tlength: uint64
+#     klass: Asn1Class
+#     res: Asn1Status
+#     inclass: bool
+
+#   inclass = false
+#   while true:
+#     offset = ab.offset
+#     result = ab.getTag(tag, klass)
+#     if result != Asn1Status.Success:
+#       break
+
+#     if klass == Asn1Class.ContextSpecific:
+#       if inclass:
+#         result = Asn1Status.Incorrect
+#         break
+#       inclass = true
+#       ttag = tag
+#       result = ab.getLength(tlength)
+#       if result != Asn1Status.Success:
+#         break
+
+#     elif klass == Asn1Class.Universal:
+#       result = ab.getLength(length)
+#       if result != Asn1Status.Success:
+#         break
+
+#       if inclass:
+#         if length >= tlength:
+#           result = Asn1Status.Incorrect
+#           break
+
+#       if cast[byte](tag) == Asn1Tag.Boolean.code():
+#         # BOOLEAN
+#         if length != 1:
+#           result = Asn1Status.Incorrect
+#           break
+#         if not ab.isEnough(cast[int](length)):
+#           result = Asn1Status.Incomplete
+#           break
+#         let b = ab.buffer[ab.offset]
+#         if b != 0xFF'u8 and b != 0x00'u8:
+#           result = Asn1Status.Incorrect
+#           break
+#         field = Asn1Field(kind: Asn1Tag.Boolean, klass: klass,
+#                           index: ttag, offset: cast[int](ab.offset),
+#                           length: 1)
+#         shallowCopy(field.buffer, ab.buffer)
+#         field.vbool = (b == 0xFF'u8)
+#         ab.offset += 1
+#         result = Asn1Status.Success
+#         break
+#       elif cast[byte](tag) == Asn1Tag.Integer.code():
+#         # INTEGER
+#         if not ab.isEnough(cast[int](length)):
+#           result = Asn1Status.Incomplete
+#           break
+#         if ab.buffer[ab.offset] == 0x00'u8:
+#           length -= 1
+#           ab.offset += 1
+#         field = Asn1Field(kind: Asn1Tag.Integer, klass: klass,
+#                           index: ttag, offset: cast[int](ab.offset),
+#                           length: cast[int](length))
+#         shallowCopy(field.buffer, ab.buffer)
+#         if length <= 8:
+#           for i in 0..<int(length):
+#             field.vint = (field.vint shl 8) or
+#                          cast[uint64](ab.buffer[ab.offset + i])
+#         ab.offset += cast[int](length)
+#         result = Asn1Status.Success
+#         break
+#       elif cast[byte](tag) == Asn1Tag.BitString.code():
+#         # BIT STRING
+#         if not ab.isEnough(cast[int](length)):
+#           result = Asn1Status.Incomplete
+#           break
+#         field = Asn1Field(kind: Asn1Tag.BitString, klass: klass,
+#                           index: ttag, offset: cast[int](ab.offset + 1),
+#                           length: cast[int](length - 1))
+#         shallowCopy(field.buffer, ab.buffer)
+#         field.ubits = cast[int](((length - 1) shl 3) - ab.buffer[ab.offset])
+#         ab.offset += cast[int](length)
+#         result = Asn1Status.Success
+#         break
+#       elif cast[byte](tag) == Asn1Tag.OctetString.code():
+#         # OCT STRING
+#         if not ab.isEnough(cast[int](length)):
+#           result = Asn1Status.Incomplete
+#           break
+#         field = Asn1Field(kind: Asn1Tag.OctetString, klass: klass,
+#                           index: ttag, offset: cast[int](ab.offset),
+#                           length: cast[int](length))
+#         shallowCopy(field.buffer, ab.buffer)
+#         ab.offset += cast[int](length)
+#         result = Asn1Status.Success
+#         break
+#       elif cast[byte](tag) == Asn1Tag.Null.code():
+#         # NULL
+#         if length != 0:
+#           result = Asn1Status.Incorrect
+#           break
+#         field = Asn1Field(kind: Asn1Tag.Null, klass: klass,
+#                           index: ttag, offset: cast[int](ab.offset),
+#                           length: 0)
+#         shallowCopy(field.buffer, ab.buffer)
+#         ab.offset += cast[int](length)
+#         result = Asn1Status.Success
+#         break
+#       elif cast[byte](tag) == Asn1Tag.Oid.code():
+#         # OID
+#         if not ab.isEnough(cast[int](length)):
+#           result = Asn1Status.Incomplete
+#           break
+#         field = Asn1Field(kind: Asn1Tag.Oid, klass: klass,
+#                           index: ttag, offset: cast[int](ab.offset),
+#                           length: cast[int](length))
+#         shallowCopy(field.buffer, ab.buffer)
+#         ab.offset += cast[int](length)
+#         result = Asn1Status.Success
+#         break
+#       elif cast[byte](tag) == Asn1Tag.Sequence.code():
+#         # SEQUENCE
+#         if not ab.isEnough(cast[int](length)):
+#           result = Asn1Status.Incomplete
+#           break
+#         field = Asn1Field(kind: Asn1Tag.Sequence, klass: klass,
+#                           index: ttag, offset: cast[int](ab.offset),
+#                           length: cast[int](length))
+#         shallowCopy(field.buffer, ab.buffer)
+#         ab.offset += cast[int](length)
+#         result = Asn1Status.Success
+#         break
+#       else:
+#         result = Asn1Status.NoSupport
+#         break
+#       inclass = false
+#       ttag = 0
+#     else:
+#       result = Asn1Status.NoSupport
+#       break
 
 proc getBuffer*(field: Asn1Field): Asn1Buffer =
   ## Return ``field`` as Asn1Buffer to enter composite types.
@@ -694,7 +904,7 @@ proc write*[T: Asn1Buffer|Asn1Composite](abc: var T, tag: Asn1Tag) =
   ## This procedure must be used to write `NULL`, `0` or empty `BIT STRING`,
   ## `OCTET STRING` types.
   doAssert(tag in {Asn1Tag.Null, Asn1Tag.Integer, Asn1Tag.BitString,
-                 Asn1Tag.OctetString})
+                   Asn1Tag.OctetString})
   var length: int
   if tag == Asn1Tag.Null:
     length = asn1EncodeNull(abc.toOpenArray())
