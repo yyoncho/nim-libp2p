@@ -141,6 +141,15 @@ template getPublicKeyLength*(curve: EcCurveKind): int =
   of Secp521r1:
     PubKey521Length
 
+template getPrivateKeyLength*(curve: EcCurveKind): int =
+  case curve
+  of Secp256r1:
+    SecKey256Length
+  of Secp384r1:
+    SecKey384Length
+  of Secp521r1:
+    SecKey521Length
+
 proc copy*[T: EcPKI](dst: var T, src: T): bool =
   ## Copy EC `private key`, `public key` or `signature` ``src`` to ``dst``.
   ##
@@ -282,6 +291,38 @@ proc `$`*(sig: EcSignature): string =
   ## Return hexadecimal string representation of EC signature.
   result = toHex(sig.buffer)
 
+proc toRawBytes*(seckey: EcPrivateKey, data: var openarray[byte]): int =
+  ## Serialize EC private key ``seckey`` to raw binary form and store it
+  ## to ``data``.
+  ##
+  ## Returns number of bytes (octets) needed to store EC private key, or `0`
+  ## if private key is not in supported curve.
+  if seckey.key.curve in EcSupportedCurvesCint:
+    result = getPrivateKeyLength(cast[EcCurveKind](seckey.key.curve))
+    if len(data) >= result:
+      copyMem(addr data[0], unsafeAddr seckey.buffer[0], result)
+
+proc toRawBytes*(pubkey: EcPublicKey, data: var openarray[byte]): int =
+  ## Serialize EC public key ``pubkey`` to uncompressed form specified in
+  ## section 4.3.6 of ANSI X9.62.
+  ##
+  ## Returns number of bytes (octets) needed to store EC public key, or `0`
+  ## if public key is not in supported curve.
+  if pubkey.key.curve in EcSupportedCurvesCint:
+    result = getPublicKeyLength(cast[EcCurveKind](pubkey.key.curve))
+    if len(data) >= result:
+      copyMem(addr data[0], unsafeAddr pubkey.buffer[0], result)
+
+proc toRawBytes*(sig: EcSignature, data: var openarray[byte]): int =
+  ## Serialize EC signature ``sig`` to raw binary form and store it to ``data``.
+  ##
+  ## Returns number of bytes (octets) needed to store EC signature, or `0`
+  ## if signature is not in supported curve.
+  result = len(sig.buffer)
+  if len(data) >= len(sig.buffer):
+    if len(sig.buffer) > 0:
+      copyMem(addr data[0], unsafeAddr sig.buffer[0], len(sig.buffer))
+
 proc toBytes*(seckey: EcPrivateKey, data: var openarray[byte]): int =
   ## Serialize EC private key ``seckey`` to ASN.1 DER binary form and store it
   ## to ``data``.
@@ -383,6 +424,33 @@ proc getBytes*(pubkey: EcPublicKey): seq[byte] =
 
 proc getBytes*(sig: EcSignature): seq[byte] =
   ## Serialize EC signature ``sig`` to ASN.1 DER binary form and return it.
+  result = newSeq[byte]()
+  let length = sig.toBytes(result)
+  result.setLen(length)
+  discard sig.toBytes(result)
+
+proc getRawBytes*(seckey: EcPrivateKey): seq[byte] =
+  ## Serialize EC private key ``seckey`` to raw binary form and return it.
+  if seckey.key.curve in EcSupportedCurvesCint:
+    result = newSeq[byte]()
+    let length = seckey.toRawBytes(result)
+    result.setLen(length)
+    discard seckey.toRawBytes(result)
+  else:
+    raise newException(EcKeyIncorrectError, "Incorrect private key")
+
+proc getRawBytes*(pubkey: EcPublicKey): seq[byte] =
+  ## Serialize EC public key ``pubkey`` to raw binary form and return it.
+  if pubkey.key.curve in EcSupportedCurvesCint:
+    result = newSeq[byte]()
+    let length = pubkey.toRawBytes(result)
+    result.setLen(length)
+    discard pubkey.toRawBytes(result)
+  else:
+    raise newException(EcKeyIncorrectError, "Incorrect public key")
+
+proc getRawBytes*(sig: EcSignature): seq[byte] =
+  ## Serialize EC signature ``sig`` to raw binary form and return it.
   result = newSeq[byte]()
   let length = sig.toBytes(result)
   result.setLen(length)
