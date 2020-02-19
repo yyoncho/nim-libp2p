@@ -106,3 +106,49 @@ suite "Switch":
 
     check:
       waitFor(testSwitch()) == true
+
+  test "e2e use switch nested dial":
+    proc testSwitch(): Future[bool] {.async, gcsafe.} =
+      let ma1: MultiAddress = Multiaddress.init("/ip4/0.0.0.0/tcp/0")
+      let ma2: MultiAddress = Multiaddress.init("/ip4/0.0.0.0/tcp/0")
+
+      var peerInfo1, peerInfo2: PeerInfo
+      var switch1, switch2: Switch
+      (switch1, peerInfo1) = createSwitch(ma1)
+      var awaiters: seq[Future[void]]
+      awaiters.add(await switch1.start())
+
+      (switch2, peerInfo2) = createSwitch(ma2)
+      awaiters.add(await switch2.start())
+
+      var proto1 = new LPProtocol
+      proto1.codec = "/proto/1"
+      var awaiter = newFuture[void]()
+      proc handler1(conn: Connection, proto: string) {.async, gcsafe.} =
+        var nested = await switch1.dial(switch2.peerInfo, "/proto/2")
+        await nested.writeLp("proto 1")
+        check cast[string](await nested.readLp()) == "proto 2"
+        await nested.close()
+        awaiter.complete()
+
+      proto1.handler = handler1
+      switch1.mount(proto1)
+
+      var proto2 = new LPProtocol
+      proto2.codec = "/proto/2"
+      proc handler2(conn: Connection, proto: string) {.async, gcsafe.} =
+        check cast[string](await conn.readLp()) == "proto 1"
+        await conn.writeLp("proto 2")
+        await conn.close()
+
+      proto2.handler = handler2
+      switch2.mount(proto2)
+
+      discard await switch1.dial(switch1.peerInfo, "/proto/1")
+      await awaiter
+      discard allFutures(switch1.stop(), switch2.stop())
+      await allFutures(awaiters)
+      result = true
+
+    check:
+      waitFor(testSwitch()) == true

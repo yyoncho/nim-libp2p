@@ -175,19 +175,43 @@ proc upgradeOutgoing(s: Switch, conn: Connection): Future[Connection] {.async, g
     return
 
   await s.mux(result) # mux it if possible
-  s.connections[conn.peerInfo.id] = result
+  if result.peerInfo.id notin s.connections:
+    s.connections[result.peerInfo.id] = result
 
 proc upgradeIncoming(s: Switch, conn: Connection) {.async, gcsafe.} =
+  ## Upgrade incoming connections, this roughly looks like:
+  ## - First, register all the secure handlers and await for
+  ## a secure request
+  ##
+  ## - Next, when a secure request arrives, handle it in the
+  ## catch all ``securedHandler`` handler
+  ##
+  ## - Lastly, register muxers and handler subsequent muxer
+  ## requests
+  ##
   trace "upgrading incoming connection"
   let ms = newMultistream()
 
   # secure incoming connections
-  proc securedHandler (conn: Connection,
-                       proto: string)
+  proc securedHandler (conn: Connection, proto: string)
                        {.async, gcsafe, closure.} =
+    ## generic handler for secure managers
     trace "Securing connection"
+
+    # get the secure handler for the proto
     let secure = s.secureManagers[proto]
     let sconn = await secure.secure(conn)
+
+    # if the connection has been already
+    # established while negotiating this
+    # one we drop it
+    if sconn.peerInfo.id in s.connections:
+      await sconn.close()
+      return
+
+    s.connections[sconn.peerInfo.id] = sconn
+
+    # if securing succedded, handle muxer requests
     if not isNil(sconn):
       # add the muxer
       for muxer in s.muxers.values:
@@ -197,7 +221,8 @@ proc upgradeIncoming(s: Switch, conn: Connection) {.async, gcsafe.} =
     await ms.handle(sconn)
 
   if (await ms.select(conn)): # just handshake
-    # add the secure handlers
+    # register all the secure managers to be
+    # handled by the catch all ``securedHandler``
     for k in s.secureManagers.keys:
       ms.addHandler(k, securedHandler)
 
@@ -217,8 +242,17 @@ proc dial*(s: Switch,
         if t.handles(a):   # check if it can dial it
           trace "Dialing address", address = $a
           conn = await t.dial(a)
+
+          # avoid raicing with incoming connections
+          if peer.id in s.connections:
+            if not isNil(conn) and not conn.closed():
+              await conn.close()
+            conn = s.connections[peer.id]
+
           # make sure to assign the peer to the connection
-          conn.peerInfo = peer
+          if isNil(conn.peerInfo):
+            conn.peerInfo = peer
+
           conn = await s.upgradeOutgoing(conn)
           if isNil(conn):
             continue
@@ -234,7 +268,8 @@ proc dial*(s: Switch,
     raise newException(CatchableError, "Unable to establish outgoing link")
 
   if proto.len > 0 and not conn.closed:
-    let stream = await s.getMuxedStream(peer)
+    result = conn
+    var stream = await s.getMuxedStream(peer)
     if not isNil(stream):
       trace "Connection is muxed, return muxed stream"
       result = stream
