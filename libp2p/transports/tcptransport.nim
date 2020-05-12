@@ -41,8 +41,8 @@ proc getTcpTransportTracker(): TcpTransportTracker {.gcsafe.} =
 
 proc dumpTracking(): string {.gcsafe.} =
   var tracker = getTcpTransportTracker()
-  result = "Opened transports: " & $tracker.opened & "\n" &
-           "Closed transports: " & $tracker.closed
+  result = "Opened TCP transports: " & $tracker.opened & "\n" &
+           "Closed TCP transports: " & $tracker.closed
 
 proc leakTransport(): bool {.gcsafe.} =
   var tracker = getTcpTransportTracker()
@@ -58,27 +58,26 @@ proc setupTcpTransportTracker(): TcpTransportTracker =
 
 proc cleanup(t: Transport, conn: Connection) {.async.} =
   await conn.closeEvent.wait()
-  trace "connection cleanup event wait ended"
+  trace "TCP connection cleanup event wait ended"
   t.connections.keepItIf(it != conn)
 
 proc connHandler*(t: TcpTransport,
                   client: StreamTransport,
                   initiator: bool): Connection =
-  trace "handling connection for", address = $client.remoteAddress
+  trace "Handling TCP connection", address = $client.remoteAddress
   let conn: Connection = newConnection(newChronosStream(client))
   conn.observedAddrs = MultiAddress.init(client.remoteAddress)
   if not initiator:
     if not isNil(t.handler):
-      t.handlers &= t.handler(conn)
-
+      t.handlers.add(t.handler(conn))
     t.connections.add(conn)
-    t.cleanups &= t.cleanup(conn)
+    t.cleanups.add(t.cleanup(conn))
 
   result = conn
 
 proc connCb(server: StreamServer,
             client: StreamTransport) {.async, gcsafe.} =
-  trace "incomming connection for", address = $client.remoteAddress
+  trace "Incomming TCP connection", address = $client.remoteAddress
   let t = cast[TcpTransport](server.udata)
   # we don't need result connection in this case
   # as it's added inside connHandler
@@ -91,7 +90,7 @@ method init*(t: TcpTransport) =
 
 method close*(t: TcpTransport) {.async, gcsafe.} =
   ## start the transport
-  trace "stopping transport"
+  trace "Stopping TCP transport"
   await procCall Transport(t).close() # call base
 
   # server can be nil
@@ -106,16 +105,16 @@ method close*(t: TcpTransport) {.async, gcsafe.} =
       fut.cancel()
   t.handlers = await allFinished(t.handlers)
   checkFutures(t.handlers)
-  t.handlers = @[]
+  t.handlers.setLen(0)
 
   for fut in t.cleanups:
     if not fut.finished:
       fut.cancel()
   t.cleanups = await allFinished(t.cleanups)
   checkFutures(t.cleanups)
-  t.cleanups = @[]
+  t.cleanups.setLen(0)
 
-  trace "transport stopped"
+  trace "TCP transport stopped"
 
   inc getTcpTransportTracker().closed
 
@@ -126,22 +125,25 @@ method listen*(t: TcpTransport,
   discard await procCall Transport(t).listen(ma, handler) # call base
 
   ## listen on the transport
-  t.server = createStreamServer(t.ma, connCb, transportFlagsToServerFlags(t.flags), t)
+  t.server = createStreamServer(t.ma, connCb,
+                                transportFlagsToServerFlags(t.flags), t)
   t.server.start()
 
-  # always get the resolved address in case we're bound to 0.0.0.0:0
-  t.ma = MultiAddress.init(t.server.sock.getLocalAddress())
+  # TODO: In case of 0.0.0.0:0 this address would be 0.0.0.0:PORT,
+  # but not real interface address. We need to get interface addresses and
+  # add it to transport addresses.
+  t.ma = MultiAddress.init(t.server.localAddress())
   result = t.server.join()
-  trace "started node on", address = t.ma
+  trace "Started TCP node", address = t.ma
 
 method dial*(t: TcpTransport,
              address: MultiAddress):
              Future[Connection] {.async, gcsafe.} =
-  trace "dialing remote peer", address = $address
+  trace "Dialing remote peer using TCP transport", address = $address
   ## dial a peer
   let client: StreamTransport = await connect(address)
   result = t.connHandler(client, true)
 
 method handles*(t: TcpTransport, address: MultiAddress): bool {.gcsafe.} =
   if procCall Transport(t).handles(address):
-    result = address.protocols.filterIt( it == multiCodec("tcp") ).len > 0
+    result = TCP.matchPartial(address)
