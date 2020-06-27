@@ -37,12 +37,6 @@ type
     handlers*: seq[HandlerHolder]
     codec*: string
 
-  MultistreamHandshakeException* = object of CatchableError
-
-proc newMultistreamHandshakeException*(): ref CatchableError {.inline.} =
-  result = newException(MultistreamHandshakeException,
-    "could not perform multistream handshake")
-
 proc newMultistream*(): MultistreamSelect =
   new result
   result.codec = MSCodec
@@ -51,44 +45,51 @@ proc select*(m: MultistreamSelect,
              conn: Connection,
              proto: seq[string]):
              Future[string] {.async.} =
-  trace "initiating handshake", codec = m.codec
-  ## select a remote protocol
-  await conn.write(m.codec) # write handshake
-  if proto.len() > 0:
-    trace "selecting proto", proto = proto[0]
-    await conn.writeLp((proto[0] & "\n")) # select proto
+  try:
+    trace "initiating handshake", codec = m.codec
+    ## select a remote protocol
+    await conn.write(m.codec) # write handshake
+    if proto.len() > 0:
+      trace "selecting proto", proto = proto[0]
+      await conn.writeLp((proto[0] & "\n")) # select proto
 
-  var s = string.fromBytes((await conn.readLp(1024))) # read ms header
-  s.removeSuffix("\n")
-  if s != Codec:
-    notice "handshake failed", codec = s.toHex()
-    raise newMultistreamHandshakeException()
-
-  if proto.len() == 0: # no protocols, must be a handshake call
-    return Codec
-  else:
-    s = string.fromBytes(await conn.readLp(1024)) # read the first proto
-    trace "reading first requested proto"
+    var s = string.fromBytes((await conn.readLp(1024))) # read ms header
     s.removeSuffix("\n")
-    if s == proto[0]:
-      trace "successfully selected ", proto = proto[0]
-      return proto[0]
-    elif proto.len > 1:
-      # Try to negotiate alternatives
-      let protos = proto[1..<proto.len()]
-      trace "selecting one of several protos", protos = protos
-      for p in protos:
-        trace "selecting proto", proto = p
-        await conn.writeLp((p & "\n")) # select proto
-        s = string.fromBytes(await conn.readLp(1024)) # read the first proto
-        s.removeSuffix("\n")
-        if s == p:
-          trace "selected protocol", protocol = s
-          return s
+    if s != Codec:
+      notice "handshake failed", codec = s.toHex()
       return ""
+
+    if proto.len() == 0: # no protocols, must be a handshake call
+      return Codec
     else:
-      # No alternatives, fail
-      return ""
+      s = string.fromBytes(await conn.readLp(1024)) # read the first proto
+      trace "reading first requested proto"
+      s.removeSuffix("\n")
+      if s == proto[0]:
+        trace "successfully selected ", proto = proto[0]
+        return proto[0]
+      elif proto.len > 1:
+        # Try to negotiate alternatives
+        let protos = proto[1..<proto.len()]
+        trace "selecting one of several protos", protos = protos
+        for p in protos:
+          trace "selecting proto", proto = p
+          await conn.writeLp((p & "\n")) # select proto
+          s = string.fromBytes(await conn.readLp(1024)) # read the first proto
+          s.removeSuffix("\n")
+          if s == p:
+            trace "selected protocol", protocol = s
+            return s
+        return ""
+      else:
+        # No alternatives, fail
+        return ""
+  except CancelledError:
+    raise
+  except CatchableError as exc:
+    trace "exception in select", exc = exc.msg
+    await conn.close()
+    result = ""
 
 proc select*(m: MultistreamSelect,
              conn: Connection,
@@ -152,8 +153,11 @@ proc handle*(m: MultistreamSelect, conn: Connection) {.async, gcsafe.} =
               return
           debug "no handlers for ", protocol = ms
           await conn.write(Na)
+  except CancelledError:
+    raise
   except CatchableError as exc:
     trace "exception in multistream", exc = exc.msg
+    await conn.close()
   finally:
     trace "leaving multistream loop"
 

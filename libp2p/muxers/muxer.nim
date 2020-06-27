@@ -63,6 +63,8 @@ method init(c: MuxerProvider) =
         futs &= c.muxerHandler(muxer)
 
       checkFutures(await allFinished(futs))
+    except CancelledError:
+      raise
     except CatchableError as exc:
       trace "exception in muxer handler", exc = exc.msg, peer = $conn, proto=proto
 

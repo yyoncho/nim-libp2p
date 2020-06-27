@@ -114,8 +114,7 @@ proc getPeer(p: PubSub,
              peerInfo: PeerInfo,
              proto: string): PubSubPeer =
   if peerInfo.id in p.peers:
-    result = p.peers[peerInfo.id]
-    return
+    return p.peers[peerInfo.id]
 
   # create new pubsub peer
   let peer = newPubSubPeer(peerInfo, proto)
@@ -127,11 +126,11 @@ proc getPeer(p: PubSub,
   p.peers[peer.id] = peer
   peer.refs.inc # increment reference count
   peer.observers = p.observers
-  result = peer
+  return peer
 
 proc internalCleanup(p: PubSub, conn: Connection) {.async.} =
   # handle connection close
-  if conn.closed:
+  if isNil(conn):
     return
 
   var peer = p.getPeer(conn.peerInfo, p.codec)
@@ -163,6 +162,7 @@ method handleConn*(p: PubSub,
       # call pubsub rpc handler
       await p.rpcHandler(peer, msgs)
 
+    asyncCheck p.internalCleanup(conn)
     let peer = p.getPeer(conn.peerInfo, proto)
     let topics = toSeq(p.topics.keys)
     if topics.len > 0:
@@ -171,18 +171,27 @@ method handleConn*(p: PubSub,
     peer.handler = handler
     await peer.handle(conn) # spawn peer read loop
     trace "pubsub peer handler ended, cleaning up"
-    await p.internalCleanup(conn)
+  except CancelledError as exc:
+    await conn.close()
+    raise exc
   except CatchableError as exc:
     trace "exception ocurred in pubsub handle", exc = exc.msg
+    await conn.close()
 
 method subscribeToPeer*(p: PubSub,
                         conn: Connection) {.base, async.} =
-  var peer = p.getPeer(conn.peerInfo, p.codec)
-  trace "setting connection for peer", peerId = conn.peerInfo.id
-  if not peer.isConnected:
-    peer.conn = conn
+  if not(isNil(conn)):
+    let peer = p.getPeer(conn.peerInfo, p.codec)
+    trace "setting connection for peer", peerId = conn.peerInfo.id
+    if not peer.connected:
+      peer.conn = conn
 
-  asyncCheck p.internalCleanup(conn)
+    asyncCheck p.internalCleanup(conn)
+
+proc connected*(p: PubSub, peer: PeerInfo): bool =
+  let peer = p.getPeer(peer, p.codec)
+  if not(isNil(peer)):
+    return peer.connected
 
 method unsubscribe*(p: PubSub,
                     topics: seq[TopicPair]) {.base, async.} =
@@ -300,7 +309,8 @@ proc newPubSub*(P: typedesc[PubSub],
              cleanupLock: newAsyncLock())
   result.initPubSub()
 
-proc addObserver*(p: PubSub; observer: PubSubObserver) = p.observers[] &= observer
+proc addObserver*(p: PubSub; observer: PubSubObserver) =
+  p.observers[] &= observer
 
 proc removeObserver*(p: PubSub; observer: PubSubObserver) =
   let idx = p.observers[].find(observer)

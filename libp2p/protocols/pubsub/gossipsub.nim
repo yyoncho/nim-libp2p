@@ -53,7 +53,7 @@ type
     gossip*: Table[string, seq[ControlIHave]]  # pending gossip
     control*: Table[string, ControlMessage]    # pending control messages
     mcache*: MCache                            # messages cache
-    heartbeatFut: Future[void]             # cancellation future for heartbeat interval
+    heartbeatFut: Future[void]                 # cancellation future for heartbeat interval
     heartbeatRunning: bool
     heartbeatLock: AsyncLock                   # heartbeat lock to prevent two consecutive concurrent heartbeats
 
@@ -160,6 +160,8 @@ proc rebalanceMesh(g: GossipSub, topic: string) {.async.} =
 
     trace "mesh balanced, got peers", peers = g.mesh.getOrDefault(topic).len,
                                       topicId = topic
+  except CancelledError:
+    raise
   except CatchableError as exc:
     trace "exception occurred re-balancing mesh", exc = exc.msg
 
@@ -228,12 +230,10 @@ proc heartbeat(g: GossipSub) {.async.} =
       checkFutures(await allFinished(sent))
 
       g.mcache.shift() # shift the cache
+    except CancelledError:
+      raise
     except CatchableError as exc:
       trace "exception ocurred in gossipsub heartbeat", exc = exc.msg
-      # sleep less in the case of an error
-      # but still throttle
-      await sleepAsync(100.millis)
-      continue
 
     await sleepAsync(1.seconds)
 
@@ -499,10 +499,10 @@ method publish*(g: GossipSub,
 
 method start*(g: GossipSub) {.async.} =
   debug "gossipsub start"
-  
+
   ## start pubsub
   ## start long running/repeating procedures
-  
+
   # interlock start to to avoid overlapping to stops
   await g.heartbeatLock.acquire()
 
@@ -514,7 +514,7 @@ method start*(g: GossipSub) {.async.} =
 
 method stop*(g: GossipSub) {.async.} =
   debug "gossipsub stop"
-  
+
   ## stop pubsub
   ## stop long running tasks
 

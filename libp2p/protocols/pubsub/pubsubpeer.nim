@@ -47,8 +47,8 @@ type
 
 proc id*(p: PubSubPeer): string = p.peerInfo.id
 
-proc isConnected*(p: PubSubPeer): bool =
-  (not isNil(p.sendConn))
+proc connected*(p: PubSubPeer): bool =
+  not(isNil(p.sendConn))
 
 proc `conn=`*(p: PubSubPeer, conn: Connection) =
   if not(isNil(conn)):
@@ -100,8 +100,12 @@ proc handle*(p: PubSubPeer, conn: Connection) {.async.} =
       trace "exiting pubsub peer read loop", peer = p.id
       await conn.close()
 
+  except CancelledError as exc:
+    await conn.close()
+    raise exc
   except CatchableError as exc:
     trace "Exception occurred in PubSubPeer.handle", exc = exc.msg
+    await conn.close()
 
 proc send*(p: PubSubPeer, msgs: seq[RPCMsg]) {.async.} =
   for m in msgs.items:
@@ -127,7 +131,7 @@ proc send*(p: PubSubPeer, msgs: seq[RPCMsg]) {.async.} =
         trace "about to send message", peer = p.id,
                                        encoded = digest
         await p.onConnect.wait()
-        if p.isConnected: # this can happen if the remote disconnected
+        if p.connected: # this can happen if the remote disconnected
           trace "sending encoded msgs to peer", peer = p.id,
                                                 encoded = encoded.buffer.shortLog
           await p.sendConn.writeLp(encoded.buffer)
@@ -141,8 +145,10 @@ proc send*(p: PubSubPeer, msgs: seq[RPCMsg]) {.async.} =
 
       except CatchableError as exc:
         trace "unable to send to remote", exc = exc.msg
-        p.sendConn = nil
-        p.onConnect.clear()
+        if not(isNil(p.sendConn)):
+          await p.sendConn.close()
+          p.sendConn = nil
+          p.onConnect.clear()
 
     # if no connection has been set,
     # queue messages until a connection
