@@ -39,6 +39,7 @@ method initStream*(s: ChronosStream) =
 
 proc init*(C: type ChronosStream,
            client: StreamTransport,
+           dir: Direction,
            timeout = DefaultChronosStreamTimeout): ChronosStream =
   result = C(client: client,
              timeout: timeout)

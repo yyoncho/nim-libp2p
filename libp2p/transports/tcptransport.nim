@@ -162,7 +162,7 @@ method close*(t: TcpTransport) {.async, gcsafe.} =
     await procCall Transport(t).close() # call base
 
     checkFutures(await allFinished(
-      toSeq(t.conns).mapIt(it.client.closeWait())))
+      toSeq(t.conns).mapIt(it.close())))
 
     # server can be nil
     if not isNil(t.server):
