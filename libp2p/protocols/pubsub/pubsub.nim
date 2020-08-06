@@ -63,7 +63,7 @@ type
 method handleDisconnect*(p: PubSub, peer: PubSubPeer) {.base.} =
   ## handle peer disconnects
   ##
-  
+
   if not(isNil(peer)) and peer.peerInfo notin p.conns:
     trace "deleting peer", peer = peer.id
     peer.onConnect.fire() # Make sure all pending sends are unblocked
@@ -76,7 +76,8 @@ method handleDisconnect*(p: PubSub, peer: PubSubPeer) {.base.} =
 proc onConnClose(p: PubSub, conn: Connection) {.async.} =
   try:
     let peer = conn.peerInfo
-    await conn.closeEvent.wait()
+    await conn.join()
+    trace "triggering onConnClose cleanup", peer = $conn
 
     if peer in p.conns:
       p.conns[peer].excl(conn)
@@ -115,7 +116,7 @@ method rpcHandler*(p: PubSub,
     trace "processing messages", msg = m.shortLog
     if m.subscriptions.len > 0:                    # if there are any subscriptions
       for s in m.subscriptions:                    # subscribe/unsubscribe the peer for each topic
-        trace "about to subscribe to topic", topicId = s.topic
+        trace "about to subscribe to topic", topicId = s.topic, peer = $peer
         await p.subscribeTopic(s.topic, s.subscribe, peer.id)
 
 proc getOrCreatePeer(p: PubSub,
@@ -282,10 +283,13 @@ proc publishHelper*(p: PubSub,
     let f = sent.filterIt(it.fut == s)
     if f.len > 0:
       if s.failed:
-        trace "sending messages to peer failed", peer = f[0].id
+        trace "sending messages to peer failed", peer = f[0].id,
+                                                 exc = f[0].fut.readError().msg,
+                                                 msgs = msgs
         failed.add(f[0].id)
       else:
-        trace "sending messages to peer succeeded", peer = f[0].id
+        trace "sending messages to peer succeeded", peer = f[0].id,
+                                                    msgs = msgs
         published.add(f[0].id)
 
   for f in failed:

@@ -15,6 +15,7 @@ import testmultibase,
        testpeer
 
 import testtransport,
+       testconnmngr,
        testmultistream,
        testbufferstream,
        testidentify,

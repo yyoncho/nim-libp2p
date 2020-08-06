@@ -83,6 +83,7 @@ proc closeMessage(s: LPChannel) {.async.} =
     name = s.name
     oid = $s.oid
     peer = $s.conn.peerInfo
+    closed = s.closed
     # stack = getStackTrace()
 
   ## send close message - this will not raise
@@ -99,6 +100,7 @@ proc resetMessage(s: LPChannel) {.async.} =
     name = s.name
     oid = $s.oid
     peer = $s.conn.peerInfo
+    closed = s.closed
     # stack = getStackTrace()
 
   ## send reset message - this will not raise
@@ -115,6 +117,7 @@ proc open*(s: LPChannel) {.async, gcsafe.} =
     name = s.name
     oid = $s.oid
     peer = $s.conn.peerInfo
+    closed = s.closed
     # stack = getStackTrace()
 
   ## NOTE: Don't call withExcAndLock or withWriteLock,
@@ -131,6 +134,7 @@ proc closeRemote*(s: LPChannel) {.async.} =
     name = s.name
     oid = $s.oid
     peer = $s.conn.peerInfo
+    closed = s.closed
     # stack = getStackTrace()
 
   trace "got EOF, closing channel"
@@ -163,6 +167,7 @@ method reset*(s: LPChannel) {.base, async, gcsafe.} =
     name = s.name
     oid = $s.oid
     peer = $s.conn.peerInfo
+    closed = s.closed
     # stack = getStackTrace()
 
   if s.closedLocal and s.isEof:
@@ -198,6 +203,7 @@ method close*(s: LPChannel) {.async, gcsafe.} =
     name = s.name
     oid = $s.oid
     peer = $s.conn.peerInfo
+    closed = s.closed
     # stack = getStackTrace()
 
   if s.closedLocal:
@@ -211,14 +217,13 @@ method close*(s: LPChannel) {.async, gcsafe.} =
       await s.closeMessage().wait(2.minutes)
       if s.atEof: # already closed by remote close parent buffer immediately
         await procCall BufferStream(s).close()
+        trace "lpchannel closed local"
     except CancelledError as exc:
       await s.reset()
       raise exc
     except CatchableError as exc:
       trace "exception closing channel", exc = exc.msg
       await s.reset()
-
-    trace "lpchannel closed local"
 
   s.closedLocal = true
   asyncCheck closeInternal()

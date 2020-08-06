@@ -248,24 +248,27 @@ method handleDisconnect*(g: GossipSub, peer: PubSubPeer) =
   ##
 
   procCall FloodSub(g).handleDisconnect(peer)
+  if not(isNil(peer)) and peer.peerInfo notin g.conns:
+    for t in toSeq(g.gossipsub.keys):
+      g.gossipsub.removePeer(t, peer)
 
-    when defined(libp2p_expensive_metrics):
-      libp2p_gossipsub_peers_per_topic_gossipsub
-        .set(g.gossipsub.peers(t).int64, labelValues = [t])
+      when defined(libp2p_expensive_metrics):
+        libp2p_gossipsub_peers_per_topic_gossipsub
+          .set(g.gossipsub.peers(t).int64, labelValues = [t])
 
-      libp2p_gossipsub_peers_per_topic_gossipsub
-        .set(g.gossipsub.peers(t).int64, labelValues = [t])
+    for t in toSeq(g.mesh.keys):
+      g.mesh.removePeer(t, peer)
 
-    when defined(libp2p_expensive_metrics):
-      libp2p_gossipsub_peers_per_topic_mesh
-        .set(g.mesh.peers(t).int64, labelValues = [t])
+      when defined(libp2p_expensive_metrics):
+        libp2p_gossipsub_peers_per_topic_mesh
+          .set(g.mesh.peers(t).int64, labelValues = [t])
 
-      libp2p_gossipsub_peers_per_topic_mesh
-        .set(g.mesh.peers(t).int64, labelValues = [t])
+    for t in toSeq(g.fanout.keys):
+      g.fanout.removePeer(t, peer)
 
-    when defined(libp2p_expensive_metrics):
-      libp2p_gossipsub_peers_per_topic_fanout
-        .set(g.fanout.peers(t).int64, labelValues = [t])
+      when defined(libp2p_expensive_metrics):
+        libp2p_gossipsub_peers_per_topic_fanout
+          .set(g.fanout.peers(t).int64, labelValues = [t])
 
 method subscribePeer*(p: GossipSub,
                       conn: Connection) =
@@ -434,8 +437,7 @@ method rpcHandler*(g: GossipSub,
 
       # forward the message to all peers interested in it
       let published = await g.publishHelper(toSendPeers, m.messages, DefaultSendTimeout)
-
-      trace "forwared message to peers", peers = published
+      trace "forwared message to peers", peers = published, msgs = m.messages
 
     var respControl: ControlMessage
     if m.control.isSome:

@@ -33,7 +33,7 @@ suite "Connection Manager":
     connMngr.storeConn(conn)
     check conn in connMngr
 
-    let peerConn = connMngr.selectConn(peer)
+    let peerConn = connMngr.selectConn(peer.peerID)
     check peerConn == conn
     check peerConn.dir == Direction.In
 
@@ -62,8 +62,8 @@ suite "Connection Manager":
     check conn1 in connMngr
     check conn2 in connMngr
 
-    let outConn = connMngr.selectConn(peer, Direction.Out)
-    let inConn = connMngr.selectConn(peer, Direction.In)
+    let outConn = connMngr.selectConn(peer.peerId, Direction.Out)
+    let inConn = connMngr.selectConn(peer.peerId, Direction.In)
 
     check outConn != inConn
     check outConn.dir == Direction.Out
@@ -83,7 +83,7 @@ suite "Connection Manager":
       connMngr.storeMuxer(muxer)
       check muxer in connMngr
 
-      let stream = await connMngr.getMuxedStream(peer)
+      let stream = await connMngr.getMuxedStream(peer.peerId)
       check not(isNil(stream))
       check stream.peerInfo == peer
 
@@ -103,8 +103,8 @@ suite "Connection Manager":
       connMngr.storeMuxer(muxer)
       check muxer in connMngr
 
-      check not(isNil((await connMngr.getMuxedStream(peer, Direction.In))))
-      check isNil((await connMngr.getMuxedStream(peer, Direction.Out)))
+      check not(isNil((await connMngr.getMuxedStream(peer.peerId, Direction.In))))
+      check isNil((await connMngr.getMuxedStream(peer.peerId, Direction.Out)))
 
     waitFor(test())
 
@@ -179,14 +179,13 @@ suite "Connection Manager":
 
         check conn in connMngr
         check muxer in connMngr
-        check not(isNil(connMngr.selectConn(peer, dir)))
+        check not(isNil(connMngr.selectConn(peer.peerId, dir)))
 
-      check peer in connMngr.peers
-      await connMngr.dropPeer(peer)
+      check peer.peerId in connMngr
+      await connMngr.dropPeer(peer.peerId)
 
-      check peer notin connMngr.peers
-      check isNil(connMngr.selectConn(peer, Direction.In))
-      check isNil(connMngr.selectConn(peer, Direction.Out))
-      check connMngr.peers.len == 0
+      check peer.peerId notin connMngr
+      check isNil(connMngr.selectConn(peer.peerId, Direction.In))
+      check isNil(connMngr.selectConn(peer.peerId, Direction.Out))
 
     waitFor(test())

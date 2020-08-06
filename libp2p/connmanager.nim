@@ -53,6 +53,9 @@ proc contains*(c: ConnManager, conn: Connection): bool =
   if isNil(conn.peerInfo):
     return
 
+  if conn.peerInfo.peerId notin c.conns:
+    return
+
   return conn in c.conns[conn.peerInfo.peerId]
 
 proc contains*(c: ConnManager, peerId: PeerID): bool =
@@ -121,7 +124,7 @@ proc onClose(c: ConnManager, conn: Connection) {.async.} =
   ## triggers the connections resource cleanup
   ##
 
-  await conn.closeEvent.wait()
+  await conn.join()
   trace "triggering connection cleanup"
   await c.cleanupConn(conn)
 

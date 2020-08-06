@@ -54,7 +54,7 @@ method subscribeTopic*(f: FloodSub,
 method handleDisconnect*(f: FloodSub, peer: PubSubPeer) =
   ## handle peer disconnects
   ##
-  
+
   procCall PubSub(f).handleDisconnect(peer)
 
   if not(isNil(peer)) and peer.peerInfo notin f.conns:

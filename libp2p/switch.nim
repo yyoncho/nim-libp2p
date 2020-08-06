@@ -101,7 +101,7 @@ proc subscribePeerInternal(s: Switch, peerId: PeerID) {.async, gcsafe.}
 
 proc cleanupPubSubPeer(s: Switch, conn: Connection) {.async.} =
   try:
-    await conn.closeEvent.wait()
+    await conn.join()
     trace "about to cleanup pubsub peer"
     if s.pubSub.isSome:
       let fut = s.pubsubMonitors.getOrDefault(conn.peerInfo.peerId)
@@ -305,7 +305,7 @@ proc internalConnect(s: Switch,
             # make sure to assign the peer to the connection
             conn.peerInfo = PeerInfo.init(peerId, addrs)
 
-            conn.closeEvent.wait()
+            conn.join()
               .addCallback do(udata: pointer):
                 asyncCheck s.triggerHooks(
                   conn.peerInfo,
@@ -326,7 +326,10 @@ proc internalConnect(s: Switch,
             s.connManager.storeOutgoing(uconn)
             asyncCheck s.triggerHooks(uconn.peerInfo, Lifecycle.Upgraded)
             conn = uconn
-            trace "dial successful", oid = $conn.oid, peer = $conn.peerInfo
+            trace "dial successful", oid = $conn.oid,
+                                     upgraddedOid = $uconn.oid,
+                                     peer = $conn.peerInfo
+
           except CatchableError as exc:
             if not(isNil(conn)):
               await conn.close()
@@ -355,7 +358,6 @@ proc internalConnect(s: Switch,
                            peer = shortLog(conn.peerInfo)
 
   asyncCheck s.cleanupPubSubPeer(conn)
-  asyncCheck s.subscribePeer(peerId)
 
   trace "got connection", oid = $conn.oid,
                           direction = $conn.dir,
@@ -418,7 +420,7 @@ proc start*(s: Switch): Future[seq[Future[void]]] {.async, gcsafe.} =
 
   proc handle(conn: Connection): Future[void] {.async, closure, gcsafe.} =
     try:
-      conn.closeEvent.wait()
+      conn.join()
         .addCallback do(udata: pointer):
           asyncCheck s.triggerHooks(
             conn.peerInfo,
@@ -489,7 +491,7 @@ proc subscribePeerInternal(s: Switch, peerId: PeerID) {.async, gcsafe.} =
         return
 
       s.pubSub.get().subscribePeer(stream)
-      await stream.closeEvent.wait()
+      await stream.join()
     except CancelledError as exc:
       if not(isNil(stream)):
         await stream.close()
@@ -498,6 +500,7 @@ proc subscribePeerInternal(s: Switch, peerId: PeerID) {.async, gcsafe.} =
     except CatchableError as exc:
       trace "exception in subscribe to peer", peer = peerId,
                                               exc = exc.msg
+    finally:
       if not(isNil(stream)):
         await stream.close()
 
@@ -510,24 +513,25 @@ proc pubsubMonitor(s: Switch, peerId: PeerID) {.async.} =
     try:
       trace "subscribing to pubsub peer", peer = peerId
       await s.subscribePeerInternal(peerId)
+
+      trace "sleeping before trying pubsub peer", peer = peerId
     except CancelledError as exc:
       raise exc
     except CatchableError as exc:
       trace "exception in pubsub monitor", peer = peerId, exc = exc.msg
-    finally:
-      trace "sleeping before trying pubsub peer", peer = peerId
-      await sleepAsync(1.seconds) # allow the peer to cooldown
+
+    await sleepAsync(1.seconds) # allow the peer to cooldown
 
   trace "exiting pubsub monitor", peer = peerId
 
-proc subscribePeer*(s: Switch, peerInfo: PeerInfo): Future[void] {.gcsafe.} =
+proc subscribePeer*(s: Switch, peerId: PeerID): Future[void] {.gcsafe.} =
   ## Waits until ``server`` is not closed.
   ##
 
   var retFuture = newFuture[void]("stream.transport.server.join")
   let pubsubFut = s.pubsubMonitors.mgetOrPut(
-    peerInfo.peerId,
-    s.pubsubMonitor(peerInfo))
+    peerId,
+    s.pubsubMonitor(peerId))
 
   proc continuation(udata: pointer) {.gcsafe.} =
     retFuture.complete()
@@ -630,7 +634,6 @@ proc muxerHandler(s: Switch, muxer: Muxer) {.async, gcsafe.} =
 
     # try establishing a pubsub connection
     asyncCheck s.cleanupPubSubPeer(muxer.connection)
-    asyncCheck s.subscribePeer(muxer.connection.peerInfo.peerId)
 
   except CancelledError as exc:
     await muxer.close()

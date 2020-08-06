@@ -38,7 +38,7 @@ proc newStandardSwitch*(privKey = none(PrivateKey),
                         transportFlags: set[ServerFlags] = {},
                         msgIdProvider: MsgIdProvider = defaultMsgIdProvider,
                         rng = newRng(),
-                        inTimeout: Duration = 5.minutes,
+                        inTimeout: Duration = 1.minutes,
                         outTimeout: Duration = 5.minutes): Switch =
   proc createMplex(conn: Connection): Muxer =
     Mplex.init(

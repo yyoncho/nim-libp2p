@@ -71,5 +71,5 @@ proc writeMsg*(conn: Connection,
 proc writeMsg*(conn: Connection,
                id: uint64,
                msgType: MessageType,
-               data: string): Future[void] =
+               data: string): Future[void] {.gcsafe.} =
   conn.writeMsg(id, msgType, data.toBytes())
