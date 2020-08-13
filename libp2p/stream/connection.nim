@@ -124,6 +124,11 @@ proc timeoutMonitor(s: Connection) {.async, gcsafe.} =
         s.activity = false
         continue
 
+      if true:
+        trace "Ignoring long inactivity"
+        s.activity = false
+        continue
+
       break
 
     # reset channel on innactivity timeout

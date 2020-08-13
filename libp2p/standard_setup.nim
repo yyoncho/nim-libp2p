@@ -1,6 +1,6 @@
 import
   options, tables, chronos, bearssl,
-  switch, peerid, peerinfo, stream/connection, multiaddress,
+  switch, peerid, peerinfo, stream/connection, multiaddress, connmanager,
   crypto/crypto, transports/[transport, tcptransport],
   muxers/[muxer, mplex/mplex, mplex/types],
   protocols/[identify, secure/secure]
@@ -37,10 +37,15 @@ proc newStandardSwitch*(privKey = none(PrivateKey),
   if rng == nil: # newRng could fail
     raise (ref CatchableError)(msg: "Cannot initialize RNG")
 
+  let connManager = ConnManager.init()
+
+  proc registerMuxer(muxer: Muxer) {.gcsafe.} =
+    connManager.storeMuxer(muxer)
+
   let
     seckey = privKey.get(otherwise = PrivateKey.random(rng[]).tryGet())
     peerInfo = PeerInfo.init(seckey, [address])
-    mplexProvider = newMuxerProvider(createMplex, MplexCodec)
+    mplexProvider = newMuxerProvider(createMplex, MplexCodec, registerMuxer)
     transports = @[Transport(TcpTransport.init(transportFlags))]
     muxers = {MplexCodec: mplexProvider}.toTable
     identify = newIdentify(peerInfo)
@@ -58,6 +63,7 @@ proc newStandardSwitch*(privKey = none(PrivateKey),
     peerInfo,
     transports,
     identify,
+    connManager,
     muxers,
     secureManagers = secureManagerInstances)
 

@@ -159,7 +159,7 @@ proc send*(
     if not p.connected:
       try:
         await p.sendLock.acquire()
-        trace "no send connection, dialing peer"
+        trace "no send connection, dialing peer", codec = p.codec
         # get a send connection if there is none
         p.sendConn = await p.switch.dial(
           p.peerId, p.codec)
@@ -176,7 +176,7 @@ proc send*(
     trace "sending encoded msgs to peer"
     await p.sendConn.writeLp(encoded).wait(timeout)
     p.sentRpcCache.put(digest)
-    trace "sent pubsub message to remote"
+    debug "sent pubsub message to remote"
 
     when defined(libp2p_expensive_metrics):
       for x in mm.messages:
@@ -185,7 +185,7 @@ proc send*(
           libp2p_pubsub_sent_messages.inc(labelValues = [p.id, t])
 
   except CatchableError as exc:
-    trace "unable to send to remote", exc = exc.msg
+    debug "unable to send to remote", exc = exc.msg
     if not(isNil(p.sendConn)):
       await p.sendConn.close()
       p.sendConn = nil

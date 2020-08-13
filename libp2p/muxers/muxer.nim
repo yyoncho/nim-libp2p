@@ -28,12 +28,14 @@ type
 
   # user provider proc that returns a constructed Muxer
   MuxerConstructor* = proc(conn: Connection): Muxer {.gcsafe, closure.}
+  MuxerRegistrator* = proc(muxer: Muxer) {.gcsafe, closure.}
 
   # this wraps a creator proc that knows how to make muxers
   MuxerProvider* = ref object of LPProtocol
     newMuxer*: MuxerConstructor
     streamHandler*: StreamHandler # triggered every time there is a new stream, called for any muxer instance
     muxerHandler*: MuxerHandler # triggered every time there is a new muxed connection created
+    registrator*: MuxerRegistrator
 
 # muxer interface
 method newStream*(m: Muxer, name: string = "", lazy: bool = false):
@@ -41,10 +43,13 @@ method newStream*(m: Muxer, name: string = "", lazy: bool = false):
 method close*(m: Muxer) {.base, async, gcsafe.} = discard
 method handle*(m: Muxer): Future[void] {.base, async, gcsafe.} = discard
 
-proc newMuxerProvider*(creator: MuxerConstructor, codec: string): MuxerProvider {.gcsafe.} =
+proc newMuxerProvider*(creator: MuxerConstructor,
+                       codec: string,
+                       registrator: MuxerRegistrator): MuxerProvider {.gcsafe.} =
   new result
   result.newMuxer = creator
   result.codec = codec
+  result.registrator = registrator
   result.init()
 
 method init(c: MuxerProvider) =
@@ -65,6 +70,7 @@ method init(c: MuxerProvider) =
         futs &= c.muxerHandler(muxer)
 
       checkFutures(await allFinished(futs))
+      
     except CancelledError as exc:
       raise exc
     except CatchableError as exc:

@@ -16,7 +16,8 @@ import pubsub,
        rpc/[messages, message],
        ../../stream/connection,
        ../../peerid,
-       ../../peerinfo
+       ../../peerinfo,
+       ../../connmanager
 
 logScope:
   topics = "floodsub"
@@ -115,6 +116,8 @@ method init*(f: FloodSub) =
     ## e.g. ``/floodsub/1.0.0``, etc...
     ##
 
+    # trace "Incoming FloodSub connection"
+    # f.switch.connManager.storeIncoming(conn)
     await f.handleConn(conn, proto)
 
   f.handler = handler

@@ -68,7 +68,7 @@ type
 
     Switch* = ref object of RootObj
       peerInfo*: PeerInfo
-      connManager: ConnManager
+      connManager*: ConnManager
       transports*: seq[Transport]
       protocols*: seq[LPProtocol]
       muxers*: Table[string, MuxerProvider]
@@ -156,7 +156,7 @@ proc identify(s: Switch, conn: Connection) {.async, gcsafe.} =
 
     trace "identify: identified remote peer", peer = $conn.peerInfo
 
-proc mux(s: Switch, conn: Connection) {.async, gcsafe.} =
+proc mux*(s: Switch, conn: Connection) {.async, gcsafe.} =
   ## mux incoming connection
 
   trace "muxing connection", peer = $conn
@@ -465,15 +465,27 @@ proc stop*(s: Switch) {.async.} =
   trace "switch stopped"
 
 proc muxerHandler(s: Switch, muxer: Muxer) {.async, gcsafe.} =
+  trace "Entering muxer handler"
+
+  # store incoming connection
+  s.connManager.storeIncoming(muxer.connection)
+
+  # store muxer and muxed connection
+  s.connManager.storeMuxer(muxer)
+
   var stream = await muxer.newStream()
+  trace "Got muxer stream"
   defer:
     if not(isNil(stream)):
       await stream.close()
 
   try:
+    trace "Getting identity in muxer"
     # once we got a muxed connection, attempt to
     # identify it
     await s.identify(stream)
+    trace "Got identity"
+
     if isNil(stream.peerInfo):
       await muxer.close()
       return
@@ -482,12 +494,6 @@ proc muxerHandler(s: Switch, muxer: Muxer) {.async, gcsafe.} =
       peerInfo = stream.peerInfo
       peerId = peerInfo.peerId
     muxer.connection.peerInfo = peerInfo
-
-    # store incoming connection
-    s.connManager.storeIncoming(muxer.connection)
-
-    # store muxer and muxed connection
-    s.connManager.storeMuxer(muxer)
 
     trace "got new muxer", peer = shortLog(peerInfo)
 
@@ -510,6 +516,7 @@ proc muxerHandler(s: Switch, muxer: Muxer) {.async, gcsafe.} =
 proc newSwitch*(peerInfo: PeerInfo,
                 transports: seq[Transport],
                 identity: Identify,
+                connManager: ConnManager,
                 muxers: Table[string, MuxerProvider],
                 secureManagers: openarray[Secure] = []): Switch =
   if secureManagers.len == 0:
@@ -519,7 +526,7 @@ proc newSwitch*(peerInfo: PeerInfo,
     peerInfo: peerInfo,
     ms: newMultistream(),
     transports: transports,
-    connManager: ConnManager.init(),
+    connManager: connManager,
     identity: identity,
     muxers: muxers,
     secureManagers: @secureManagers,

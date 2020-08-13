@@ -153,10 +153,13 @@ proc selectMuxer*(c: ConnManager, conn: Connection): Muxer =
   ##
 
   if isNil(conn):
+    trace "No connection in selectMuxer"
     return
 
   if conn in c.muxed:
     return c.muxed[conn].muxer
+  else:
+    trace "No entry in c.muxed"
 
 proc storeConn*(c: ConnManager, conn: Connection) =
   ## store a connection
@@ -221,6 +224,8 @@ proc getMuxedStream*(c: ConnManager,
   let muxer = c.selectMuxer(c.selectConn(peerId, dir))
   if not(isNil(muxer)):
     return await muxer.newStream()
+  else:
+    trace "No muxer, no stream", peerId
 
 proc getMuxedStream*(c: ConnManager,
                      peerId: PeerID): Future[Connection] {.async, gcsafe.} =
@@ -230,6 +235,8 @@ proc getMuxedStream*(c: ConnManager,
   let muxer = c.selectMuxer(c.selectConn(peerId))
   if not(isNil(muxer)):
     return await muxer.newStream()
+  else:
+    trace "No muxer, no stream", peerId
 
 proc getMuxedStream*(c: ConnManager,
                      conn: Connection): Future[Connection] {.async, gcsafe.} =

@@ -16,7 +16,8 @@ import pubsubpeer,
        ../../stream/connection,
        ../../peerid,
        ../../peerinfo,
-       ../../errors
+       ../../errors,
+       ../../connmanager
 
 export PubSubPeer
 export PubSubObserver
@@ -170,6 +171,9 @@ method handleConn*(p: PubSub,
     trace "no valid PeerId for peer"
     await conn.close()
     return
+
+  # trace "Incoming PubSub connection"
+  # p.switch.connManager.storeIncoming(conn)
 
   proc handler(peer: PubSubPeer, msgs: seq[RPCMsg]) {.async.} =
     # call pubsub rpc handler
