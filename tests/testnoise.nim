@@ -87,7 +87,7 @@ suite "Noise":
 
       let
         transport1: TcpTransport = TcpTransport.init()
-      asyncCheck await transport1.listen(server, connHandler)
+      asyncCheck transport1.listen(server, connHandler)
 
       let
         transport2: TcpTransport = TcpTransport.init()
@@ -129,7 +129,7 @@ suite "Noise":
 
       let
         transport1: TcpTransport = TcpTransport.init()
-      asyncCheck await transport1.listen(server, connHandler)
+      asyncCheck transport1.listen(server, connHandler)
 
       let
         transport2: TcpTransport = TcpTransport.init()
@@ -172,7 +172,7 @@ suite "Noise":
 
       let
         transport1: TcpTransport = TcpTransport.init()
-        listenFut = await transport1.listen(server, connHandler)
+        listenFut = transport1.listen(server, connHandler)
 
       let
         transport2: TcpTransport = TcpTransport.init()

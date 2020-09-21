@@ -6,8 +6,9 @@ import ../libp2p/[stream/connection,
                   transports/transport,
                   transports/tcptransport,
                   multiaddress,
-                  wire,
-                  errors]
+                  errors,
+                  wire]
+
 import ./helpers
 
 suite "TCP transport":
@@ -19,7 +20,7 @@ suite "TCP transport":
       let ma: MultiAddress = Multiaddress.init("/ip4/0.0.0.0/tcp/0").tryGet()
       let handlerWait = newFuture[void]()
       proc connHandler(conn: Connection) {.async, gcsafe.} =
-        await conn.write(cstring("Hello!"), 6)
+        await conn.write("Hello!")
         await conn.close()
         handlerWait.complete()
 
@@ -52,9 +53,9 @@ suite "TCP transport":
         handlerWait.complete()
 
       let transport: TcpTransport = TcpTransport.init()
-      asyncCheck await transport.listen(ma, connHandler)
+      asyncCheck transport.listen(ma, connHandler)
       let streamTransport: StreamTransport = await connect(transport.ma)
-      let sent = await streamTransport.write("Hello!", 6)
+      let sent = await streamTransport.write("Hello!")
 
       await handlerWait.wait(5000.millis) # when no issues will not wait that long!
       await streamTransport.closeWait()
@@ -122,7 +123,7 @@ suite "TCP transport":
       let ma: MultiAddress = MultiAddress.init(server.sock.getLocalAddress()).tryGet()
       let transport: TcpTransport = TcpTransport.init()
       let conn = await transport.dial(ma)
-      await conn.write(cstring("Hello!"), 6)
+      await conn.write("Hello!")
       result = true
 
       await handlerWait.wait(5000.millis) # when no issues will not wait that long!
@@ -141,7 +142,7 @@ suite "TCP transport":
       let ma: MultiAddress = Multiaddress.init("/ip4/0.0.0.0/tcp/0").tryGet()
       let handlerWait = newFuture[void]()
       proc connHandler(conn: Connection) {.async, gcsafe.} =
-        await conn.write(cstring("Hello!"), 6)
+        await conn.write("Hello!")
         await conn.close()
         handlerWait.complete()
 
@@ -180,7 +181,7 @@ suite "TCP transport":
 
       let transport2: TcpTransport = TcpTransport.init()
       let conn = await transport2.dial(transport1.ma)
-      await conn.write(cstring("Hello!"), 6)
+      await conn.write("Hello!")
 
       await handlerWait.wait(5000.millis) # when no issues will not wait that long!
 
@@ -195,12 +196,12 @@ suite "TCP transport":
   test "e2e: should limit incoming connections":
     proc test() {.async.} =
       let ma: MultiAddress = Multiaddress.init("/ip4/0.0.0.0/tcp/0").tryGet()
-      var times = 1
+      var times = 0
       proc connHandler(conn: Connection) {.async, gcsafe.} =
         times.inc()
 
       var transports: seq[TcpTransport]
-      transports.add(TcpTransport.init(maxIncoming = 2))
+      transports.add(TcpTransport.init(maxConns = 2))
       asyncCheck transports[0].listen(ma, connHandler)
 
       var conns: seq[Connection]
@@ -209,37 +210,11 @@ suite "TCP transport":
           let transport = TcpTransport.init()
           transports.add(transport)
           conns.add(await transport.dial(transports[0].ma).wait(10.millis))
+          echo "DIALED"
       except AsyncTimeoutError:
-        check times == 2
+        discard
 
-      await allFuturesThrowing(
-        conns.mapIt(it.close()))
-
-      await allFuturesThrowing(
-        transports.mapIt(it.close()))
-
-    waitFor(test())
-
-  test "e2e: should limit outgoing connections":
-    proc test() {.async.} =
-      let ma: MultiAddress = Multiaddress.init("/ip4/0.0.0.0/tcp/0").tryGet()
-      var times = 1
-      proc connHandler(conn: Connection) {.async, gcsafe.} =
-        times.inc()
-
-      var transports: seq[TcpTransport]
-      transports.add(TcpTransport.init())
-      asyncCheck transports[0].listen(ma, connHandler)
-
-      var conns: seq[Connection]
-      try:
-        let transport = TcpTransport.init(maxOutgoing = 2)
-        transports.add(transport)
-        for i in 0..10:
-          conns.add(await transport.dial(transports[0].ma))
-      except TooManyConnections:
-        check times == 2
-
+      check times == 2
       await allFuturesThrowing(
         conns.mapIt(it.close()))
 
