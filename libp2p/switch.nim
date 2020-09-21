@@ -447,7 +447,7 @@ proc start*(s: Switch): Future[seq[Future[void]]] {.async, gcsafe.} =
   for t in s.transports: # for each transport
     for i, a in s.peerInfo.addrs:
       if t.handles(a): # check if it handles the multiaddr
-        var server = await t.listen(a, handle)
+        var server = t.listen(a, handle)
         s.peerInfo.addrs[i] = t.ma # update peer's address
         startFuts.add(server)
 
