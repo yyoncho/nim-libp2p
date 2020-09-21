@@ -6,7 +6,6 @@
 ## at your option.
 ## This file may not be copied, modified, or distributed except according to
 ## those terms.
-
 import sequtils
 import chronos, chronicles
 import ../stream/connection,
@@ -31,17 +30,16 @@ method close*(t: Transport) {.base, async, gcsafe.} =
   discard
 
 method listen*(t: Transport,
-               ma: MultiAddress,
-               handler: ConnHandler):
-               Future[Future[void]] {.base, async, gcsafe.} =
+               ma: MultiAddress, handler: ConnHandler)
+               {.base, async, gcsafe.} =
   ## listen for incoming connections
   t.ma = ma
   t.handler = handler
   trace "starting node", address = $ma
 
 method dial*(t: Transport,
-             address: MultiAddress):
-             Future[Connection] {.base, async, gcsafe.} =
+             address: MultiAddress): Future[Connection]
+             {.base, async, gcsafe.} =
   ## dial a peer
   discard
 
