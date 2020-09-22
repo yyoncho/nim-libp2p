@@ -452,7 +452,7 @@ proc start*(s: Switch): Future[seq[Future[void]]] {.async, gcsafe.} =
         startFuts.add(server)
 
   debug "Started libp2p node", peer = s.peerInfo
-  result = startFuts # listen for incoming connections
+  return startFuts # listen for incoming connections
 
 proc stop*(s: Switch) {.async.} =
   trace "Stopping switch"

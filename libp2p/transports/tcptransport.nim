@@ -7,7 +7,8 @@
 ## This file may not be copied, modified, or distributed except according to
 ## those terms.
 
-import chronos, chronicles, sequtils
+import oids
+import chronos, chronicles, sequtils, deques
 import transport,
        ../errors,
        ../wire,
@@ -67,7 +68,10 @@ proc setupTcpTransportTracker(): TcpTransportTracker =
 proc connHandler*(t: TcpTransport,
                   client: StreamTransport,
                   initiator: bool): Connection =
-  trace "handling connection", address = $client.remoteAddress
+  debug "Handling tcp connection", address = $client.remoteAddress,
+                                   initiator = initiator,
+                                   clients = t.clients[initiator].len
+
   let stream = ChronosStream.init(client,
                                   dir = if initiator: Direction.Out
                                   else: Direction.In)
@@ -88,10 +92,12 @@ proc connHandler*(t: TcpTransport,
         await conn.close()
       t.clients[initiator].keepItIf( it != client )
 
-      if initiator:
+      if not initiator:
         # we've gone bellow the max conns reset the event
         t.semaphore.release()
-        trace "cleared client", len = t.clients[initiator].len
+        debug "Released incoming client slot", incoming = t.clients[initiator].len,
+                                               count = t.semaphore.count,
+                                               len = t.semaphore.queue.len
 
     except CatchableError as exc:
       let useExc {.used.} = exc
@@ -167,12 +173,26 @@ method listen*(t: TcpTransport, ma: MultiAddress,
 
   while true:
     try:
+      debug "About to acquire accept semaphore", incoming = t.clients[false].len,
+                                                 outgoing = t.clients[true].len,
+                                                 count = t.semaphore.count,
+                                                 len = t.semaphore.queue.len
       await t.semaphore.acquire()
+      debug "Acquired accept semaphore", incoming = t.clients[false].len,
+                                         outgoing = t.clients[true].len,
+                                         count = t.semaphore.count,
+                                         len = t.semaphore.queue.len
+
       let transp = await t.server.accept()
-      trace "Received incoming connection", address = $transp.remoteAddress
-      # we don't need result connection in this case as it's added inside
-      # connHandler
+      debug "Received incoming connection", address = $transp.remoteAddress,
+                                            incoming = t.clients[false].len,
+                                            outgoing = t.clients[true].len,
+                                            count = t.semaphore.count,
+                                            len = t.semaphore.queue.len
+
       try:
+        # we don't need result connection in this
+        # case as it's added inside connHandler
         discard t.connHandler(transp, false)
       except CancelledError as exc:
         raise exc
@@ -191,7 +211,7 @@ method listen*(t: TcpTransport, ma: MultiAddress,
       break
     except TransportUseClosedError as exc:
       let useExc {.used.} = exc
-      trace "Server was closed, exiting listening loop"
+      info "Server was closed, exiting listening loop"
       break
     except CancelledError as exc:
       raise exc

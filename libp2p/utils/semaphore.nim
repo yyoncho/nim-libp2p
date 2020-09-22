@@ -10,29 +10,16 @@
 import deques
 import chronos
 
+# TODO: this should probably go in chronos
+
 type
   AsyncSemaphore* = ref object of RootObj
-    count: int
-    queue: Deque[Future[void]]
+    size*: int
+    count*: int
+    queue*: Deque[Future[void]]
 
-proc init*(T: type AsyncSemaphore, count: int): T =
-  T(count: count)
-
-proc acquire*(s: AsyncSemaphore): Future[void] =
-  ## Acquire a resource and decrement the semaphore's
-  ## counter. If no more resources are available,
-  ## the returned future will not complete until
-  ## the resource count goes above 0 again.
-  ##
-
-  var fut = newFuture[void]("AsyncSemaphore.acquire")
-  if s.count > 0:
-    s.count.dec
-    fut.complete()
-    return fut
-
-  s.queue.addLast(fut)
-  return fut
+proc init*(T: type AsyncSemaphore, size: int): T =
+  T(size: size, count: size)
 
 proc tryAcquire*(s: AsyncSemaphore): bool =
   ## Attempts to acquire a resource, if successful
@@ -45,6 +32,22 @@ proc tryAcquire*(s: AsyncSemaphore): bool =
 
   return false
 
+proc acquire*(s: AsyncSemaphore): Future[void] =
+  ## Acquire a resource and decrement the semaphore's
+  ## counter. If no more resources are available,
+  ## the returned future will not complete until
+  ## the resource count goes above 0 again.
+  ##
+
+  var fut = newFuture[void]("AsyncSemaphore.acquire")
+  if s.count > 0:
+    fut.complete()
+  else:
+    s.queue.addLast(fut)
+
+  s.count.dec
+  return fut
+
 proc release*(s: AsyncSemaphore) =
   ## Release a resource from the semaphore,
   ## by picking the first future from the queue
@@ -52,54 +55,93 @@ proc release*(s: AsyncSemaphore) =
   ## internal resource count
   ##
 
-  while s.queue.len > 0:
-    doAssert(s.count == 0,
-      "the semaphore state is invalid!")
+  if s.count >= s.size:
+    return
+
+  while true:
+    s.count.inc
+    if s.queue.len == 0:
+      return
 
     var fut = s.queue.popFirst()
     if not fut.cancelled():
       fut.complete()
-      s.count.inc
       return
 
 when isMainModule:
   import unittest
+  import chronos
 
   suite "AsyncSemaphore":
     test "should acquire":
       proc test() {.async.} =
-        let sema = AsyncSemaphore.init(10)
+        let sema = AsyncSemaphore.init(3)
 
-        var count = 0
-        proc use() {.async.} =
-          while true:
-            await sema.acquire()
-            count.inc()
+        await sema.acquire()
+        await sema.acquire()
+        await sema.acquire()
 
-        asyncSpawn use()
-        await sleepAsync(10.millis)
-        check count == 10
+        check sema.count == 0
 
       waitFor(test())
 
     test "should release":
       proc test() {.async.} =
+        let sema = AsyncSemaphore.init(3)
+
+        await sema.acquire()
+        await sema.acquire()
+        await sema.acquire()
+
+        check sema.count == 0
+        sema.release()
+        sema.release()
+        sema.release()
+        check sema.count == 3
+
+      waitFor(test())
+
+    test "should queue acquire":
+      proc test() {.async.} =
         let sema = AsyncSemaphore.init(1)
 
-        var completed: bool
-        proc timeIt() {.async.} =
-          await sleepAsync(200.millis)
-          check false
-
-        proc release() {.async.} =
-          await sleepAsync(10.millis)
-          sema.release()
-
-        asyncSpawn timeIt()
         await sema.acquire()
-        asyncSpawn release()
+        let fut = sema.acquire()
+
+        check sema.count == -1
+        check sema.queue.len == 1
+        sema.release()
+        sema.release()
+        check sema.count == 1
+
+        check fut.finished()
+
+      waitFor(test())
+
+    test "should handle canceled":
+      proc test() {.async.} =
+        let sema = AsyncSemaphore.init(1)
+
         await sema.acquire()
-        check true
+        let fut = sema.acquire()
+
+        check sema.count == -1
+        check sema.queue.len == 1
+        fut.cancel()
+        sema.release()
+        check sema.count == 1
+
+        check fut.cancelled()
+
+      waitFor(test())
+
+    test "should keep count == size":
+      proc test() {.async.} =
+        let sema = AsyncSemaphore.init(1)
+        sema.release()
+        sema.release()
+        sema.release()
+        check sema.count == 1
 
       waitFor(test())
 
