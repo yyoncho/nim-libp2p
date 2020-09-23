@@ -12,8 +12,8 @@ import chronos, chronicles, metrics
 import peerinfo,
        stream/connection,
        muxers/muxer,
+       utils/semaphore,
        errors
-       utils/semaphore
 
 logScope:
   topics = "connmanager"
@@ -64,7 +64,6 @@ type
     # object itself make it susceptible to
     # copies and mangling by unrelated code.
     conns: seq[Connection]
-    muxed: Table[Connection, MuxerHolder]
     connEvents: Table[ConnEventKind, OrderedSet[ConnEventHandler]]
     peerEvents: Table[PeerEvent, OrderedSet[PeerEventHandler]]
 
