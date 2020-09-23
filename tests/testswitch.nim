@@ -153,6 +153,7 @@ suite "Switch":
       check switch2.isConnected(switch1.peerInfo)
 
       try:
+        doAssert(not isNil(conn), "conn is nil!")
         await conn.writeLp("Hello!")
         let msg = string.fromBytes(await conn.readLp(1024))
         check "Hello!" == msg

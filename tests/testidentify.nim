@@ -18,7 +18,7 @@ suite "Identify":
     checkTrackers()
 
   test "handle identify message":
-    proc testHandle(): Future[bool] {.async.} =
+    proc test() {.async.} =
       let ma: MultiAddress = Multiaddress.init("/ip4/0.0.0.0/tcp/0").tryGet()
       let remoteSecKey = PrivateKey.random(ECDSA, rng[]).get()
       let remotePeerInfo = PeerInfo.init(remoteSecKey,
@@ -30,12 +30,15 @@ suite "Identify":
       let msListen = newMultistream()
 
       msListen.addHandler(IdentifyCodec, identifyProto1)
-      proc connHandler(conn: Connection): Future[void] {.async, gcsafe.} =
-        await msListen.handle(conn)
 
       var transport1 = TcpTransport.init()
-      serverFut = transport1.listen(ma, connHandler)
+      serverFut = transport1.start(ma)
 
+      proc acceptHandler(): Future[void] {.async, gcsafe.} =
+        let conn = await transport1.accept()
+        await msListen.handle(conn)
+
+      let acceptFut = acceptHandler()
       let msDial = newMultistream()
       let transport2: TcpTransport = TcpTransport.init()
       let conn = await transport2.dial(transport1.ma)
@@ -52,15 +55,12 @@ suite "Identify":
       check id.protos == @["/test/proto1/1.0.0", "/test/proto2/1.0.0"]
 
       await conn.close()
-      await transport1.close()
+      await acceptFut
+      await transport1.stop()
       await serverFut
+      await transport2.stop()
 
-      result = true
-
-      await transport2.close()
-
-    check:
-      waitFor(testHandle()) == true
+    waitFor(test())
 
   test "handle failed identify":
     proc testHandleError() {.async.} =
@@ -69,17 +69,17 @@ suite "Identify":
       let identifyProto1 = newIdentify(remotePeerInfo)
       let msListen = newMultistream()
 
-      let done = newFuture[void]()
-
       msListen.addHandler(IdentifyCodec, identifyProto1)
-      proc connHandler(conn: Connection): Future[void] {.async, gcsafe.} =
-        await msListen.handle(conn)
-        await conn.close()
-        done.complete()
 
       let transport1: TcpTransport = TcpTransport.init()
-      asyncCheck transport1.listen(ma, connHandler)
+      asyncCheck transport1.start(ma)
 
+      proc acceptHandler() {.async.} =
+        let conn = await transport1.accept()
+        await msListen.handle(conn)
+        await conn.close()
+
+      let acceptFut = acceptHandler()
       let msDial = newMultistream()
       let transport2: TcpTransport = TcpTransport.init()
       let conn = await transport2.dial(transport1.ma)
@@ -91,10 +91,10 @@ suite "Identify":
         discard await msDial.select(conn, IdentifyCodec)
         discard await identifyProto2.identify(conn, pi2)
       finally:
-        await done.wait(5000.millis) # when no issues will not wait that long!
         await conn.close()
-        await transport2.close()
-        await transport1.close()
+        await acceptFut.wait(5000.millis) # when no issues will not wait that long!
+        await transport2.stop()
+        await transport1.stop()
 
     expect IdentityNoMatchError:
       waitFor(testHandleError())
