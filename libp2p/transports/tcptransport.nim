@@ -7,19 +7,15 @@
 ## This file may not be copied, modified, or distributed except according to
 ## those terms.
 
-import oids
-import chronos, chronicles, sequtils, deques
+import oids, sequtils
+import chronos, chronicles
 import transport,
        ../errors,
        ../wire,
        ../multiaddress,
        ../multicodec,
        ../stream/connection,
-       ../stream/chronosstream,
-       ../utils/semaphore
-
-when chronicles.enabledLogLevel == LogLevel.TRACE:
-  import oids
+       ../stream/chronosstream
 
 logScope:
   topics = "tcptransport"
@@ -34,8 +30,6 @@ type
     clients: array[bool, seq[StreamTransport]]
     flags: set[ServerFlags]
     cleanups*: seq[Future[void]]
-    handlers*: seq[Future[void]]
-    semaphore*: AsyncSemaphore
 
   TcpTransportTracker* = ref object of TrackerBase
     opened*: uint64
@@ -79,11 +73,7 @@ proc connHandler*(t: TcpTransport,
   let conn = Connection(stream)
   conn.observedAddr = MultiAddress.init(client.remoteAddress).tryGet()
 
-  if not initiator:
-    if not isNil(t.handler):
-      t.handlers.add(t.handler(conn))
-
-  proc cleanup() {.async.} =
+  proc onClose() {.async.} =
     try:
       await client.join()
       trace "cleaning up client", addrs = $client.remoteAddress,
@@ -91,29 +81,18 @@ proc connHandler*(t: TcpTransport,
       if not(isNil(conn)):
         await conn.close()
       t.clients[initiator].keepItIf( it != client )
-
-      if not initiator:
-        # we've gone bellow the max conns reset the event
-        t.semaphore.release()
-        debug "Released incoming client slot", incoming = t.clients[initiator].len,
-                                               count = t.semaphore.count,
-                                               len = t.semaphore.queue.len
-
     except CatchableError as exc:
       let useExc {.used.} = exc
       trace "error cleaning up client", errMsg = exc.msg
 
   t.clients[initiator].add(client)
-  asyncSpawn cleanup()
+  asyncSpawn onClose()
 
   return conn
 
 proc init*(T: type TcpTransport,
-           flags: set[ServerFlags] = {},
-           maxConns = MaxTCPConnections): T =
-  result = T(
-    flags: flags,
-    semaphore: AsyncSemaphore.init(maxConns))
+           flags: set[ServerFlags] = {}): T =
+  result = T(flags: flags)
 
   result.initTransport()
 
@@ -121,11 +100,23 @@ method initTransport*(t: TcpTransport) =
   t.multicodec = multiCodec("tcp")
   inc getTcpTransportTracker().opened
 
-method close*(t: TcpTransport) {.async, gcsafe.} =
+method start*(t: TcpTransport, ma: MultiAddress) {.async.} =
+  ## listen on the transport
+
+  await procCall Transport(t).start(ma)
+  t.server = createStreamServer(t.ma, t.flags, t)
+
+  # always get the resolved address in case we're bound to 0.0.0.0:0
+  t.ma = MultiAddress.init(t.server.sock.getLocalAddress()).tryGet()
+  t.running = true
+
+  trace "Listen started on", address = t.ma
+
+method stop*(t: TcpTransport) {.async, gcsafe.} =
+  ## stop the transport
   try:
-    ## start the transport
     trace "stopping transport"
-    await procCall Transport(t).close() # call base
+    await procCall Transport(t).stop() # call base
 
     checkFutures(
       await allFinished(
@@ -137,14 +128,6 @@ method close*(t: TcpTransport) {.async, gcsafe.} =
       await t.server.closeWait()
 
     t.server = nil
-
-    for fut in t.handlers:
-      if not fut.finished:
-        fut.cancel()
-
-    checkFutures(
-      await allFinished(t.handlers))
-    t.handlers = @[]
 
     for fut in t.cleanups:
       if not fut.finished:
@@ -159,62 +142,37 @@ method close*(t: TcpTransport) {.async, gcsafe.} =
   except CatchableError as exc:
     let useExc {.used.} = exc
     trace "error shutting down tcp transport", errMsg = exc.msg
+  finally:
+    t.running = false
 
-method listen*(t: TcpTransport, ma: MultiAddress,
-               handler: ConnHandler) {.async, gcsafe.} =
-  discard procCall Transport(t).listen(ma, handler) # call base
-
-  ## listen on the transport
-  t.server = createStreamServer(t.ma, t.flags, t)
-
-  # always get the resolved address in case we're bound to 0.0.0.0:0
-  t.ma = MultiAddress.init(t.server.sock.getLocalAddress()).tryGet()
-  trace "Listen started on", address = t.ma
-
-  while true:
+method accept*(t: TcpTransport): Future[Connection] {.async, gcsafe.} =
+  try:
+    let transp = await t.server.accept()
     try:
-      debug "About to acquire accept semaphore", incoming = t.clients[false].len,
-                                                 outgoing = t.clients[true].len,
-                                                 count = t.semaphore.count,
-                                                 len = t.semaphore.queue.len
-      await t.semaphore.acquire()
-      debug "Acquired accept semaphore", incoming = t.clients[false].len,
-                                         outgoing = t.clients[true].len,
-                                         count = t.semaphore.count,
-                                         len = t.semaphore.queue.len
-
-      let transp = await t.server.accept()
-      debug "Received incoming connection", address = $transp.remoteAddress,
-                                            incoming = t.clients[false].len,
-                                            outgoing = t.clients[true].len,
-                                            count = t.semaphore.count,
-                                            len = t.semaphore.queue.len
-
-      try:
-        # we don't need result connection in this
-        # case as it's added inside connHandler
-        discard t.connHandler(transp, false)
-      except CancelledError as exc:
-        raise exc
-      except CatchableError as exc:
-        let useExc {.used.} = exc
-        debug "listen: connection setup failed", errMsg = exc.msg
-        if not transp.closed:
-          await transp.closeWait()
-    except TransportTooManyError as exc:
-      let useExc {.used.} = exc
-      warn "listen: could not accept new client, too many files opened"
-    except TransportOsError as exc:
-      let useExc {.used.} = exc
-      error "listen: could not accept new client, got an error",
-            errMsg = exc.msg
-      break
-    except TransportUseClosedError as exc:
-      let useExc {.used.} = exc
-      info "Server was closed, exiting listening loop"
-      break
+      # we don't need result connection in this
+      # case as it's added inside connHandler
+      return t.connHandler(transp, false)
     except CancelledError as exc:
       raise exc
+    except CatchableError as exc:
+      let useExc {.used.} = exc
+      debug "listen: connection setup failed", errMsg = exc.msg
+      if not transp.closed:
+        await transp.closeWait()
+  except TransportTooManyError as exc:
+    let useExc {.used.} = exc
+    warn "listen: could not accept new client, too many files opened"
+  except TransportOsError as exc:
+    let useExc {.used.} = exc
+    error "listen: could not accept new client, got an error",
+          errMsg = exc.msg
+    break
+  except TransportUseClosedError as exc:
+    let useExc {.used.} = exc
+    info "Server was closed, exiting listening loop"
+    break
+  except CancelledError as exc:
+    raise exc
 
 method dial*(t: TcpTransport,
              address: MultiAddress):
@@ -223,7 +181,7 @@ method dial*(t: TcpTransport,
   ## dial a peer
   try:
     let transp = await connect(address)
-    result = t.connHandler(transp, true)
+    return t.connHandler(transp, true)
   except TransportTooManyError as exc:
     warn "dial: could not create new connection, too many files opened"
     raise exc

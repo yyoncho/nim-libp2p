@@ -104,7 +104,7 @@ func hash*(p: Connection): Hash =
   cast[pointer](p).hash
 
 proc timeoutMonitor(s: Connection) {.async, gcsafe.} =
-  ## monitor the channel for innactivity
+  ## monitor the channel for inactivity
   ##
   ## if the timeout was hit, it means that
   ## neither incoming nor outgoing activity
