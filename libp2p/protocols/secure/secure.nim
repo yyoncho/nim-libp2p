@@ -76,7 +76,7 @@ proc handleConn*(s: Secure,
       await sconn.close()
     except CancelledError:
       # This is top-level procedure which will work as separate task, so it
-      # do not need to propogate CancelledError.
+      # do not need to propagate CancelledError.
       discard
     except CatchableError as exc:
       trace "error cleaning up secure connection", err = exc.msg, sconn
