@@ -64,7 +64,7 @@ proc release*(s: AsyncSemaphore) =
       return
 
     var fut = s.queue.popFirst()
-    if not fut.cancelled():
+    if not(fut.cancelled() or fut.finished()):
       fut.complete()
       return
 

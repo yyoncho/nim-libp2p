@@ -7,19 +7,21 @@
 ## This file may not be copied, modified, or distributed except according to
 ## those terms.
 
-import std/[options, tables, sequtils, sets]
+import std/[options, tables, sequtils, sets, sugar]
 import chronos, chronicles, metrics
 import peerinfo,
        stream/connection,
        muxers/muxer,
        errors
+       utils/semaphore
 
 logScope:
   topics = "connmanager"
 
 declareGauge(libp2p_peers, "total connected peers")
 
-const MaxConnectionsPerPeer = 5
+const
+  MaxConnections = 100
 
 type
   TooManyConnections* = object of CatchableError
@@ -55,23 +57,28 @@ type
 
   ConnManager* = ref object of RootObj
     maxConns: int
+    connSemaphore*: AsyncSemaphore
+    muxed: Table[Connection, MuxerHolder]
     # NOTE: don't change to PeerInfo here
     # the reference semantics on the PeerInfo
     # object itself make it susceptible to
     # copies and mangling by unrelated code.
-    conns: Table[PeerID, HashSet[Connection]]
+    conns: seq[Connection]
     muxed: Table[Connection, MuxerHolder]
     connEvents: Table[ConnEventKind, OrderedSet[ConnEventHandler]]
     peerEvents: Table[PeerEvent, OrderedSet[PeerEventHandler]]
 
-proc newTooManyConnections(): ref TooManyConnections {.inline.} =
-  result = newException(TooManyConnections, "too many connections for peer")
+proc init*(C: type ConnManager, maxConns: int = MaxConnections): ConnManager =
+  C(maxConns: maxConns,
+    muxed: initTable[Connection, MuxerHolder](),
+    connSemaphore: AsyncSemaphore.init(maxConns))
 
-proc init*(C: type ConnManager,
-           maxConnsPerPeer: int = MaxConnectionsPerPeer): ConnManager =
-  C(maxConns: maxConnsPerPeer,
-    conns: initTable[PeerID, HashSet[Connection]](),
-    muxed: initTable[Connection, MuxerHolder]())
+proc connCount*(c: ConnManager, peerId: PeerID): int =
+  c.conns
+  .filter(
+    proc(conn: Connection): bool =
+      (not isNil(conn.peerInfo) and conn.peerInfo.peerId == peerId)
+  ).len
 
 proc connCount*(c: ConnManager, peerId: PeerID): int =
   c.conns.getOrDefault(peerId).len
@@ -156,13 +163,10 @@ proc contains*(c: ConnManager, conn: Connection): bool =
   if isNil(conn):
     return
 
-  if isNil(conn.peerInfo):
-    return
-
-  return conn in c.conns[conn.peerInfo.peerId]
+  return conn in c.conns
 
 proc contains*(c: ConnManager, peerId: PeerID): bool =
-  peerId in c.conns
+  c.connCount(peerId) > 0
 
 proc contains*(c: ConnManager, muxer: Muxer): bool =
   ## checks if a muxer is being tracked by the connection
@@ -190,29 +194,24 @@ proc closeMuxerHolder(muxerHolder: MuxerHolder) {.async.} =
   trace "Cleaned up muxer", m = muxerHolder.muxer
 
 proc delConn(c: ConnManager, conn: Connection) =
-  let peerId = conn.peerInfo.peerId
-  if peerId in c.conns:
-    c.conns[peerId].excl(conn)
-
-    if c.conns[peerId].len == 0:
-      c.conns.del(peerId)
-      libp2p_peers.set(c.conns.len.int64)
-
+  c.conns.keepItIf(it != conn)
+  if not isNil(conn.peerInfo):
+    libp2p_peers.set(c.connCount( conn.peerInfo.peerId ).int64)
     trace "Removed connection", conn
 
 proc cleanupConn(c: ConnManager, conn: Connection) {.async.} =
   ## clean connection's resources such as muxers and streams
+  ##
 
   if isNil(conn):
     return
 
-  if isNil(conn.peerInfo):
-    return
-
-  # Remove connection from all tables without async breaks
-  var muxer = some(MuxerHolder())
-  if not c.muxed.pop(conn, muxer.get()):
-    muxer = none(MuxerHolder)
+  var muxer = none(MuxerHolder)
+  if not isNil(conn.peerInfo):
+    # Remove connection from all tables without async breaks
+    muxer = some(MuxerHolder())
+    if not c.muxed.pop(conn, muxer.get()):
+      muxer = none(MuxerHolder)
 
   delConn(c, conn)
 
@@ -229,25 +228,31 @@ proc onClose(c: ConnManager, conn: Connection) {.async.} =
   ##
   ## triggers the connections resource cleanup
   ##
+
   try:
     await conn.join()
     trace "Connection closed, cleaning up", conn
     await c.cleanupConn(conn)
+    c.connSemaphore.release()
   except CancelledError:
     # This is top-level procedure which will work as separate task, so it
-    # do not need to propogate CancelledError.
+    # do not need to propagate CancelledError.
     debug "Unexpected cancellation in connection manager's cleanup", conn
   except CatchableError as exc:
     debug "Unexpected exception in connection manager's cleanup",
           errMsg = exc.msg, conn
 
 proc selectConn*(c: ConnManager,
-                peerId: PeerID,
-                dir: Direction): Connection =
+                 peerId: PeerID,
+                 dir: Direction): Connection =
   ## Select a connection for the provided peer and direction
   ##
-  let conns = toSeq(
-    c.conns.getOrDefault(peerId))
+
+  let conns = c.conns
+    .filter(
+      proc(conn: Connection): bool =
+        (not isNil(conn.peerInfo) and conn.peerInfo.peerId == peerId)
+    )
     .filterIt( it.dir == dir )
 
   if conns.len > 0:
@@ -261,6 +266,7 @@ proc selectConn*(c: ConnManager, peerId: PeerID): Connection =
   var conn = c.selectConn(peerId, Direction.Out)
   if isNil(conn):
     conn = c.selectConn(peerId, Direction.In)
+
   if isNil(conn):
     trace "connection not found", peerId
 
@@ -278,27 +284,42 @@ proc selectMuxer*(c: ConnManager, conn: Connection): Muxer =
   else:
     debug "no muxer for connection", conn
 
-proc storeConn*(c: ConnManager, conn: Connection) =
+proc selectMuxer*(c: ConnManager,
+                  peerId: PeerID,
+                  dir: Direction): Muxer =
+  ## select a muxer for a peer with the specified
+  ## direction
+  ##
+
+  let conns = toSeq(c.muxed.keys).filterIt(
+    it.peerInfo.peerId == peerId and it.dir == dir
+  )
+
+  if conns.len > 0:
+    return c.selectMuxer(conns[0])
+
+proc selectMuxer*(c: ConnManager, peerId: PeerID): Muxer =
+  ## select a muxer for a peer
+  ##
+
+  var muxer = c.selectMuxer(peerId, Direction.Out)
+  if isNil(muxer):
+    muxer = c.selectMuxer(peerId, Direction.In)
+
+  if isNil(muxer):
+    trace "muxer not found", peerId
+
+  return muxer
+
+proc storeConn*(c: ConnManager, conn: Connection) {.async.} =
   ## store a connection
   ##
 
   if isNil(conn):
     raise newException(CatchableError, "connection cannot be nil")
 
-  if isNil(conn.peerInfo):
-    raise newException(CatchableError, "empty peer info")
-
-  let peerId = conn.peerInfo.peerId
-  if c.conns.getOrDefault(peerId).len > c.maxConns:
-    debug "too many connections",
-      conn, conns = c.conns.getOrDefault(peerId).len
-
-    raise newTooManyConnections()
-
-  if peerId notin c.conns:
-    c.conns[peerId] = initHashSet[Connection]()
-
-  c.conns[peerId].incl(conn)
+  await c.connSemaphore.acquire()
+  c.conns.add(conn)
 
   # Launch on close listener
   # All the errors are handled inside `onClose()` procedure.
@@ -308,11 +329,11 @@ proc storeConn*(c: ConnManager, conn: Connection) =
   trace "Stored connection",
     conn, direction = $conn.dir, connections = c.conns.len
 
-proc storeOutgoing*(c: ConnManager, conn: Connection) =
+proc storeOutgoing*(c: ConnManager, conn: Connection): Future[void] =
   conn.dir = Direction.Out
   c.storeConn(conn)
 
-proc storeIncoming*(c: ConnManager, conn: Connection) =
+proc storeIncoming*(c: ConnManager, conn: Connection): Future[void] =
   conn.dir = Direction.In
   c.storeConn(conn)
 
@@ -342,7 +363,7 @@ proc getMuxedStream*(c: ConnManager,
   ## with the given direction
   ##
 
-  let muxer = c.selectMuxer(c.selectConn(peerId, dir))
+  let muxer = c.selectMuxer(peerId, dir)
   if not(isNil(muxer)):
     return await muxer.newStream()
 
@@ -351,7 +372,7 @@ proc getMuxedStream*(c: ConnManager,
   ## get a muxed stream for the passed peer from any connection
   ##
 
-  let muxer = c.selectMuxer(c.selectConn(peerId))
+  let muxer = c.selectMuxer(peerId)
   if not(isNil(muxer)):
     return await muxer.newStream()
 
@@ -367,8 +388,15 @@ proc getMuxedStream*(c: ConnManager,
 proc dropPeer*(c: ConnManager, peerId: PeerID) {.async.} =
   ## drop connections and cleanup resources for peer
   ##
+
   trace "Dropping peer", peerId
-  let conns = c.conns.getOrDefault(peerId)
+  # TODO: inflight connections for this peer can still be added
+  # after upgrade
+  let conns = c.conns.filter(
+    proc(conn: Connection): bool =
+      (not isNil(conn.peerInfo) and conn.peerInfo.peerId == peerId)
+  )
+
   for conn in conns:
     trace  "Removing connection", conn
     delConn(c, conn)
@@ -393,7 +421,7 @@ proc close*(c: ConnManager) {.async.} =
 
   trace "Closing ConnManager"
   let conns = c.conns
-  c.conns.clear()
+  c.conns.setLen(0)
 
   let muxed = c.muxed
   c.muxed.clear()
@@ -401,8 +429,7 @@ proc close*(c: ConnManager) {.async.} =
   for _, muxer in muxed:
     await closeMuxerHolder(muxer)
 
-  for _, conns2 in conns:
-    for conn in conns2:
-      await conn.close()
+  for conn in conns:
+    await conn.close()
 
   trace "Closed ConnManager"
