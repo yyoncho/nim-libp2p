@@ -198,33 +198,3 @@ suite "TCP transport":
 
     check:
       waitFor(testListenerDialer()) == true
-
-  # test "e2e: should limit incoming connections":
-  #   proc test() {.async.} =
-  #     let ma: MultiAddress = Multiaddress.init("/ip4/0.0.0.0/tcp/0").tryGet()
-  #     var times = 0
-  #     proc connHandler(conn: Connection) {.async, gcsafe.} =
-  #       times.inc()
-
-  #     var transports: seq[TcpTransport]
-  #     transports.add(TcpTransport.init(maxConns = 2))
-  #     asyncCheck transports[0].listen(ma, connHandler)
-
-  #     var conns: seq[Connection]
-  #     try:
-  #       for i in 0..10:
-  #         let transport = TcpTransport.init()
-  #         transports.add(transport)
-  #         conns.add(await transport.dial(transports[0].ma).wait(10.millis))
-  #         echo "DIALED"
-  #     except AsyncTimeoutError:
-  #       discard
-
-  #     check times == 2
-  #     await allFuturesThrowing(
-  #       conns.mapIt(it.close()))
-
-  #     await allFuturesThrowing(
-  #       transports.mapIt(it.close()))
-
-  #   waitFor(test())

@@ -1,6 +1,6 @@
 {.used.}
 
-import unittest, options
+import unittest, options, sequtils
 import chronos
 import stew/byteutils
 import nimcrypto/sysrand
@@ -206,6 +206,76 @@ suite "Switch":
       await allFuturesThrowing(
         switch1.stop(),
         switch2.stop())
+      await allFuturesThrowing(awaiters)
+
+    waitFor(testSwitch())
+
+  test "e2e should prevent more than maximum conns (listen)":
+    proc testSwitch() {.async, gcsafe.} =
+      var awaiters: seq[Future[void]]
+
+      let lestener = newStandardSwitch(maxConns = 2)
+      awaiters.add(await lestener.start())
+
+      let switches = @[
+        newStandardSwitch(),
+        newStandardSwitch(),
+        newStandardSwitch()]
+
+      var triggered: bool
+      for i, s in switches:
+        try:
+          await s.connect(
+            lestener.peerInfo.peerId,
+            lestener.peerInfo.addrs).wait(100.millis)
+
+          check i < 2 # shouldn't dial more than twice
+        except AsyncTimeoutError:
+          check i == 2
+          triggered = true
+
+      check triggered
+
+      await allFuturesThrowing(
+        switches
+        .mapIt( it.stop() )
+        .concat( @[lestener.stop()] )
+      )
+      await allFuturesThrowing(awaiters)
+
+    waitFor(testSwitch())
+
+  test "e2e should prevent more than max conns (dialer)":
+    proc testSwitch() {.async, gcsafe.} =
+      var awaiters: seq[Future[void]]
+
+      let dialer = newStandardSwitch(maxConns = 2)
+      let listeners = @[
+        newStandardSwitch(),
+        newStandardSwitch(),
+        newStandardSwitch()]
+
+      for s in listeners:
+        awaiters.add((await s.start()))
+
+      var triggered: bool
+      for i, s in listeners:
+        try:
+          await dialer.connect(
+            s.peerInfo.peerId,
+            s.peerInfo.addrs).wait(100.millis)
+
+          check i < 2 # shouldn't dial more than twice
+        except AsyncTimeoutError:
+          check i == 2
+          triggered = true
+
+      check triggered
+      await allFuturesThrowing(
+        listeners
+        .mapIt( it.stop() )
+        .concat( @[dialer.stop()] )
+      )
       await allFuturesThrowing(awaiters)
 
     waitFor(testSwitch())
