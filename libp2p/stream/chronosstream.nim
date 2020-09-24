@@ -19,7 +19,7 @@ const
 
 type
   ChronosStream* = ref object of Connection
-    client*: StreamTransport
+    client: StreamTransport
 
 func shortLog*(conn: ChronosStream): string =
   if conn.isNil: "ChronosStream(nil)"

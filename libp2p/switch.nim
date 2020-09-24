@@ -46,9 +46,6 @@ declareCounter(libp2p_dialed_peers, "dialed peers")
 declareCounter(libp2p_failed_dials, "failed dials")
 declareCounter(libp2p_failed_upgrade, "peers failed upgrade")
 
-const
-  MaxConnections* = 100
-
 type
     UpgradeFailedError* = object of CatchableError
     DialFailedError* = object of CatchableError
@@ -299,6 +296,9 @@ proc internalConnect(s: Switch,
         if t.handles(a):   # check if it can dial it
           trace "Dialing address", address = $a, peerId
           let dialed = try:
+              # await a connection slot when the total
+              # connection count is equal to `maxConns`
+              await s.connManager.acquireConnSlot()
               await t.dial(a)
             except CancelledError as exc:
               trace "Dialing canceled", msg = exc.msg, peerId
@@ -437,6 +437,9 @@ proc accept(s: Switch, transport: Transport) {.async.} =
   ##
 
   while transport.running:
+    # await a connection slot when the total
+    # connection count is equal to `maxConns`
+    await s.connManager.acquireConnSlot()
     let conn = await transport.accept()
     if isNil(conn):
       return
@@ -546,7 +549,8 @@ proc newSwitch*(peerInfo: PeerInfo,
                 transports: seq[Transport],
                 identity: Identify,
                 muxers: Table[string, MuxerProvider],
-                secureManagers: openarray[Secure] = []): Switch =
+                secureManagers: openarray[Secure] = [],
+                maxConns = MaxConnections): Switch =
   if secureManagers.len == 0:
     raise (ref CatchableError)(msg: "Provide at least one secure manager")
 
@@ -554,7 +558,7 @@ proc newSwitch*(peerInfo: PeerInfo,
     peerInfo: peerInfo,
     ms: newMultistream(),
     transports: transports,
-    connManager: ConnManager.init(100),
+    connManager: ConnManager.init(maxConns),
     identity: identity,
     muxers: muxers,
     secureManagers: @secureManagers)

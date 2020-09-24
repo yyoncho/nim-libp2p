@@ -21,25 +21,20 @@ type
 proc init*(T: type AsyncSemaphore, size: int): T =
   T(size: size, count: size)
 
-proc tryAcquire*(s: AsyncSemaphore): bool =
-  ## Attempts to acquire a resource, if successful
-  ## the returns true, if not, returns false
-  ##
-
-  if s.count > 0:
-    s.count.dec
-    return true
-
-  return false
-
 proc acquire*(s: AsyncSemaphore): Future[void] =
-  ## Acquire a resource and decrement the semaphore's
+  ## Acquire a resource and decrement the resource
   ## counter. If no more resources are available,
   ## the returned future will not complete until
   ## the resource count goes above 0 again.
   ##
 
   var fut = newFuture[void]("AsyncSemaphore.acquire")
+  fut.cancelCallback = proc(udata: pointer) =
+    ## if future got canceled, increment the
+    ## resource counter
+    ##
+    s.count.inc
+
   if s.count > 0:
     fut.complete()
   else:
@@ -47,6 +42,16 @@ proc acquire*(s: AsyncSemaphore): Future[void] =
 
   s.count.dec
   return fut
+
+proc tryAcquire*(s: AsyncSemaphore): bool =
+  ## Attempts to acquire a resource, if successful
+  ## returns true, otherwise false
+  ##
+
+  # acquire() will return finished
+  # futures if the resource count
+  # is less than `size`
+  return (s.acquire().finished)
 
 proc release*(s: AsyncSemaphore) =
   ## Release a resource from the semaphore,
@@ -59,18 +64,22 @@ proc release*(s: AsyncSemaphore) =
     return
 
   while true:
-    s.count.inc
-    if s.queue.len == 0:
-      return
+    if s.queue.len > 0:
+      var fut = s.queue.popFirst()
+      # skip `canceled`, since the resource
+      # count has been already adjusted in
+      # the cancellation callback
+      if fut.cancelled():
+        continue
 
-    var fut = s.queue.popFirst()
-    if not(fut.cancelled() or fut.finished()):
-      fut.complete()
-      return
+      if not fut.finished:
+        fut.complete()
+
+    s.count.inc # increment the result count
+    return
 
 when isMainModule:
   import unittest
-  import chronos
 
   suite "AsyncSemaphore":
     test "should acquire":
@@ -145,10 +154,30 @@ when isMainModule:
 
       waitFor(test())
 
-    test "should try acquire":
+    test "should tryAcquire":
       proc test() {.async.} =
         let sema = AsyncSemaphore.init(1)
         await sema.acquire()
         check sema.tryAcquire() == false
+
+      waitFor(test())
+
+    test "should tryAcquire and acquire":
+      proc test() {.async.} =
+        let sema = AsyncSemaphore.init(4)
+        check sema.tryAcquire() == true
+        check sema.tryAcquire() == true
+        check sema.tryAcquire() == true
+        check sema.tryAcquire() == true
+        check sema.count == 0
+
+        let fut = sema.acquire()
+        check fut.finished == false
+        check sema.count == -1
+        # queue is only used when count is < 0
+        check sema.queue.len == 1
+
+        sema.release()
+        check fut.finished == true
 
       waitFor(test())
