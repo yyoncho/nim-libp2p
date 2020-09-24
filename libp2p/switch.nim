@@ -513,7 +513,7 @@ proc muxerHandler(s: Switch, muxer: Muxer) {.async, gcsafe.} =
         await s.connManager.triggerPeerEvents(peerId, PeerEvent.Left)
       except CatchableError as exc:
         # This is top-level procedure which will work as separate task, so it
-        # do not need to propogate CancelledError and shouldn't leak others
+        # do not need to propagate CancelledError and shouldn't leak others
         debug "Unexpected exception in switch muxer cleanup",
           conn, msg = exc.msg
 

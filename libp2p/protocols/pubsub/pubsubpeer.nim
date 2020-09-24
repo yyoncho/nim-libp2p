@@ -129,7 +129,7 @@ proc handle*(p: PubSubPeer, conn: Connection) {.async.} =
       await conn.close()
   except CancelledError:
     # This is top-level procedure which will work as separate task, so it
-    # do not need to propogate CancelledError.
+    # do not need to propagate CancelledError.
     trace "Unexpected cancellation in PubSubPeer.handle"
   except CatchableError as exc:
     trace "Exception occurred in PubSubPeer.handle",
