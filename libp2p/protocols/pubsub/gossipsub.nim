@@ -794,7 +794,8 @@ proc heartbeat(g: GossipSub) {.async.} =
     except CancelledError as exc:
       raise exc
     except CatchableError as exc:
-      warn "exception ocurred in gossipsub heartbeat", exc = exc.msg, trace = exc.getStackTrace()
+      warn "exception ocurred in gossipsub heartbeat", exc = exc.msg,
+                                                       trace = exc.getStackTrace()
 
     for trigger in g.heartbeatEvents:
       trace "firing heartbeat event", instance = cast[int](g)

@@ -208,15 +208,15 @@ proc send*(p: PubSubPeer, msg: RPCMsg, anonymize: bool) =
   # or malicious data on the wire - in particular, re-encoding protects against
   # some forms of valid but redundantly encoded protobufs with unknown or
   # duplicated fields
+  var mm = msg # hooks can modify the message
   let encoded = if p.hasObservers():
     # trigger send hooks
-    var mm = msg # hooks can modify the message
     p.sendObservers(mm)
     encodeRpcMsg(mm, anonymize)
   else:
     # If there are no send hooks, we redundantly re-encode the message to
     # protobuf for every peer - this could easily be improved!
-    encodeRpcMsg(msg, anonymize)
+    encodeRpcMsg(mm, anonymize)
 
   if encoded.len <= 0:
     debug "empty message, skipping", p, msg
