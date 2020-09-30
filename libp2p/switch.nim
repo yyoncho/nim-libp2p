@@ -7,11 +7,12 @@
 ## This file may not be copied, modified, or distributed except according to
 ## those terms.
 
-import tables,
-       sequtils,
-       options,
-       sets,
-       oids
+import std/[tables,
+            sequtils,
+            options,
+            sets,
+            oids,
+            sugar]
 
 import chronos,
        chronicles,
@@ -212,12 +213,13 @@ proc upgradeOutgoing(s: Switch, conn: Connection): Future[Connection] {.async, g
     raise newException(UpgradeFailedError,
       "No peerInfo for connection, stopping upgrade")
 
+  s.connManager.updateConn(conn, sconn)
   trace "Upgraded outgoing connection", conn, sconn
 
   return sconn
 
-proc upgradeIncoming(s: Switch, conn: Connection) {.async, gcsafe.} = # noraises
-  trace "Upgrading incoming connection", conn
+proc upgradeIncoming(s: Switch, incomingConn: Connection) {.async, gcsafe.} = # noraises
+  trace "Upgrading incoming connection", incomingConn
   let ms = newMultistream()
 
   # secure incoming connections
@@ -235,6 +237,8 @@ proc upgradeIncoming(s: Switch, conn: Connection) {.async, gcsafe.} = # noraises
       defer:
         await sconn.close()
 
+      s.connManager.updateConn(conn, sconn)
+
       # add the muxer
       for muxer in s.muxers.values:
         ms.addHandler(muxer.codecs, muxer)
@@ -250,18 +254,18 @@ proc upgradeIncoming(s: Switch, conn: Connection) {.async, gcsafe.} = # noraises
     trace "Stopped secure handler", conn
 
   try:
-    if (await ms.select(conn)): # just handshake
+    if (await ms.select(incomingConn)): # just handshake
       # add the secure handlers
       for k in s.secureManagers:
         ms.addHandler(k.codec, securedHandler)
 
     # handle un-secured connections
     # we handshaked above, set this ms handler as active
-    await ms.handle(conn, active = true)
+    await ms.handle(incomingConn, active = true)
   except CatchableError as exc:
     debug "exception upgrading incoming", exc = exc.msg
   finally:
-    await conn.close()
+    await incomingConn.close()
 
 proc internalConnect(s: Switch,
                      peerId: PeerID,
@@ -298,8 +302,9 @@ proc internalConnect(s: Switch,
           let dialed = try:
               # await a connection slot when the total
               # connection count is equal to `maxConns`
-              await s.connManager.acquireConnSlot()
-              await t.dial(a)
+              await s.connManager.trackOutgoingConn(
+                () => t.dial(a)
+              )
             except CancelledError as exc:
               trace "Dialing canceled", msg = exc.msg, peerId
               raise exc
@@ -307,8 +312,6 @@ proc internalConnect(s: Switch,
               trace "Dialing failed", msg = exc.msg, peerId
               libp2p_failed_dials.inc()
               continue # Try the next address
-
-          await s.connManager.storeOutgoing(dialed)
 
           # make sure to assign the peer to the connection
           dialed.peerInfo = PeerInfo.init(peerId, addrs)
@@ -319,7 +322,7 @@ proc internalConnect(s: Switch,
               await s.upgradeOutgoing(dialed)
             except CatchableError as exc:
               # If we failed to establish the connection through one transport,
-              # we won't succeeed through another - no use in trying again
+              # we won't succeeded through another - no use in trying again
               await dialed.close()
               debug "Upgrade failed", msg = exc.msg, peerId
               if exc isnot CancelledError:
@@ -437,16 +440,18 @@ proc accept(s: Switch, transport: Transport) {.async.} =
   ##
 
   while transport.running:
-    # await a connection slot when the total
-    # connection count is equal to `maxConns`
-    await s.connManager.acquireConnSlot()
-    let conn = await transport.accept()
-    if isNil(conn):
-      return
-
-    debug "Incoming connection", conn
-    await s.connManager.storeIncoming(conn)
-    asyncSpawn s.upgradeIncoming(conn) # perform upgrade on incoming connection
+    try:
+      trace "About to accept incoming connection"
+      let conn = await s.connManager.trackIncomingConn(
+        () => transport.accept()
+      )
+      trace "Accepted an incoming connection", conn
+      asyncSpawn s.upgradeIncoming(conn) # perform upgrade on incoming connection
+    except CancelledError as exc:
+      trace "Canceling accept loop"
+      break
+    except CatchableError as exc:
+      trace "Exception in accept loop", exc = exc.msg
 
 proc start*(s: Switch): Future[seq[Future[void]]] {.async, gcsafe.} =
   trace "starting switch for peer", peerInfo = s.peerInfo
