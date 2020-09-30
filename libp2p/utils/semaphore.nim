@@ -8,7 +8,7 @@
 ## those terms.
 
 import deques
-import chronos
+import chronos, chronicles
 
 # TODO: this should probably go in chronos
 
@@ -16,7 +16,7 @@ type
   AsyncSemaphore* = ref object of RootObj
     size*: int
     count*: int
-    queue*: Deque[Future[void]]
+    queue: Deque[Future[void]]
 
 proc init*(T: type AsyncSemaphore, size: int): T =
   T(size: size, count: size)
@@ -34,6 +34,8 @@ proc acquire*(s: AsyncSemaphore): Future[void] =
     ## resource counter
     ##
     s.count.inc
+    trace "canceling and releasing semaphore slot", available = s.count,
+                                                    queue = s.queue.len
 
   if s.count > 0:
     fut.complete()
@@ -41,6 +43,8 @@ proc acquire*(s: AsyncSemaphore): Future[void] =
     s.queue.addLast(fut)
 
   s.count.dec
+  trace "acquired semaphore slot", available = s.count,
+                                   queue = s.queue.len
   return fut
 
 proc tryAcquire*(s: AsyncSemaphore): bool =
@@ -66,16 +70,23 @@ proc release*(s: AsyncSemaphore) =
   while true:
     if s.queue.len > 0:
       var fut = s.queue.popFirst()
+      trace "releasing semaphore slot", available = s.count,
+                                        queue = s.queue.len
+
       # skip `canceled`, since the resource
       # count has been already adjusted in
       # the cancellation callback
       if fut.cancelled():
+        trace "canceled semaphore slot, skipping", available = s.count,
+                                                   queue = s.queue.len
         continue
 
-      if not fut.finished:
+      if not fut.finished():
         fut.complete()
 
     s.count.inc # increment the result count
+    trace "released semaphore slot", available = s.count,
+                                     queue = s.queue.len
     return
 
 when isMainModule:
@@ -179,5 +190,7 @@ when isMainModule:
 
         sema.release()
         check fut.finished == true
+        check sema.count == 0
+        check sema.queue.len == 0
 
       waitFor(test())
