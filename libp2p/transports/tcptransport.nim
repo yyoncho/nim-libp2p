@@ -68,7 +68,6 @@ proc connHandler*(t: TcpTransport,
   let stream = ChronosStream.init(client,
                                   dir = if initiator: Direction.Out
                                   else: Direction.In)
-
   let conn = Connection(stream)
   conn.observedAddr = MultiAddress.init(client.remoteAddress).tryGet()
 
@@ -76,7 +75,7 @@ proc connHandler*(t: TcpTransport,
     try:
       await client.join()
       trace "cleaning up client", addrs = $client.remoteAddress,
-                                  connoid = $conn.oid
+                                  conn = $conn.oid
       if not(isNil(conn)):
         await conn.close()
       t.clients[initiator].keepItIf( it != client )

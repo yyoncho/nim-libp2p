@@ -7,7 +7,7 @@
 ## This file may not be copied, modified, or distributed except according to
 ## those terms.
 
-import std/[hashes, oids, strformat]
+import std/[hashes, oids, strformat, sugar]
 import chronicles, chronos, metrics
 import lpstream,
        ../multiaddress,
@@ -125,7 +125,7 @@ proc timeoutMonitor(s: Connection) {.async, gcsafe.} =
 
       break
 
-    # reset channel on innactivity timeout
+    # reset channel on inactivity timeout
     trace "Connection timed out", s
     if not(isNil(s.timeoutHandler)):
       await s.timeoutHandler()
