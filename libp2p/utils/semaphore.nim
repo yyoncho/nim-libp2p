@@ -91,7 +91,6 @@ proc release*(s: AsyncSemaphore) =
 
 when isMainModule:
   import unittest
-  import chronos
 
   suite "AsyncSemaphore":
     test "should acquire":

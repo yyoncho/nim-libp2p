@@ -7,7 +7,7 @@
 ## This file may not be copied, modified, or distributed except according to
 ## those terms.
 
-import oids, sequtils
+import std/[oids, sequtils, sugar]
 import chronos, chronicles
 import transport,
        ../errors,
@@ -60,7 +60,7 @@ proc setupTcpTransportTracker(): TcpTransportTracker =
 
 proc connHandler*(t: TcpTransport,
                   client: StreamTransport,
-                  initiator: bool): Connection =
+                  initiator: bool): Future[Connection] {.async, gcsafe.} =
   debug "Handling tcp connection", address = $client.remoteAddress,
                                    initiator = initiator,
                                    clients = t.clients[initiator].len
@@ -88,11 +88,19 @@ proc connHandler*(t: TcpTransport,
 
   return conn
 
-proc init*(T: type TcpTransport,
-           flags: set[ServerFlags] = {}): T =
-  result = T(flags: flags)
+proc init*(
+  T: type TcpTransport,
+  flags: set[ServerFlags] = {},
+  connMngr: ConnManager,
+  upgrade: Upgrade): T =
 
-  result.initTransport()
+  let t = T(
+    flags: flags,
+    upgrade: upgrade,
+    connMngr: connMngr)
+
+  t.initTransport()
+  return t
 
 method initTransport*(t: TcpTransport) =
   t.multicodec = multiCodec("tcp")
@@ -100,6 +108,9 @@ method initTransport*(t: TcpTransport) =
 
 method start*(t: TcpTransport, ma: MultiAddress) {.async.} =
   ## listen on the transport
+  ##
+
+  trace "Starting TCP transport", address = ma
 
   await procCall Transport(t).start(ma)
   t.server = createStreamServer(t.ma, t.flags, t)
@@ -113,7 +124,7 @@ method start*(t: TcpTransport, ma: MultiAddress) {.async.} =
 method stop*(t: TcpTransport) {.async, gcsafe.} =
   ## stop the transport
   try:
-    trace "stopping transport"
+    trace "Stopping TCP transport"
     await procCall Transport(t).stop() # call base
 
     checkFutures(
@@ -143,13 +154,16 @@ method stop*(t: TcpTransport) {.async, gcsafe.} =
   finally:
     t.running = false
 
-method accept*(t: TcpTransport): Future[Connection] {.async, gcsafe.} =
+method accept*(t: TcpTransport) {.async, gcsafe.} =
   try:
     let transp = await t.server.accept()
     try:
       # we don't need result connection in this
       # case as it's added inside connHandler
-      return t.connHandler(transp, false)
+      let conn = await t.connMngr.trackIncomingConn(
+        () => t.connHandler(transp, false)
+      )
+      await t.upgrade.upgradeIncoming(conn)
     except CancelledError as exc:
       raise exc
     except CatchableError as exc:
@@ -173,13 +187,33 @@ method accept*(t: TcpTransport): Future[Connection] {.async, gcsafe.} =
     raise exc
 
 method dial*(t: TcpTransport,
+             peerId: PeerID,
              address: MultiAddress):
              Future[Connection] {.async, gcsafe.} =
   trace "dialing remote peer", address = $address
   ## dial a peer
+
+  var conn: Connection
   try:
+    # Check if we have a connection already and try to reuse it
+    conn = await t.connMngr.getMuxedStream(peerId)
+    if conn != nil:
+      if conn.atEof or conn.closed:
+        # This connection should already have been removed from the connection
+        # manager - it's essentially a bug that we end up here - we'll fail
+        # for now, hoping that this will clean themselves up later...
+        warn "dead connection in connection manager", conn
+        await conn.close()
+        raise newException(DialFailedError, "Zombie connection encountered")
+
+      trace "Reusing existing connection", conn, direction = $conn.dir
+      return conn
+
     let transp = await connect(address)
-    return t.connHandler(transp, true)
+    conn = await t.connMngr.trackOutgoingConn(
+      () => t.connHandler(transp, initiator = true)
+    )
+    return await t.upgrade.upgradeOutgoing(conn)
   except TransportTooManyError as exc:
     warn "dial: could not create new connection, too many files opened"
     raise exc

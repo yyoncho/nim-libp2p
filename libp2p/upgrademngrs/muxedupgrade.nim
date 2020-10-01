@@ -46,6 +46,11 @@ proc init*(
       await conn.close()
     trace "Stream handler done", conn
 
+  for key, val in muxers:
+    val.streamHandler = upgrader.streamHandler
+    val.muxerHandler = proc(muxer: Muxer): Future[void] =
+      upgrader.muxerHandler(muxer)
+
   return upgrader
 
 proc mux(u: MuxedUpgrade, conn: Connection): Future[Muxer] {.async, gcsafe.} =
@@ -155,43 +160,47 @@ proc muxerHandler(u: MuxedUpgrade, muxer: Muxer) {.async, gcsafe.} =
     libp2p_failed_upgrade.inc()
     trace "Exception in muxer handler", conn, msg = exc.msg
 
-proc upgradeOutgoing(s: Switch, conn: Connection): Future[Connection] {.async, gcsafe.} =
-  trace "Upgrading outgoing connection", conn
-
-  let sconn = await s.secure(conn) # secure the connection
-  if isNil(sconn):
-    raise newException(UpgradeFailedError,
-      "unable to secure connection, stopping upgrade")
-
-  if sconn.peerInfo.isNil:
-    raise newException(UpgradeFailedError,
-      "current version of nim-libp2p requires that secure protocol negotiates peerid")
-
-  let muxer = await s.mux(sconn) # mux it if possible
-  if muxer == nil:
-    # TODO this might be relaxed in the future
-    raise newException(UpgradeFailedError,
-      "a muxer is required for outgoing connections")
-
+method upgradeOutgoing(s: Switch, conn: Connection): Future[Connection] {.async, gcsafe.} =
   try:
-    await s.identify(muxer)
+    trace "Upgrading outgoing connection", conn
+
+    let sconn = await s.secure(conn) # secure the connection
+    if isNil(sconn):
+      raise newException(UpgradeFailedError,
+        "unable to secure connection, stopping upgrade")
+
+    if sconn.peerInfo.isNil:
+      raise newException(UpgradeFailedError,
+        "current version of nim-libp2p requires that secure protocol negotiates peerid")
+
+    let muxer = await s.mux(sconn) # mux it if possible
+    if muxer == nil:
+      # TODO this might be relaxed in the future
+      raise newException(UpgradeFailedError,
+        "a muxer is required for outgoing connections")
+
+    try:
+      await s.identify(muxer)
+    except CatchableError as exc:
+      # Identify is non-essential, though if it fails, it might indicate that
+      # the connection was closed already - this will be picked up by the read
+      # loop
+      debug "Could not identify connection", conn, msg = exc.msg
+
+    if isNil(sconn.peerInfo):
+      await sconn.close()
+      raise newException(UpgradeFailedError,
+        "No peerInfo for connection, stopping upgrade")
+
+    s.connManager.updateConn(conn, sconn)
+    trace "Upgraded outgoing connection", conn, sconn
+
+    return sconn
   except CatchableError as exc:
-    # Identify is non-essential, though if it fails, it might indicate that
-    # the connection was closed already - this will be picked up by the read
-    # loop
-    debug "Could not identify connection", conn, msg = exc.msg
+    if not isNil(conn):
+      await conn.close()
 
-  if isNil(sconn.peerInfo):
-    await sconn.close()
-    raise newException(UpgradeFailedError,
-      "No peerInfo for connection, stopping upgrade")
-
-  s.connManager.updateConn(conn, sconn)
-  trace "Upgraded outgoing connection", conn, sconn
-
-  return sconn
-
-proc upgradeIncoming(s: Switch, incomingConn: Connection) {.async, gcsafe.} = # noraises
+method upgradeIncoming(s: Switch, incomingConn: Connection) {.async, gcsafe.} = # noraises
   trace "Upgrading incoming connection", incomingConn
   let ms = newMultistream()
 

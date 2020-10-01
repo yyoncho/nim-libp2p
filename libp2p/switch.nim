@@ -45,24 +45,20 @@ logScope:
 
 declareCounter(libp2p_dialed_peers, "dialed peers")
 declareCounter(libp2p_failed_dials, "failed dials")
-declareCounter(libp2p_failed_upgrade, "peers failed upgrade")
 
 type
-    UpgradeFailedError* = object of CatchableError
-    DialFailedError* = object of CatchableError
-
-    Switch* = ref object of RootObj
-      peerInfo*: PeerInfo
-      connManager: ConnManager
-      transports*: seq[Transport]
-      protocols*: seq[LPProtocol]
-      muxers*: Table[string, MuxerProvider]
-      ms*: MultistreamSelect
-      identity*: Identify
-      streamHandler*: StreamHandler
-      secureManagers*: seq[Secure]
-      dialLock: Table[PeerID, AsyncLock]
-      acceptFuts: seq[Future[void]]
+  Switch* = ref object of RootObj
+    peerInfo*: PeerInfo
+    connManager: ConnManager
+    transports*: seq[Transport]
+    protocols*: seq[LPProtocol]
+    muxers*: Table[string, MuxerProvider]
+    ms*: MultistreamSelect
+    identity*: Identify
+    streamHandler*: StreamHandler
+    secureManagers*: seq[Secure]
+    dialLock: Table[PeerID, AsyncLock]
+    acceptFuts: seq[Future[void]]
 
 proc addConnEventHandler*(s: Switch,
                           handler: ConnEventHandler,
@@ -110,162 +106,8 @@ proc secure(s: Switch, conn: Connection): Future[Connection] {.async, gcsafe.} =
 
   return await secureProtocol[0].secure(conn, true)
 
-proc identify(s: Switch, conn: Connection) {.async, gcsafe.} =
-  ## identify the connection
-
-  if (await s.ms.select(conn, s.identity.codec)):
-    let info = await s.identity.identify(conn, conn.peerInfo)
-
-    if info.pubKey.isNone and isNil(conn):
-      raise newException(UpgradeFailedError,
-        "no public key provided and no existing peer identity found")
-
-    if isNil(conn.peerInfo):
-      conn.peerInfo = PeerInfo.init(info.pubKey.get())
-
-    if info.addrs.len > 0:
-      conn.peerInfo.addrs = info.addrs
-
-    if info.agentVersion.isSome:
-      conn.peerInfo.agentVersion = info.agentVersion.get()
-
-    if info.protoVersion.isSome:
-      conn.peerInfo.protoVersion = info.protoVersion.get()
-
-    if info.protos.len > 0:
-      conn.peerInfo.protocols = info.protos
-
-    trace "identified remote peer", conn, peerInfo = shortLog(conn.peerInfo)
-
-proc identify(s: Switch, muxer: Muxer) {.async, gcsafe.} =
-  # new stream for identify
-  var stream = await muxer.newStream()
-  if stream == nil:
-    return
-
-  try:
-    await s.identify(stream)
-  finally:
-    await stream.closeWithEOF()
-
-proc mux(s: Switch, conn: Connection): Future[Muxer] {.async, gcsafe.} =
-  ## mux incoming connection
-
-  trace "Muxing connection", conn
-  if s.muxers.len == 0:
-    warn "no muxers registered, skipping upgrade flow", conn
-    return
-
-  let muxerName = await s.ms.select(conn, toSeq(s.muxers.keys()))
-  if muxerName.len == 0 or muxerName == "na":
-    debug "no muxer available, early exit", conn
-    return
-
-  trace "Found a muxer", conn, muxerName
-
-  # create new muxer for connection
-  let muxer = s.muxers[muxerName].newMuxer(conn)
-
-  # install stream handler
-  muxer.streamHandler = s.streamHandler
-
-  s.connManager.storeMuxer(muxer)
-
-  # start muxer read loop - the future will complete when loop ends
-  let handlerFut = muxer.handle()
-
-  # store it in muxed connections if we have a peer for it
-  s.connManager.storeMuxer(muxer, handlerFut) # update muxer with handler
-
-  return muxer
-
 proc disconnect*(s: Switch, peerId: PeerID): Future[void] {.gcsafe.} =
   s.connManager.dropPeer(peerId)
-
-proc upgradeOutgoing(s: Switch, conn: Connection): Future[Connection] {.async, gcsafe.} =
-  trace "Upgrading outgoing connection", conn
-
-  let sconn = await s.secure(conn) # secure the connection
-  if isNil(sconn):
-    raise newException(UpgradeFailedError,
-      "unable to secure connection, stopping upgrade")
-
-  if sconn.peerInfo.isNil:
-    raise newException(UpgradeFailedError,
-      "current version of nim-libp2p requires that secure protocol negotiates peerid")
-
-  let muxer = await s.mux(sconn) # mux it if possible
-  if muxer == nil:
-    # TODO this might be relaxed in the future
-    raise newException(UpgradeFailedError,
-      "a muxer is required for outgoing connections")
-
-  try:
-    await s.identify(muxer)
-  except CatchableError as exc:
-    # Identify is non-essential, though if it fails, it might indicate that
-    # the connection was closed already - this will be picked up by the read
-    # loop
-    debug "Could not identify connection", conn, msg = exc.msg
-
-  if isNil(sconn.peerInfo):
-    await sconn.close()
-    raise newException(UpgradeFailedError,
-      "No peerInfo for connection, stopping upgrade")
-
-  s.connManager.updateConn(conn, sconn)
-  trace "Upgraded outgoing connection", conn, sconn
-
-  return sconn
-
-proc upgradeIncoming(s: Switch, incomingConn: Connection) {.async, gcsafe.} = # noraises
-  trace "Upgrading incoming connection", incomingConn
-  let ms = newMultistream()
-
-  # secure incoming connections
-  proc securedHandler (conn: Connection,
-                       proto: string)
-                       {.async, gcsafe, closure.} =
-    trace "Starting secure handler", conn
-    let secure = s.secureManagers.filterIt(it.codec == proto)[0]
-
-    try:
-      var sconn = await secure.secure(conn, false)
-      if isNil(sconn):
-        return
-
-      defer:
-        await sconn.close()
-
-      s.connManager.updateConn(conn, sconn)
-
-      # add the muxer
-      for muxer in s.muxers.values:
-        ms.addHandler(muxer.codecs, muxer)
-
-      # handle subsequent secure requests
-      await ms.handle(sconn)
-
-    except CancelledError as exc:
-      raise exc
-    except CatchableError as exc:
-      debug "Exception in secure handler", msg = exc.msg, conn
-
-    trace "Stopped secure handler", conn
-
-  try:
-    if (await ms.select(incomingConn)): # just handshake
-      # add the secure handlers
-      for k in s.secureManagers:
-        ms.addHandler(k.codec, securedHandler)
-
-    # handle un-secured connections
-    # we handshaked above, set this ms handler as active
-    await ms.handle(incomingConn, active = true)
-  except CatchableError as exc:
-    debug "exception upgrading incoming", exc = exc.msg
-  finally:
-    await incomingConn.close()
 
 proc internalConnect(s: Switch,
                      peerId: PeerID,
@@ -279,32 +121,13 @@ proc internalConnect(s: Switch,
   try:
     await lock.acquire()
 
-    # Check if we have a connection already and try to reuse it
-    conn = await s.connManager.getMuxedStream(peerId)
-    if conn != nil:
-      if conn.atEof or conn.closed:
-        # This connection should already have been removed from the connection
-        # manager - it's essentially a bug that we end up here - we'll fail
-        # for now, hoping that this will clean themselves up later...
-        warn "dead connection in connection manager", conn
-        await conn.close()
-        raise newException(DialFailedError, "Zombie connection encountered")
-
-      trace "Reusing existing connection", conn, direction = $conn.dir
-
-      return conn
-
     trace "Dialing peer", peerId
     for t in s.transports: # for each transport
-      for a in addrs: # for each address
-        if t.handles(a):   # check if it can dial it
+      for a in addrs:      # for each address
+        if t.handles(a):   # check if we can dial it
           trace "Dialing address", address = $a, peerId
           let dialed = try:
-              # await a connection slot when the total
-              # connection count is equal to `maxConns`
-              await s.connManager.trackOutgoingConn(
-                () => t.dial(a)
-              )
+              await t.dial(a)
             except CancelledError as exc:
               trace "Dialing canceled", msg = exc.msg, peerId
               raise exc
@@ -317,21 +140,6 @@ proc internalConnect(s: Switch,
           dialed.peerInfo = PeerInfo.init(peerId, addrs)
 
           libp2p_dialed_peers.inc()
-
-          let upgraded = try:
-              await s.upgradeOutgoing(dialed)
-            except CatchableError as exc:
-              # If we failed to establish the connection through one transport,
-              # we won't succeeded through another - no use in trying again
-              await dialed.close()
-              debug "Upgrade failed", msg = exc.msg, peerId
-              if exc isnot CancelledError:
-                libp2p_failed_upgrade.inc()
-              raise exc
-
-          doAssert not isNil(upgraded), "connection died after upgradeOutgoing"
-
-          conn = upgraded
           trace "Dial successful", conn, peerInfo = conn.peerInfo
           break
   finally:
@@ -441,12 +249,7 @@ proc accept(s: Switch, transport: Transport) {.async.} =
 
   while transport.running:
     try:
-      trace "About to accept incoming connection"
-      let conn = await s.connManager.trackIncomingConn(
-        () => transport.accept()
-      )
-      trace "Accepted an incoming connection", conn
-      asyncSpawn s.upgradeIncoming(conn) # perform upgrade on incoming connection
+      await transport.accept()
     except CancelledError as exc:
       trace "Canceling accept loop"
       break
@@ -490,66 +293,6 @@ proc stop*(s: Switch) {.async.} =
 
   trace "Switch stopped"
 
-proc muxerHandler(s: Switch, muxer: Muxer) {.async, gcsafe.} =
-  let
-    conn = muxer.connection
-
-  if conn.peerInfo.isNil:
-    warn "This version of nim-libp2p requires secure protocol to negotiate peerid"
-    await muxer.close()
-    return
-
-  # store muxer and muxed connection
-  s.connManager.storeMuxer(muxer)
-
-  try:
-    await s.identify(muxer)
-  except CatchableError as exc:
-    # Identify is non-essential, though if it fails, it might indicate that
-    # the connection was closed already - this will be picked up by the read
-    # loop
-    debug "Could not identify connection", conn, msg = exc.msg
-
-  try:
-    let peerId = conn.peerInfo.peerId
-
-    proc peerCleanup() {.async.} =
-      try:
-        await muxer.connection.join()
-        await s.connManager.triggerConnEvent(
-          peerId, ConnEvent(kind: ConnEventKind.Disconnected))
-        await s.connManager.triggerPeerEvents(peerId, PeerEvent.Left)
-      except CatchableError as exc:
-        # This is top-level procedure which will work as separate task, so it
-        # do not need to propagate CancelledError and shouldn't leak others
-        debug "Unexpected exception in switch muxer cleanup",
-          conn, msg = exc.msg
-
-    proc peerStartup() {.async.} =
-      try:
-        await s.connManager.triggerPeerEvents(peerId, PeerEvent.Joined)
-        await s.connManager.triggerConnEvent(peerId,
-          ConnEvent(kind: ConnEventKind.Connected, incoming: true))
-      except CatchableError as exc:
-        # This is top-level procedure which will work as separate task, so it
-        # do not need to propagate CancelledError and shouldn't leak others
-        debug "Unexpected exception in switch muxer startup",
-          conn, msg = exc.msg
-
-    # All the errors are handled inside `peerStartup()` procedure.
-    asyncSpawn peerStartup()
-
-    # All the errors are handled inside `peerCleanup()` procedure.
-    asyncSpawn peerCleanup()
-
-  except CancelledError as exc:
-    await muxer.close()
-    raise exc
-  except CatchableError as exc:
-    await muxer.close()
-    libp2p_failed_upgrade.inc()
-    trace "Exception in muxer handler", conn, msg = exc.msg
-
 proc newSwitch*(peerInfo: PeerInfo,
                 transports: seq[Transport],
                 identity: Identify,
@@ -569,24 +312,7 @@ proc newSwitch*(peerInfo: PeerInfo,
     muxers: muxers,
     secureManagers: @secureManagers)
 
-  switch.streamHandler = proc(conn: Connection) {.async, gcsafe.} = # noraises
-    trace "Starting stream handler", conn
-    try:
-      await switch.ms.handle(conn) # handle incoming connection
-    except CancelledError as exc:
-      raise exc
-    except CatchableError as exc:
-      trace "exception in stream handler", conn, msg = exc.msg
-    finally:
-      await conn.closeWithEOF()
-    trace "Stream handler done", conn
-
   switch.mount(identity)
-  for key, val in muxers:
-    val.streamHandler = switch.streamHandler
-    val.muxerHandler = proc(muxer: Muxer): Future[void] =
-      switch.muxerHandler(muxer)
-
   return switch
 
 proc isConnected*(s: Switch, peerInfo: PeerInfo): bool

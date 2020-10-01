@@ -32,10 +32,10 @@ type
     connManager*: ConnManager
     secureManagers*: seq[Secure]
 
-method upgradeIncoming*(u: Upgrade, conn: Connection): Future[void] =
+method upgradeIncoming*(u: Upgrade, conn: Connection): Future[void] {.base.} =
   doAssert(false, "Not implemented!")
 
-method upgradeOutgoing*(u: Upgrade, conn: Connection): Future[void] =
+method upgradeOutgoing*(u: Upgrade, conn: Connection): Future[Connection] {.base.} =
   doAssert(false, "Not implemented!")
 
 proc secure*(u: Upgrade, conn: Connection): Future[Connection] {.async, gcsafe.} =

@@ -10,14 +10,22 @@
 
 import sequtils
 import chronos, chronicles
-import ../stream/connection,
+import ../upgrademngrs/upgrade,
+       ../stream/connection,
        ../multiaddress,
-       ../multicodec
+       ../multicodec,
+       ../connmanager
+
+export multicodec, connection, upgrade, connmanager, chronos
 
 type
+  DialFailedError* = object of CatchableError
+
   Transport* = ref object of RootObj
     ma*: Multiaddress
     multicodec*: MultiCodec
+    connMngr*: ConnManager
+    upgrade*: Upgrade
     running*: bool
 
 method initTransport*(t: Transport) {.base, gcsafe, locks: "unknown".} =
@@ -38,14 +46,14 @@ method stop*(t: Transport) {.base, async.} =
   ## including all outstanding connections
   discard
 
-method accept*(t: Transport): Future[Connection]
-               {.base, async, gcsafe.} =
+method accept*(t: Transport) {.base, async.} =
   ## accept incoming connections
   ##
 
   discard
 
 method dial*(t: Transport,
+             peerId: PeerID,
              address: MultiAddress): Future[Connection]
              {.base, async, gcsafe.} =
   ## dial a peer
