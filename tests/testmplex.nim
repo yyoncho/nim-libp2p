@@ -111,7 +111,7 @@ suite "Mplex":
 
       var data = newSeq[byte](6)
       await chann.close() # closing channel
-      # should be able to read on local clsoe
+      # should be able to read on local close
       await chann.readExactly(addr data[0], 3)
       # closing remote end
       let closeFut = chann.pushEof()
@@ -298,6 +298,34 @@ suite "Mplex":
       let wfut2 = chann.pushData(@[0'u8])
       await chann.reset()
       check await allFutures(rfut, rfut2, wfut, wfut2).withTimeout(100.millis)
+      await conn.close()
+
+    asyncTest "should not hang on concurrent push/reads":
+      proc writeHandler(data: seq[byte]) {.async, gcsafe.} = discard
+      let
+        conn = newBufferStream(writeHandler)
+        chann = LPChannel.init(1, conn, true)
+
+      var data = newSeq[byte](1)
+      proc writer() {.async.} =
+        await chann.pushData(@[0'u8])
+        await chann.pushData(@[0'u8])
+        await chann.pushData(@[0'u8])
+
+      proc reader() {.async.} =
+        await chann.readExactly(addr data[0], 1)
+        await chann.readExactly(addr data[0], 1)
+
+      let rw = @[writer(), reader()] # order of execution is important!!!
+
+      await chann.close()
+      check await chann.reset() # this would hang
+      .withTimeout(100.millis)
+
+      check await allFuturesThrowing(
+        allFinished(rw))
+        .withTimeout(100.millis)
+
       await conn.close()
 
     asyncTest "channel should fail writing":
@@ -861,7 +889,7 @@ suite "Mplex":
         transport2.stop())
       await acceptFut
 
-    asyncTest "canceling listening connection should close both ends":
+    asyncTest "closing listening connection should close both ends":
       let ma: MultiAddress = Multiaddress.init("/ip4/0.0.0.0/tcp/0").tryGet()
       let transport1 = TcpTransport.init()
 

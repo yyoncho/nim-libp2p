@@ -95,6 +95,24 @@ proc reset*(s: LPChannel) {.async, gcsafe.} =
     # Make sure to drain any ongoing pushes - there's already at least one item
     # more in the queue already so any ongoing reads shouldn't interfere
     # Notably, popFirst is not fair - which reader/writer gets woken up depends
+    # if no reader are attached, attempt to drain
+    # the queue, otherwise, wait for the reader
+    # to complete and drain whatever left
+    # afterwards.
+
+    if s.reading:
+      # If a reader is attached, schedule a future to be
+      # completed as soon as possible, but after the ongoing
+      # read (either at the end of this poll or sometime during
+      # the next poll()), otherwise we'll schedule a pop after
+      # the read which will never complete because the reader
+      # steals it from under us.
+      var w = newFuture[void]()
+      proc wakeup(p: pointer = nil) = w.complete()
+      callSoon(wakeup)
+      await w
+      continue
+
     discard await s.readQueue.popFirst()
 
   if s.readQueue.len == 0 and s.reading:
