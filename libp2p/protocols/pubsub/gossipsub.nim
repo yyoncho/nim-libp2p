@@ -140,6 +140,8 @@ type
 
     directPeers*: seq[PeerId]
 
+    maxTopicCount*: int # negative number for unlimited
+
   GossipSub* = ref object of FloodSub
     mesh*: PeerTable                           # peers that we send messages to when we are subscribed to the topic
     fanout*: PeerTable                         # peers that we send messages to when we're not subscribed to the topic
@@ -209,6 +211,7 @@ proc init*(_: type[GossipSubParams]): GossipSubParams =
       ipColocationFactorThreshold: 1.0,
       behaviourPenaltyWeight: -1.0,
       behaviourPenaltyDecay: 0.999,
+      maxTopicCount: -1, # unlimited
     )
 
 proc validateParameters*(parameters: GossipSubParams): Result[void, cstring] =
@@ -1085,6 +1088,13 @@ proc handleIWant(g: GossipSub,
 method rpcHandler*(g: GossipSub,
                   peer: PubSubPeer,
                   rpcMsg: RPCMsg) {.async.} =
+  # apply subscriptions limit here
+  if g.parameters.maxTopicCount >= 0 and 
+    rpcMsg.subscriptions.len > g.parameters.maxTopicCount:
+    warn "Ignoring peer requesting too many subscriptions", peer
+    peer.behaviourPenalty += 1
+    return
+
   await procCall PubSub(g).rpcHandler(peer, rpcMsg)
 
   for msg in rpcMsg.messages:                         # for every message
