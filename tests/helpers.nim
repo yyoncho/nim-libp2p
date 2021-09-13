@@ -86,16 +86,15 @@ proc new*(T: typedesc[TestBufferStream], writeHandler: WriteHandler): T =
 proc newBufferStream*(writeHandler: WriteHandler): TestBufferStream {.deprecated: "use TestBufferStream.new".}=
   TestBufferStream.new(writeHandler)
 
-proc checkExpiringInternal(cond: proc(): bool {.raises: [Defect].} ): Future[bool] {.async, gcsafe.} =
-  {.gcsafe.}:
-    let start = Moment.now()
-    while true:
-      if Moment.now() > (start + chronos.seconds(5)):
-        return false
-      elif cond():
-        return true
-      else:
-        await sleepAsync(1.millis)
-
 template checkExpiring*(code: untyped): untyped =
-  checkExpiringInternal(proc(): bool = code)
+  let start = Moment.now()
+  var res = false
+  while true:
+    if Moment.now() > (start + chronos.seconds(5)):
+      break
+    elif code:
+      res = true
+      break
+    else:
+      await sleepAsync(1.millis)
+  res

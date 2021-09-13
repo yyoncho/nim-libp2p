@@ -1,6 +1,6 @@
 import chronos, unittest2
 import ../libp2p/daemon/daemonapi, ../libp2p/multiaddress, ../libp2p/multicodec,
-       ../libp2p/cid, ../libp2p/multihash, ../libp2p/peerid
+       ../libp2p/cid, ../libp2p/multihash, ../libp2p/peerid, helpers
 
 when defined(nimHasUsed): {.used.}
 
@@ -109,20 +109,19 @@ proc pubsubTest(f: set[P2PDaemonFlags]): Future[bool] {.async.} =
   var ticket1 = await api1.pubsubSubscribe("test-topic", pubsubHandler1)
   var ticket2 = await api2.pubsubSubscribe("test-topic", pubsubHandler2)
 
-  await sleepAsync(2.seconds)
+  check checkExpiring(len(await api1.pubsubGetTopics()) == 1)
+  check checkExpiring(len(await api2.pubsubGetTopics()) == 1)
 
-  var topics1 = await api1.pubsubGetTopics()
-  var topics2 = await api2.pubsubGetTopics()
+  var peers1 = await api1.pubsubListPeers("test-topic")
+  var peers2 = await api2.pubsubListPeers("test-topic")
 
-  if len(topics1) == 1 and len(topics2) == 1:
-    var peers1 = await api1.pubsubListPeers("test-topic")
-    var peers2 = await api2.pubsubListPeers("test-topic")
-    if len(peers1) == 1 and len(peers2) == 1:
-      # Publish test data via api1.
-      await sleepAsync(500.milliseconds)
-      await api1.pubsubPublish("test-topic", msgData)
-      var res = await one(allFutures(handlerFuture1, handlerFuture2),
-                          sleepAsync(10.seconds))
+  check checkExpiring(len(await api1.pubsubListPeers("test-topic")) == 1)
+  check checkExpiring(len(await api2.pubsubListPeers("test-topic")) == 1)
+
+  # Publish test data via api1.
+  await api1.pubsubPublish("test-topic", msgData)
+  var res = await one(allFutures(handlerFuture1, handlerFuture2),
+                      sleepAsync(10.seconds))
 
   await api1.close()
   await api2.close()
