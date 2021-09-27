@@ -91,6 +91,8 @@ template checkExpiring*(code: untyped): untyped =
   var res = false
   while true:
     if Moment.now() > (start + chronos.seconds(5)):
+      # To show error
+      check code
       break
     elif code:
       res = true

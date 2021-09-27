@@ -91,7 +91,7 @@ proc pubsubTest(f: set[P2PDaemonFlags]): Future[bool] {.async.} =
       inc(resultsCount)
     handlerFuture1.complete()
     # Callback must return `false` to close subscription channel.
-    result = false
+    result = true
 
   proc pubsubHandler2(api: DaemonAPI,
                      ticket: PubsubTicket,
@@ -101,10 +101,13 @@ proc pubsubTest(f: set[P2PDaemonFlags]): Future[bool] {.async.} =
       inc(resultsCount)
     handlerFuture2.complete()
     # Callback must return `false` to close subscription channel.
-    result = false
+    result = true
 
   await api1.connect(id2.peer, id2.addresses)
   await api2.connect(id1.peer, id1.addresses)
+
+  check checkExpiring(len(await api1.listPeers()) >= 1)
+  check checkExpiring(len(await api2.listPeers()) >= 1)
 
   var ticket1 = await api1.pubsubSubscribe("test-topic", pubsubHandler1)
   var ticket2 = await api2.pubsubSubscribe("test-topic", pubsubHandler2)
@@ -112,16 +115,16 @@ proc pubsubTest(f: set[P2PDaemonFlags]): Future[bool] {.async.} =
   check checkExpiring(len(await api1.pubsubGetTopics()) == 1)
   check checkExpiring(len(await api2.pubsubGetTopics()) == 1)
 
-  var peers1 = await api1.pubsubListPeers("test-topic")
-  var peers2 = await api2.pubsubListPeers("test-topic")
-
   check checkExpiring(len(await api1.pubsubListPeers("test-topic")) == 1)
   check checkExpiring(len(await api2.pubsubListPeers("test-topic")) == 1)
 
   # Publish test data via api1.
   await api1.pubsubPublish("test-topic", msgData)
+
   var res = await one(allFutures(handlerFuture1, handlerFuture2),
                       sleepAsync(10.seconds))
+
+  check checkExpiring(resultsCount == 2)
 
   await api1.close()
   await api2.close()
