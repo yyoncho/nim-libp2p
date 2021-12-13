@@ -28,7 +28,7 @@ const
 
 type
   BufferStream* = ref object of Connection
-    readQueue*: AsyncQueue[seq[byte]] # read queue for managing backpressure
+    readQueue*: AsyncQueue[SharedBuffer[byte]] # read queue for managing backpressure
     readBuf*: StreamSeq               # overflow buffer for readOnce
     pushing*: bool                    # number of ongoing push operations
     reading*: bool                    # is there an ongoing read? (only allow one)
@@ -53,7 +53,7 @@ method initStream*(s: BufferStream) =
 
   procCall Connection(s).initStream()
 
-  s.readQueue = newAsyncQueue[seq[byte]](1)
+  s.readQueue = newAsyncQueue[SharedBuffer[byte]](1)
 
   trace "BufferStream created", s
 
@@ -65,7 +65,7 @@ proc new*(
   bufferStream.initStream()
   bufferStream
 
-method pushData*(s: BufferStream, data: seq[byte]) {.base, async.} =
+method pushData*(s: BufferStream, data: SharedBuffer[byte]) {.base, async.} =
   ## Write bytes to internal read buffer, use this to fill up the
   ## buffer with data.
   ##
@@ -151,12 +151,12 @@ method readOnce*(s: BufferStream,
     else:
       let remaining = min(buf.len, nbytes - rbytes)
       toOpenArray(p, rbytes, nbytes - 1)[0..<remaining] =
-        buf.toOpenArray(0, remaining - 1)
+        buf.slice(0, remaining).sbOpenArray()
       rbytes += remaining
 
       if remaining < buf.len:
         trace "add leftovers", s, len = buf.len - remaining
-        s.readBuf.add(buf.toOpenArray(remaining, buf.high))
+        s.readBuf.add(buf.slice(remaining, buf.len - remaining).sbOpenArray())
 
   if s.isEof and s.readBuf.len() == 0:
     # We can clear the readBuf memory since it won't be used any more

@@ -29,11 +29,15 @@ logScope:
 
 const
   LPStreamTrackerName* = "LPStream"
-  Eof* = @[]
+  Eof*: seq[byte] = @[]
 
 type
   Direction* {.pure.} = enum
     In, Out
+
+  SharedBuffer*[T] = object
+    buf: ref seq[T]
+    start, len: int
 
   LPStream* = ref object of RootObj
     closeEvent*: AsyncEvent
@@ -61,6 +65,30 @@ type
   StreamTracker* = ref object of TrackerBase
     opened*: uint64
     closed*: uint64
+
+template sbOpenArray*[T](sb: SharedBuffer[T]): openArray[T] =
+  sb.buf[].toOpenArray(sb.start, sb.start + sb.len - 1)
+
+proc len*[T](sb: SharedBuffer[T]): int {.inline.} =
+  sb.len
+
+proc size*[T](sb: SharedBuffer[T]): int {.inline.} =
+  sb.len * sizeof(T)
+
+proc pointer*[T](sb: SharedBuffer[T]): ptr T {.inline.} =
+  unsafeAddr sb.buf[sb.start]
+
+converter toSB*[T](s: seq[T]): SharedBuffer[T] {.inline.} =
+  result = SharedBuffer[T]()
+  result.buf = new(seq[T])
+  result.buf[] = s
+  result.len = s.len
+
+proc slice*[T](sb: SharedBuffer[T], start, len: int): SharedBuffer[T] {.inline.} =
+  result = SharedBuffer[T]()
+  result.buf = sb.buf
+  result.start = start + sb.start
+  result.len = len
 
 proc setupStreamTracker(name: string): StreamTracker =
   let tracker = new StreamTracker
@@ -241,7 +269,7 @@ proc readLp*(s: LPStream, maxSize: int): Future[seq[byte]] {.async, gcsafe.} =
   await s.readExactly(addr res[0], res.len)
   return res
 
-method write*(s: LPStream, msg: seq[byte]): Future[void] {.base.} =
+method write*(s: LPStream, msg: SharedBuffer[byte]): Future[void] {.base.} =
   doAssert(false, "not implemented!")
 
 proc writeLp*(s: LPStream, msg: openArray[byte]): Future[void] =

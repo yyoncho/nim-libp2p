@@ -222,7 +222,7 @@ method readMessage*(sconn: SecioConn): Future[seq[byte]] {.async.} =
     trace "Message MAC verification failed", buf = buf.shortLog
     raise (ref SecioError)(msg: "message failed MAC verification")
 
-method write*(sconn: SecioConn, message: seq[byte]) {.async.} =
+method write*(sconn: SecioConn, message: SharedBuffer[byte]) {.async.} =
   ## Write message ``message`` to secure connection ``sconn``.
   if message.len == 0:
     return
@@ -239,7 +239,7 @@ method write*(sconn: SecioConn, message: seq[byte]) {.async.} =
     var msg = newSeq[byte](chunkSize + 4 + macsize)
     msg[0..<4] = uint32(length).toBytesBE()
 
-    sconn.writerCoder.encrypt(message.toOpenArray(offset, offset + chunkSize - 1),
+    sconn.writerCoder.encrypt(message.sbOpenArray(),
                               msg.toOpenArray(4, 4 + chunkSize - 1))
     left = left - chunkSize
     offset = offset + chunkSize

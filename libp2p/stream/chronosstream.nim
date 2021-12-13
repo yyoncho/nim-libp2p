@@ -104,7 +104,7 @@ method readOnce*(s: ChronosStream, pbytes: pointer, nbytes: int): Future[int] {.
       if s.tracked:
         libp2p_peers_traffic_read.inc(nbytes.int64, labelValues = [s.shortAgent])
 
-method write*(s: ChronosStream, msg: seq[byte]) {.async.} =
+method write*(s: ChronosStream, msg: SharedBuffer[byte]) {.async.} =
   if s.closed:
     raise newLPStreamClosedError()
 
@@ -115,7 +115,7 @@ method write*(s: ChronosStream, msg: seq[byte]) {.async.} =
     # StreamTransport will only return written < msg.len on fatal failures where
     # further writing is not possible - in such cases, we'll raise here,
     # since we don't return partial writes lengths
-    var written = await s.client.write(msg)
+    var written = await s.client.write(msg.pointer, msg.size)
 
     if written < msg.len:
       raise (ref LPStreamClosedError)(msg: "Write couldn't finish writing")

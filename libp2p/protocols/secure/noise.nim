@@ -460,7 +460,7 @@ proc encryptFrame(
 
   cipherFrame[2 + src.len()..<cipherFrame.len] = tag
 
-method write*(sconn: NoiseConnection, message: seq[byte]): Future[void] {.async.} =
+method write*(sconn: NoiseConnection, message: SharedBuffer[byte]): Future[void] {.async.} =
   if message.len == 0:
     return
 
@@ -478,16 +478,17 @@ method write*(sconn: NoiseConnection, message: seq[byte]): Future[void] {.async.
   while left > 0:
     let
       chunkSize = min(MaxPlainSize, left)
+      chunk = message.slice(offset, chunkSize)
 
     encryptFrame(
       sconn,
       cipherFrames.toOpenArray(woffset, woffset + chunkSize + FramingSize - 1),
-      message.toOpenArray(offset, offset + chunkSize - 1))
+      chunk.sbOpenArray())
 
     when defined(libp2p_dump):
       dumpMessage(
         sconn, FlowDirection.Outgoing,
-        message.toOpenArray(offset, offset + chunkSize - 1))
+        message.toSeq.toOpenArray(offset, offset + chunkSize - 1))
 
     left = left - chunkSize
     offset += chunkSize

@@ -75,8 +75,8 @@ type
   TestBufferStream* = ref object of BufferStream
     writeHandler*: WriteHandler
 
-method write*(s: TestBufferStream, msg: seq[byte]): Future[void] =
-  s.writeHandler(msg)
+method write*(s: TestBufferStream, msg: SharedBuffer[byte]): Future[void] =
+  s.writeHandler(@(msg.sbOpenArray()))
 
 proc new*(T: typedesc[TestBufferStream], writeHandler: WriteHandler): T =
   let testBufferStream = T(writeHandler: writeHandler)

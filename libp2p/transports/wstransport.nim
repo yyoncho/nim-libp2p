@@ -60,9 +60,9 @@ method readOnce*(
 
 method write*(
   s: WsStream,
-  msg: seq[byte]): Future[void] {.async.} =
+  msg: SharedBuffer[byte]): Future[void] {.async.} =
   try:
-    await s.session.send(msg, Opcode.Binary)
+    await s.session.send(@(msg.sbOpenArray()), Opcode.Binary)
   except WSClosedError:
     raise newLPStreamEOFError()
 

@@ -13,7 +13,7 @@ import std/[oids, strformat]
 import pkg/[chronos, chronicles, metrics, nimcrypto/utils]
 import ./coder,
        ../muxer,
-       ../../stream/[bufferstream, connection, streamseq],
+       ../../stream/[bufferstream, connection, streamseq, lpstream],
        ../../peerinfo
 
 export connection
@@ -175,7 +175,7 @@ method readOnce*(s: LPChannel,
     await s.reset()
     raise exc
 
-method write*(s: LPChannel, msg: seq[byte]): Future[void] {.async.} =
+method write*(s: LPChannel, msg: SharedBuffer[byte]): Future[void] {.async.} =
   ## Write to mplex channel - there may be up to MaxWrite concurrent writes
   ## pending after which the peer is disconnected
   if s.closedLocal or s.conn.closed:

@@ -58,7 +58,7 @@ proc readMsg*(conn: Connection): Future[Msg] {.async, gcsafe.} =
 proc writeMsg*(conn: Connection,
                id: uint64,
                msgType: MessageType,
-               data: seq[byte] = @[]): Future[void] =
+               data: SharedBuffer[byte] = toSB(newSeq[byte]())): Future[void] =
   var
     left = data.len
     offset = 0
@@ -70,7 +70,8 @@ proc writeMsg*(conn: Connection,
       chunkSize = if left > MaxMsgSize: MaxMsgSize - 64 else: left
 
     buf.writePBVarint(id shl 3 or ord(msgType).uint64)
-    buf.writeSeq(data.toOpenArray(offset, offset + chunkSize - 1))
+    let slice = data.slice(offset, chunkSize)
+    buf.writeSeq(slice.sbOpenArray())
     left = left - chunkSize
     offset = offset + chunkSize
 
