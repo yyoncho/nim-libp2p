@@ -557,7 +557,7 @@ method handshake*(p: Noise, conn: Connection, initiator: bool): Future[SecureCon
       let pid = PeerId.init(remotePubKey)
       if not conn.peerId.validate():
         raise newException(NoiseHandshakeError, "Failed to validate peerId.")
-      if pid.isErr or pid.get() != conn.peerId:
+      if pid.isErr or conn.peerId.match(remotePubKey) == false:
         var
           failedKey: PublicKey
         discard extractPublicKey(conn.peerId, failedKey)
