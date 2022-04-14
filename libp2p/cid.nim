@@ -12,6 +12,7 @@
 {.push raises: [Defect].}
 
 import tables, hashes
+import chronicles
 import multibase, multicodec, multihash, vbuffer, varint
 import stew/[base58, results]
 
@@ -282,3 +283,7 @@ proc `$`*(cid: Cid): string =
       ""
   else:
     ""
+
+chronicles.expandIt(Cid):
+  version = it.cidver
+  hash = $it
