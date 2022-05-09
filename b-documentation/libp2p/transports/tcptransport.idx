@@ -1,0 +1,10 @@
+TcpTransportTrackerName	libp2p/transports/tcptransport.html#TcpTransportTrackerName	tcptransport: TcpTransportTrackerName	
+TcpTransport	libp2p/transports/tcptransport.html#TcpTransport	tcptransport: TcpTransport	
+TcpTransportTracker	libp2p/transports/tcptransport.html#TcpTransportTracker	tcptransport: TcpTransportTracker	
+connHandler	libp2p/transports/tcptransport.html#connHandler,TcpTransport,StreamTransport,Direction	tcptransport: connHandler(self: TcpTransport; client: StreamTransport; dir: Direction): Future[\n    Connection]	
+new	libp2p/transports/tcptransport.html#new,typedesc[TcpTransport],set[ServerFlags],Upgrade	tcptransport: new(T: typedesc[TcpTransport]; flags: set[ServerFlags] = {}; upgrade: Upgrade): T:type	
+start	libp2p/transports/tcptransport.html#start.e,TcpTransport,seq[MultiAddress]	tcptransport: start(self: TcpTransport; addrs: seq[MultiAddress]): Future[void]	
+stop	libp2p/transports/tcptransport.html#stop.e,TcpTransport	tcptransport: stop(self: TcpTransport): Future[void]	
+accept	libp2p/transports/tcptransport.html#accept.e,TcpTransport	tcptransport: accept(self: TcpTransport): Future[Connection]	
+dial	libp2p/transports/tcptransport.html#dial.e,TcpTransport,string,MultiAddress	tcptransport: dial(self: TcpTransport; hostname: string; address: MultiAddress): Future[\n    Connection]	
+handles	libp2p/transports/tcptransport.html#handles.e,TcpTransport,MultiAddress	tcptransport: handles(t: TcpTransport; address: MultiAddress): bool	

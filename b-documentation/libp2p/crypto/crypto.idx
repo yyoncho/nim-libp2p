@@ -1,0 +1,89 @@
+libp2p_pki_schemes	libp2p/crypto/crypto.html#libp2p_pki_schemes	crypto: libp2p_pki_schemes	
+RSA	libp2p/crypto/crypto.html#RSA	PKScheme.RSA	
+Ed25519	libp2p/crypto/crypto.html#Ed25519	PKScheme.Ed25519	
+Secp256k1	libp2p/crypto/crypto.html#Secp256k1	PKScheme.Secp256k1	
+ECDSA	libp2p/crypto/crypto.html#ECDSA	PKScheme.ECDSA	
+PKScheme	libp2p/crypto/crypto.html#PKScheme	crypto: PKScheme	
+SupportedSchemes	libp2p/crypto/crypto.html#SupportedSchemes	crypto: SupportedSchemes	
+SupportedSchemesInt	libp2p/crypto/crypto.html#SupportedSchemesInt	crypto: SupportedSchemesInt	
+RsaDefaultKeySize	libp2p/crypto/crypto.html#RsaDefaultKeySize	crypto: RsaDefaultKeySize	
+supported	libp2p/crypto/crypto.html#supported.t,PKScheme	crypto: supported(scheme: PKScheme): bool	
+Sha256	libp2p/crypto/crypto.html#Sha256	DigestSheme.Sha256	
+Sha512	libp2p/crypto/crypto.html#Sha512	DigestSheme.Sha512	
+DigestSheme	libp2p/crypto/crypto.html#DigestSheme	crypto: DigestSheme	
+ECDHEScheme	libp2p/crypto/crypto.html#ECDHEScheme	crypto: ECDHEScheme	
+PublicKey	libp2p/crypto/crypto.html#PublicKey	crypto: PublicKey	
+PrivateKey	libp2p/crypto/crypto.html#PrivateKey	crypto: PrivateKey	
+KeyPair	libp2p/crypto/crypto.html#KeyPair	crypto: KeyPair	
+Secret	libp2p/crypto/crypto.html#Secret	crypto: Secret	
+Signature	libp2p/crypto/crypto.html#Signature	crypto: Signature	
+KeyError	libp2p/crypto/crypto.html#KeyError	CryptoError.KeyError	
+SigError	libp2p/crypto/crypto.html#SigError	CryptoError.SigError	
+HashError	libp2p/crypto/crypto.html#HashError	CryptoError.HashError	
+SchemeError	libp2p/crypto/crypto.html#SchemeError	CryptoError.SchemeError	
+CryptoError	libp2p/crypto/crypto.html#CryptoError	crypto: CryptoError	
+CryptoResult	libp2p/crypto/crypto.html#CryptoResult	crypto: CryptoResult	
+orError	libp2p/crypto/crypto.html#orError.t,untyped,untyped	crypto: orError(exp: untyped; err: untyped): untyped	
+newRng	libp2p/crypto/crypto.html#newRng	crypto: newRng(): ref BrHmacDrbgContext	
+shuffle	libp2p/crypto/crypto.html#shuffle,ref.HmacDrbgContext,openArray[T]	crypto: shuffle[T](rng: ref BrHmacDrbgContext; x: var openArray[T])	
+random	libp2p/crypto/crypto.html#random,typedesc[PrivateKey],PKScheme,HmacDrbgContext	crypto: random(T: typedesc[PrivateKey]; scheme: PKScheme; rng: var BrHmacDrbgContext;\n       bits = RsaDefaultKeySize): CryptoResult[PrivateKey]	
+random	libp2p/crypto/crypto.html#random,typedesc[PrivateKey],HmacDrbgContext	crypto: random(T: typedesc[PrivateKey]; rng: var BrHmacDrbgContext;\n       bits = RsaDefaultKeySize): CryptoResult[PrivateKey]	
+random	libp2p/crypto/crypto.html#random,typedesc[KeyPair],PKScheme,HmacDrbgContext	crypto: random(T: typedesc[KeyPair]; scheme: PKScheme; rng: var BrHmacDrbgContext;\n       bits = RsaDefaultKeySize): CryptoResult[KeyPair]	
+random	libp2p/crypto/crypto.html#random,typedesc[KeyPair],HmacDrbgContext	crypto: random(T: typedesc[KeyPair]; rng: var BrHmacDrbgContext;\n       bits = RsaDefaultKeySize): CryptoResult[KeyPair]	
+getPublicKey	libp2p/crypto/crypto.html#getPublicKey,PrivateKey	crypto: getPublicKey(key: PrivateKey): CryptoResult[PublicKey]	
+toRawBytes	libp2p/crypto/crypto.html#toRawBytes,,openArray[byte]	crypto: toRawBytes(key: PrivateKey | PublicKey; data: var openArray[byte]): CryptoResult[\n    int]	
+getRawBytes	libp2p/crypto/crypto.html#getRawBytes	crypto: getRawBytes(key: PrivateKey | PublicKey): CryptoResult[seq[byte]]	
+toBytes	libp2p/crypto/crypto.html#toBytes,PrivateKey,openArray[byte]	crypto: toBytes(key: PrivateKey; data: var openArray[byte]): CryptoResult[int]	
+toBytes	libp2p/crypto/crypto.html#toBytes,PublicKey,openArray[byte]	crypto: toBytes(key: PublicKey; data: var openArray[byte]): CryptoResult[int]	
+toBytes	libp2p/crypto/crypto.html#toBytes,Signature,openArray[byte]	crypto: toBytes(sig: Signature; data: var openArray[byte]): int	
+getBytes	libp2p/crypto/crypto.html#getBytes,PrivateKey	crypto: getBytes(key: PrivateKey): CryptoResult[seq[byte]]	
+getBytes	libp2p/crypto/crypto.html#getBytes,PublicKey	crypto: getBytes(key: PublicKey): CryptoResult[seq[byte]]	
+getBytes	libp2p/crypto/crypto.html#getBytes,Signature	crypto: getBytes(sig: Signature): seq[byte]	
+init	libp2p/crypto/crypto.html#init,T,openArray[byte]	crypto: init[T: PrivateKey | PublicKey](key: var T; data: openArray[byte]): bool	
+init	libp2p/crypto/crypto.html#init,Signature,openArray[byte]	crypto: init(sig: var Signature; data: openArray[byte]): bool	
+init	libp2p/crypto/crypto.html#init,T,string	crypto: init[T: PrivateKey | PublicKey](key: var T; data: string): bool	
+init	libp2p/crypto/crypto.html#init,Signature,string	crypto: init(sig: var Signature; data: string): bool	
+init	libp2p/crypto/crypto.html#init,typedesc[PrivateKey],openArray[byte]	crypto: init(t: typedesc[PrivateKey]; data: openArray[byte]): CryptoResult[PrivateKey]	
+init	libp2p/crypto/crypto.html#init,typedesc[PublicKey],openArray[byte]	crypto: init(t: typedesc[PublicKey]; data: openArray[byte]): CryptoResult[PublicKey]	
+init	libp2p/crypto/crypto.html#init,typedesc[Signature],openArray[byte]	crypto: init(t: typedesc[Signature]; data: openArray[byte]): CryptoResult[Signature]	
+init	libp2p/crypto/crypto.html#init,typedesc[PrivateKey],string	crypto: init(t: typedesc[PrivateKey]; data: string): CryptoResult[PrivateKey]	
+init	libp2p/crypto/crypto.html#init,typedesc[PrivateKey],	crypto: init(t: typedesc[PrivateKey]; key: rsa.RsaPrivateKey): PrivateKey	
+init	libp2p/crypto/crypto.html#init,typedesc[PublicKey],	crypto: init(t: typedesc[PublicKey]; key: rsa.RsaPublicKey): PublicKey	
+init	libp2p/crypto/crypto.html#init,typedesc[PrivateKey],EdPrivateKey	crypto: init(t: typedesc[PrivateKey]; key: EdPrivateKey): PrivateKey	
+init	libp2p/crypto/crypto.html#init,typedesc[PublicKey],EdPublicKey	crypto: init(t: typedesc[PublicKey]; key: EdPublicKey): PublicKey	
+init	libp2p/crypto/crypto.html#init,typedesc[PrivateKey],SkPrivateKey	crypto: init(t: typedesc[PrivateKey]; key: SkPrivateKey): PrivateKey	
+init	libp2p/crypto/crypto.html#init,typedesc[PublicKey],SkPublicKey	crypto: init(t: typedesc[PublicKey]; key: SkPublicKey): PublicKey	
+init	libp2p/crypto/crypto.html#init,typedesc[PrivateKey],_2	crypto: init(t: typedesc[PrivateKey]; key: ecnist.EcPrivateKey): PrivateKey	
+init	libp2p/crypto/crypto.html#init,typedesc[PublicKey],_2	crypto: init(t: typedesc[PublicKey]; key: ecnist.EcPublicKey): PublicKey	
+init	libp2p/crypto/crypto.html#init,typedesc[PublicKey],string	crypto: init(t: typedesc[PublicKey]; data: string): CryptoResult[PublicKey]	
+init	libp2p/crypto/crypto.html#init,typedesc[Signature],string	crypto: init(t: typedesc[Signature]; data: string): CryptoResult[Signature]	
+`==`	libp2p/crypto/crypto.html#==,PublicKey,PublicKey	crypto: `==`(key1, key2: PublicKey): bool	
+`==`	libp2p/crypto/crypto.html#==,PrivateKey,PrivateKey	crypto: `==`(key1, key2: PrivateKey): bool	
+`$`	libp2p/crypto/crypto.html#$	crypto: `$`(key: PrivateKey | PublicKey): string	
+shortLog	libp2p/crypto/crypto.html#shortLog	crypto: shortLog(key: PrivateKey | PublicKey): string	
+`$`	libp2p/crypto/crypto.html#$,Signature	crypto: `$`(sig: Signature): string	
+sign	libp2p/crypto/crypto.html#sign,PrivateKey,openArray[byte]	crypto: sign(key: PrivateKey; data: openArray[byte]): CryptoResult[Signature]	
+verify	libp2p/crypto/crypto.html#verify,Signature,openArray[byte],PublicKey	crypto: verify(sig: Signature; message: openArray[byte]; key: PublicKey): bool	
+stretchKeys	libp2p/crypto/crypto.html#stretchKeys,string,string,seq[byte]	crypto: stretchKeys(cipherType: string; hashType: string; sharedSecret: seq[byte]): Secret	
+goffset	libp2p/crypto/crypto.html#goffset.t,untyped,untyped,untyped	crypto: goffset(secret, id, o: untyped): untyped	
+ivOpenArray	libp2p/crypto/crypto.html#ivOpenArray.t,Secret,int	crypto: ivOpenArray(secret: Secret; id: int): untyped	
+keyOpenArray	libp2p/crypto/crypto.html#keyOpenArray.t,Secret,int	crypto: keyOpenArray(secret: Secret; id: int): untyped	
+macOpenArray	libp2p/crypto/crypto.html#macOpenArray.t,Secret,int	crypto: macOpenArray(secret: Secret; id: int): untyped	
+iv	libp2p/crypto/crypto.html#iv,Secret,int	crypto: iv(secret: Secret; id: int): seq[byte]	
+key	libp2p/crypto/crypto.html#key,Secret,int	crypto: key(secret: Secret; id: int): seq[byte]	
+mac	libp2p/crypto/crypto.html#mac,Secret,int	crypto: mac(secret: Secret; id: int): seq[byte]	
+ephemeral	libp2p/crypto/crypto.html#ephemeral,EcCurveKind,HmacDrbgContext	crypto: ephemeral(scheme: ECDHEScheme; rng: var BrHmacDrbgContext): CryptoResult[\n    EcKeyPair]	
+ephemeral	libp2p/crypto/crypto.html#ephemeral,string,HmacDrbgContext	crypto: ephemeral(scheme: string; rng: var BrHmacDrbgContext): CryptoResult[EcKeyPair]	
+getOrder	libp2p/crypto/crypto.html#getOrder,openArray[byte],openArray[byte],openArray[byte],openArray[byte]	crypto: getOrder(remotePubkey, localNonce: openArray[byte];\n         localPubkey, remoteNonce: openArray[byte]): CryptoResult[int]	
+selectBest	libp2p/crypto/crypto.html#selectBest,int,string,string	crypto: selectBest(order: int; p1, p2: string): string	
+createProposal	libp2p/crypto/crypto.html#createProposal,openArray[byte],openArray[byte],string,string,string	crypto: createProposal(nonce, pubkey: openArray[byte];\n               exchanges, ciphers, hashes: string): seq[byte]	
+decodeProposal	libp2p/crypto/crypto.html#decodeProposal,seq[byte],seq[byte],seq[byte],string,string,string	crypto: decodeProposal(message: seq[byte]; nonce, pubkey: var seq[byte];\n               exchanges, ciphers, hashes: var string): bool	
+createExchange	libp2p/crypto/crypto.html#createExchange,openArray[byte],openArray[byte]	crypto: createExchange(epubkey, signature: openArray[byte]): seq[byte]	
+decodeExchange	libp2p/crypto/crypto.html#decodeExchange,seq[byte],seq[byte],seq[byte]	crypto: decodeExchange(message: seq[byte]; pubkey, signature: var seq[byte]): bool	
+write	libp2p/crypto/crypto.html#write,VBuffer,PublicKey	crypto: write(vb: var VBuffer; pubkey: PublicKey)	
+write	libp2p/crypto/crypto.html#write,VBuffer,PrivateKey	crypto: write(vb: var VBuffer; seckey: PrivateKey)	
+write	libp2p/crypto/crypto.html#write,VBuffer,PrivateKey_2	crypto: write(vb: var VBuffer; sig: PrivateKey)	
+write	libp2p/crypto/crypto.html#write,ProtoBuffer,int,T	crypto: write[T: PublicKey | PrivateKey](pb: var ProtoBuffer; field: int; key: T)	
+write	libp2p/crypto/crypto.html#write,ProtoBuffer,int,Signature	crypto: write(pb: var ProtoBuffer; field: int; sig: Signature)	
+getField	libp2p/crypto/crypto.html#getField,ProtoBuffer,int,T	crypto: getField[T: PublicKey | PrivateKey](pb: ProtoBuffer; field: int; value: var T): ProtoResult[\n    bool]	
+getField	libp2p/crypto/crypto.html#getField,ProtoBuffer,int,Signature	crypto: getField(pb: ProtoBuffer; field: int; value: var Signature): ProtoResult[bool]	

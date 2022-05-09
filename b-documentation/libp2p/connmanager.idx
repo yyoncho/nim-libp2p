@@ -1,0 +1,34 @@
+MaxConnections	libp2p/connmanager.html#MaxConnections	connmanager: MaxConnections	
+MaxConnectionsPerPeer	libp2p/connmanager.html#MaxConnectionsPerPeer	connmanager: MaxConnectionsPerPeer	
+TooManyConnectionsError	libp2p/connmanager.html#TooManyConnectionsError	connmanager: TooManyConnectionsError	
+ConnProvider	libp2p/connmanager.html#ConnProvider	connmanager: ConnProvider	
+ConnEventKind	libp2p/connmanager.html#ConnEventKind	connmanager: ConnEventKind	
+ConnEvent	libp2p/connmanager.html#ConnEvent	connmanager: ConnEvent	
+ConnEventHandler	libp2p/connmanager.html#ConnEventHandler	connmanager: ConnEventHandler	
+PeerEventKind	libp2p/connmanager.html#PeerEventKind	connmanager: PeerEventKind	
+PeerEvent	libp2p/connmanager.html#PeerEvent	connmanager: PeerEvent	
+PeerEventHandler	libp2p/connmanager.html#PeerEventHandler	connmanager: PeerEventHandler	
+ConnManager	libp2p/connmanager.html#ConnManager	connmanager: ConnManager	
+new	libp2p/connmanager.html#new,typeConnManager,int,int	connmanager: new(C: type ConnManager; maxConnsPerPeer = MaxConnectionsPerPeer;\n    maxConnections = MaxConnections; maxIn = -1; maxOut = -1): ConnManager	
+connCount	libp2p/connmanager.html#connCount,ConnManager,PeerId	connmanager: connCount(c: ConnManager; peerId: PeerId): int	
+addConnEventHandler	libp2p/connmanager.html#addConnEventHandler,ConnManager,ConnEventHandler,ConnEventKind	connmanager: addConnEventHandler(c: ConnManager; handler: ConnEventHandler;\n                    kind: ConnEventKind)	
+removeConnEventHandler	libp2p/connmanager.html#removeConnEventHandler,ConnManager,ConnEventHandler,ConnEventKind	connmanager: removeConnEventHandler(c: ConnManager; handler: ConnEventHandler;\n                       kind: ConnEventKind)	
+triggerConnEvent	libp2p/connmanager.html#triggerConnEvent,ConnManager,PeerId,ConnEvent	connmanager: triggerConnEvent(c: ConnManager; peerId: PeerId; event: ConnEvent): Future[void]	
+addPeerEventHandler	libp2p/connmanager.html#addPeerEventHandler,ConnManager,PeerEventHandler,PeerEventKind	connmanager: addPeerEventHandler(c: ConnManager; handler: PeerEventHandler;\n                    kind: PeerEventKind)	
+removePeerEventHandler	libp2p/connmanager.html#removePeerEventHandler,ConnManager,PeerEventHandler,PeerEventKind	connmanager: removePeerEventHandler(c: ConnManager; handler: PeerEventHandler;\n                       kind: PeerEventKind)	
+triggerPeerEvents	libp2p/connmanager.html#triggerPeerEvents,ConnManager,PeerId,PeerEvent	connmanager: triggerPeerEvents(c: ConnManager; peerId: PeerId; event: PeerEvent): Future[void]	
+contains	libp2p/connmanager.html#contains,ConnManager,Connection	connmanager: contains(c: ConnManager; conn: Connection): bool	
+contains	libp2p/connmanager.html#contains,ConnManager,PeerId	connmanager: contains(c: ConnManager; peerId: PeerId): bool	
+contains	libp2p/connmanager.html#contains,ConnManager,Muxer	connmanager: contains(c: ConnManager; muxer: Muxer): bool	
+selectConn	libp2p/connmanager.html#selectConn,ConnManager,PeerId,Direction	connmanager: selectConn(c: ConnManager; peerId: PeerId; dir: Direction): Connection	
+selectConn	libp2p/connmanager.html#selectConn,ConnManager,PeerId	connmanager: selectConn(c: ConnManager; peerId: PeerId): Connection	
+selectMuxer	libp2p/connmanager.html#selectMuxer,ConnManager,Connection	connmanager: selectMuxer(c: ConnManager; conn: Connection): Muxer	
+storeConn	libp2p/connmanager.html#storeConn,ConnManager,Connection	connmanager: storeConn(c: ConnManager; conn: Connection)	
+trackIncomingConn	libp2p/connmanager.html#trackIncomingConn,ConnManager,ConnProvider	connmanager: trackIncomingConn(c: ConnManager; provider: ConnProvider): Future[Connection]	
+trackOutgoingConn	libp2p/connmanager.html#trackOutgoingConn,ConnManager,ConnProvider	connmanager: trackOutgoingConn(c: ConnManager; provider: ConnProvider; forceDial = false): Future[\n    Connection]	
+storeMuxer	libp2p/connmanager.html#storeMuxer,ConnManager,Muxer,Future[void]	connmanager: storeMuxer(c: ConnManager; muxer: Muxer; handle: Future[void] = nil)	
+getStream	libp2p/connmanager.html#getStream,ConnManager,PeerId,Direction	connmanager: getStream(c: ConnManager; peerId: PeerId; dir: Direction): Future[Connection]	
+getStream	libp2p/connmanager.html#getStream,ConnManager,PeerId	connmanager: getStream(c: ConnManager; peerId: PeerId): Future[Connection]	
+getStream	libp2p/connmanager.html#getStream,ConnManager,Connection	connmanager: getStream(c: ConnManager; conn: Connection): Future[Connection]	
+dropPeer	libp2p/connmanager.html#dropPeer,ConnManager,PeerId	connmanager: dropPeer(c: ConnManager; peerId: PeerId): Future[void]	
+close	libp2p/connmanager.html#close,ConnManager	connmanager: close(c: ConnManager): Future[void]	

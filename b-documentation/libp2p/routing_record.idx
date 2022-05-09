@@ -1,0 +1,9 @@
+AddressInfo	libp2p/routing_record.html#AddressInfo	routing_record: AddressInfo	
+PeerRecord	libp2p/routing_record.html#PeerRecord	routing_record: PeerRecord	
+decode	libp2p/routing_record.html#decode,typedesc[PeerRecord],seq[byte]	routing_record: decode(T: typedesc[PeerRecord]; buffer: seq[byte]): Result[PeerRecord,\n    ProtoError]	
+encode	libp2p/routing_record.html#encode,PeerRecord	routing_record: encode(record: PeerRecord): seq[byte]	
+init	libp2p/routing_record.html#init,typedesc[PeerRecord],PeerId,seq[MultiAddress]	routing_record: init(T: typedesc[PeerRecord]; peerId: PeerId; addresses: seq[MultiAddress];\n     seqNo = toUnix(getTime()).uint64): T:type	
+SignedPeerRecord	libp2p/routing_record.html#SignedPeerRecord	routing_record: SignedPeerRecord	
+payloadDomain	libp2p/routing_record.html#payloadDomain,typedesc[PeerRecord]	routing_record: payloadDomain(T: typedesc[PeerRecord]): string	
+payloadType	libp2p/routing_record.html#payloadType,typedesc[PeerRecord]	routing_record: payloadType(T: typedesc[PeerRecord]): seq[byte]	
+checkValid	libp2p/routing_record.html#checkValid,SignedPeerRecord	routing_record: checkValid(spr: SignedPeerRecord): Result[void, EnvelopeError]	

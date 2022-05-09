@@ -1,0 +1,43 @@
+EdPrivateKeySize	libp2p/crypto/ed25519/ed25519.html#EdPrivateKeySize	ed25519: EdPrivateKeySize	
+EdPublicKeySize	libp2p/crypto/ed25519/ed25519.html#EdPublicKeySize	ed25519: EdPublicKeySize	
+EdSignatureSize	libp2p/crypto/ed25519/ed25519.html#EdSignatureSize	ed25519: EdSignatureSize	
+EdPrivateKey	libp2p/crypto/ed25519/ed25519.html#EdPrivateKey	ed25519: EdPrivateKey	
+EdPublicKey	libp2p/crypto/ed25519/ed25519.html#EdPublicKey	ed25519: EdPublicKey	
+EdSignature	libp2p/crypto/ed25519/ed25519.html#EdSignature	ed25519: EdSignature	
+EdKeyPair	libp2p/crypto/ed25519/ed25519.html#EdKeyPair	ed25519: EdKeyPair	
+EdIncorrectError	libp2p/crypto/ed25519/ed25519.html#EdIncorrectError	EdError.EdIncorrectError	
+EdError	libp2p/crypto/ed25519/ed25519.html#EdError	ed25519: EdError	
+checkScalar	libp2p/crypto/ed25519/ed25519.html#checkScalar,openArray[byte]	ed25519: checkScalar(scalar: openArray[byte]): uint32	
+random	libp2p/crypto/ed25519/ed25519.html#random,typedesc[EdPrivateKey],HmacDrbgContext	ed25519: random(t: typedesc[EdPrivateKey]; rng: var BrHmacDrbgContext): EdPrivateKey	
+random	libp2p/crypto/ed25519/ed25519.html#random,typedesc[EdKeyPair],HmacDrbgContext	ed25519: random(t: typedesc[EdKeyPair]; rng: var BrHmacDrbgContext): EdKeyPair	
+getPublicKey	libp2p/crypto/ed25519/ed25519.html#getPublicKey,EdPrivateKey	ed25519: getPublicKey(key: EdPrivateKey): EdPublicKey	
+toBytes	libp2p/crypto/ed25519/ed25519.html#toBytes,EdPrivateKey,openArray[byte]	ed25519: toBytes(key: EdPrivateKey; data: var openArray[byte]): int	
+toBytes	libp2p/crypto/ed25519/ed25519.html#toBytes,EdPublicKey,openArray[byte]	ed25519: toBytes(key: EdPublicKey; data: var openArray[byte]): int	
+toBytes	libp2p/crypto/ed25519/ed25519.html#toBytes,EdSignature,openArray[byte]	ed25519: toBytes(sig: EdSignature; data: var openArray[byte]): int	
+getBytes	libp2p/crypto/ed25519/ed25519.html#getBytes,EdPrivateKey	ed25519: getBytes(key: EdPrivateKey): seq[byte]	
+getBytes	libp2p/crypto/ed25519/ed25519.html#getBytes,EdPublicKey	ed25519: getBytes(key: EdPublicKey): seq[byte]	
+getBytes	libp2p/crypto/ed25519/ed25519.html#getBytes,EdSignature	ed25519: getBytes(sig: EdSignature): seq[byte]	
+`==`	libp2p/crypto/ed25519/ed25519.html#==,EdPrivateKey,EdPrivateKey	ed25519: `==`(eda, edb: EdPrivateKey): bool	
+`==`	libp2p/crypto/ed25519/ed25519.html#==,EdPublicKey,EdPublicKey	ed25519: `==`(eda, edb: EdPublicKey): bool	
+`==`	libp2p/crypto/ed25519/ed25519.html#==,EdSignature,EdSignature	ed25519: `==`(eda, edb: EdSignature): bool	
+`$`	libp2p/crypto/ed25519/ed25519.html#$,EdPrivateKey	ed25519: `$`(key: EdPrivateKey): string	
+`$`	libp2p/crypto/ed25519/ed25519.html#$,EdPublicKey	ed25519: `$`(key: EdPublicKey): string	
+`$`	libp2p/crypto/ed25519/ed25519.html#$,EdSignature	ed25519: `$`(sig: EdSignature): string	
+init	libp2p/crypto/ed25519/ed25519.html#init,EdPrivateKey,openArray[byte]	ed25519: init(key: var EdPrivateKey; data: openArray[byte]): bool	
+init	libp2p/crypto/ed25519/ed25519.html#init,EdPublicKey,openArray[byte]	ed25519: init(key: var EdPublicKey; data: openArray[byte]): bool	
+init	libp2p/crypto/ed25519/ed25519.html#init,EdSignature,openArray[byte]	ed25519: init(sig: var EdSignature; data: openArray[byte]): bool	
+init	libp2p/crypto/ed25519/ed25519.html#init,EdPrivateKey,string	ed25519: init(key: var EdPrivateKey; data: string): bool	
+init	libp2p/crypto/ed25519/ed25519.html#init,EdPublicKey,string	ed25519: init(key: var EdPublicKey; data: string): bool	
+init	libp2p/crypto/ed25519/ed25519.html#init,EdSignature,string	ed25519: init(sig: var EdSignature; data: string): bool	
+init	libp2p/crypto/ed25519/ed25519.html#init,typedesc[EdPrivateKey],openArray[byte]	ed25519: init(t: typedesc[EdPrivateKey]; data: openArray[byte]): Result[EdPrivateKey,\n    EdError]	
+init	libp2p/crypto/ed25519/ed25519.html#init,typedesc[EdPublicKey],openArray[byte]	ed25519: init(t: typedesc[EdPublicKey]; data: openArray[byte]): Result[EdPublicKey,\n    EdError]	
+init	libp2p/crypto/ed25519/ed25519.html#init,typedesc[EdSignature],openArray[byte]	ed25519: init(t: typedesc[EdSignature]; data: openArray[byte]): Result[EdSignature,\n    EdError]	
+init	libp2p/crypto/ed25519/ed25519.html#init,typedesc[EdPrivateKey],string	ed25519: init(t: typedesc[EdPrivateKey]; data: string): Result[EdPrivateKey, EdError]	
+init	libp2p/crypto/ed25519/ed25519.html#init,typedesc[EdPublicKey],string	ed25519: init(t: typedesc[EdPublicKey]; data: string): Result[EdPublicKey, EdError]	
+init	libp2p/crypto/ed25519/ed25519.html#init,typedesc[EdSignature],string	ed25519: init(t: typedesc[EdSignature]; data: string): Result[EdSignature, EdError]	
+clear	libp2p/crypto/ed25519/ed25519.html#clear,EdPrivateKey	ed25519: clear(key: var EdPrivateKey)	
+clear	libp2p/crypto/ed25519/ed25519.html#clear,EdPublicKey	ed25519: clear(key: var EdPublicKey)	
+clear	libp2p/crypto/ed25519/ed25519.html#clear,EdSignature	ed25519: clear(sig: var EdSignature)	
+clear	libp2p/crypto/ed25519/ed25519.html#clear,EdKeyPair	ed25519: clear(pair: var EdKeyPair)	
+sign	libp2p/crypto/ed25519/ed25519.html#sign,EdPrivateKey,openArray[T]	ed25519: sign[T: byte | char](key: EdPrivateKey; message: openArray[T]): EdSignature	
+verify	libp2p/crypto/ed25519/ed25519.html#verify,EdSignature,openArray[T],EdPublicKey	ed25519: verify[T: byte | char](sig: EdSignature; message: openArray[T]; key: EdPublicKey): bool	

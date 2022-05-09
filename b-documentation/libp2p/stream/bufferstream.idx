@@ -1,0 +1,12 @@
+BufferStreamTrackerName	libp2p/stream/bufferstream.html#BufferStreamTrackerName	bufferstream: BufferStreamTrackerName	
+BufferStream	libp2p/stream/bufferstream.html#BufferStream	bufferstream: BufferStream	
+shortLog	libp2p/stream/bufferstream.html#shortLog,BufferStream	bufferstream: shortLog(s: BufferStream): auto	
+formatItIMPL	libp2p/stream/bufferstream.html#formatItIMPL.t,BufferStream	bufferstream: formatItIMPL(it: BufferStream): auto	
+len	libp2p/stream/bufferstream.html#len,BufferStream	bufferstream: len(s: BufferStream): int	
+initStream	libp2p/stream/bufferstream.html#initStream.e,BufferStream	bufferstream: initStream(s: BufferStream)	
+new	libp2p/stream/bufferstream.html#new,typedesc[BufferStream],Duration	bufferstream: new(T: typedesc[BufferStream]; timeout: Duration = DefaultConnectionTimeout): T:type	
+pushData	libp2p/stream/bufferstream.html#pushData.e,BufferStream,seq[byte]	bufferstream: pushData(s: BufferStream; data: seq[byte]): Future[void]	
+pushEof	libp2p/stream/bufferstream.html#pushEof.e,BufferStream	bufferstream: pushEof(s: BufferStream): Future[void]	
+atEof	libp2p/stream/bufferstream.html#atEof.e,BufferStream	bufferstream: atEof(s: BufferStream): bool	
+readOnce	libp2p/stream/bufferstream.html#readOnce.e,BufferStream,pointer,int	bufferstream: readOnce(s: BufferStream; pbytes: pointer; nbytes: int): Future[int]	
+closeImpl	libp2p/stream/bufferstream.html#closeImpl.e,BufferStream	bufferstream: closeImpl(s: BufferStream): Future[void]	

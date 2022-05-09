@@ -1,0 +1,28 @@
+VarintError	libp2p/varint.html#VarintError	varint: VarintError	
+VarintResult	libp2p/varint.html#VarintResult	varint: VarintResult	
+PB	libp2p/varint.html#PB	varint: PB	
+LP	libp2p/varint.html#LP	varint: LP	
+zint32	libp2p/varint.html#zint32	varint: zint32	
+zint64	libp2p/varint.html#zint64	varint: zint64	
+zint	libp2p/varint.html#zint	varint: zint	
+hint32	libp2p/varint.html#hint32	varint: hint32	
+hint64	libp2p/varint.html#hint64	varint: hint64	
+hint	libp2p/varint.html#hint	varint: hint	
+PBSomeUVarint	libp2p/varint.html#PBSomeUVarint	varint: PBSomeUVarint	
+PBSomeSVarint	libp2p/varint.html#PBSomeSVarint	varint: PBSomeSVarint	
+PBZigVarint	libp2p/varint.html#PBZigVarint	varint: PBZigVarint	
+PBSomeVarint	libp2p/varint.html#PBSomeVarint	varint: PBSomeVarint	
+LPSomeUVarint	libp2p/varint.html#LPSomeUVarint	varint: LPSomeUVarint	
+LPSomeVarint	libp2p/varint.html#LPSomeVarint	varint: LPSomeVarint	
+SomeVarint	libp2p/varint.html#SomeVarint	varint: SomeVarint	
+SomeUVarint	libp2p/varint.html#SomeUVarint	varint: SomeUVarint	
+vsizeof	libp2p/varint.html#vsizeof,SomeVarint	varint: vsizeof(x: SomeVarint): int	
+getUVarint	libp2p/varint.html#getUVarint,typedesc[T],openArray[byte],int,SomeUVarint	varint: getUVarint[T: PB | LP](vtype: typedesc[T]; pbytes: openArray[byte];\n                       outlen: var int; outval: var SomeUVarint): VarintResult[\n    void]	
+putUVarint	libp2p/varint.html#putUVarint,typedesc[T],openArray[byte],int,SomeUVarint	varint: putUVarint[T: PB | LP](vtype: typedesc[T]; pbytes: var openArray[byte];\n                       outlen: var int; outval: SomeUVarint): VarintResult[void]	
+getSVarint	libp2p/varint.html#getSVarint,openArray[byte],int,	varint: getSVarint(pbytes: openArray[byte]; outsize: var int;\n           outval: var (PBZigVarint | PBSomeSVarint)): VarintResult[void]	
+putSVarint	libp2p/varint.html#putSVarint,openArray[byte],int,	varint: putSVarint(pbytes: var openArray[byte]; outsize: var int;\n           outval: (PBZigVarint | PBSomeSVarint)): VarintResult[void]	
+putVarint	libp2p/varint.html#putVarint,typedesc[T],openArray[byte],int,SomeVarint	varint: putVarint[T: PB | LP](vtype: typedesc[T]; pbytes: var openArray[byte];\n                      nbytes: var int; value: SomeVarint): VarintResult[void]	
+getVarint	libp2p/varint.html#getVarint,typedesc[T],openArray[byte],int,SomeVarint	varint: getVarint[T: PB | LP](vtype: typedesc[T]; pbytes: openArray[byte];\n                      nbytes: var int; value: var SomeVarint): VarintResult[void]	
+toBytes	libp2p/varint.html#toBytes.t,typedesc[PB],PBSomeVarint	varint: toBytes(vtype: typedesc[PB]; value: PBSomeVarint): auto	
+encodeVarint	libp2p/varint.html#encodeVarint,typedesc[PB],PBSomeVarint	varint: encodeVarint(vtype: typedesc[PB]; value: PBSomeVarint): VarintResult[seq[byte]]	
+encodeVarint	libp2p/varint.html#encodeVarint,typedesc[LP],LPSomeVarint	varint: encodeVarint(vtype: typedesc[LP]; value: LPSomeVarint): VarintResult[seq[byte]]	

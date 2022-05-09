@@ -1,0 +1,7 @@
+AsyncSemaphore	libp2p/utils/semaphore.html#AsyncSemaphore	semaphore: AsyncSemaphore	
+newAsyncSemaphore	libp2p/utils/semaphore.html#newAsyncSemaphore,int	semaphore: newAsyncSemaphore(size: int): AsyncSemaphore	
+count	libp2p/utils/semaphore.html#count,AsyncSemaphore	semaphore: count(s: AsyncSemaphore): int	
+tryAcquire	libp2p/utils/semaphore.html#tryAcquire,AsyncSemaphore	semaphore: tryAcquire(s: AsyncSemaphore): bool	
+acquire	libp2p/utils/semaphore.html#acquire,AsyncSemaphore	semaphore: acquire(s: AsyncSemaphore): Future[void]	
+forceAcquire	libp2p/utils/semaphore.html#forceAcquire,AsyncSemaphore	semaphore: forceAcquire(s: AsyncSemaphore)	
+release	libp2p/utils/semaphore.html#release,AsyncSemaphore	semaphore: release(s: AsyncSemaphore)	

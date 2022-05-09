@@ -1,0 +1,13 @@
+DefaultChanTimeout	libp2p/muxers/muxer.html#DefaultChanTimeout	muxer: DefaultChanTimeout	
+MuxerError	libp2p/muxers/muxer.html#MuxerError	muxer: MuxerError	
+StreamHandler	libp2p/muxers/muxer.html#StreamHandler	muxer: StreamHandler	
+MuxerHandler	libp2p/muxers/muxer.html#MuxerHandler	muxer: MuxerHandler	
+Muxer	libp2p/muxers/muxer.html#Muxer	muxer: Muxer	
+MuxerConstructor	libp2p/muxers/muxer.html#MuxerConstructor	muxer: MuxerConstructor	
+MuxerProvider	libp2p/muxers/muxer.html#MuxerProvider	muxer: MuxerProvider	
+shortLog	libp2p/muxers/muxer.html#shortLog,Muxer	muxer: shortLog(m: Muxer): auto	
+formatItIMPL	libp2p/muxers/muxer.html#formatItIMPL.t,Muxer	muxer: formatItIMPL(it: Muxer): auto	
+newStream	libp2p/muxers/muxer.html#newStream.e,Muxer,string,bool	muxer: newStream(m: Muxer; name: string = &quot;&quot;; lazy: bool = false): Future[Connection]	
+close	libp2p/muxers/muxer.html#close.e,Muxer	muxer: close(m: Muxer): Future[void]	
+handle	libp2p/muxers/muxer.html#handle.e,Muxer	muxer: handle(m: Muxer): Future[void]	
+new	libp2p/muxers/muxer.html#new,typedesc[MuxerProvider],MuxerConstructor,string	muxer: new(T: typedesc[MuxerProvider]; creator: MuxerConstructor; codec: string): T:type	

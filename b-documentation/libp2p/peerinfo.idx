@@ -1,0 +1,6 @@
+PeerInfoError	libp2p/peerinfo.html#PeerInfoError	peerinfo: PeerInfoError	
+PeerInfo	libp2p/peerinfo.html#PeerInfo	peerinfo: PeerInfo	
+shortLog	libp2p/peerinfo.html#shortLog,PeerInfo	peerinfo: shortLog(p: PeerInfo): auto	
+formatItIMPL	libp2p/peerinfo.html#formatItIMPL.t,PeerInfo	peerinfo: formatItIMPL(it: PeerInfo): auto	
+update	libp2p/peerinfo.html#update,PeerInfo	peerinfo: update(p: PeerInfo)	
+new	libp2p/peerinfo.html#new,typedesc[PeerInfo],PrivateKey,openArray[MultiAddress],openArray[string],string,string	peerinfo: new(p: typedesc[PeerInfo]; key: PrivateKey; addrs: openArray[MultiAddress] = [];\n    protocols: openArray[string] = []; protoVersion: string = &quot;&quot;;\n    agentVersion: string = &quot;&quot;): PeerInfo	

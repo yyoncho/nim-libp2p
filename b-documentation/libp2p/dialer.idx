@@ -1,0 +1,6 @@
+DialFailedError	libp2p/dialer.html#DialFailedError	dialer: DialFailedError	
+Dialer	libp2p/dialer.html#Dialer	dialer: Dialer	
+connect	libp2p/dialer.html#connect.e,Dialer,PeerId,seq[MultiAddress]	dialer: connect(self: Dialer; peerId: PeerId; addrs: seq[MultiAddress];\n        forceDial = false): Future[void]	
+dial	libp2p/dialer.html#dial.e,Dialer,PeerId,seq[string]	dialer: dial(self: Dialer; peerId: PeerId; protos: seq[string]): Future[Connection]	
+dial	libp2p/dialer.html#dial.e,Dialer,PeerId,seq[MultiAddress],seq[string]	dialer: dial(self: Dialer; peerId: PeerId; addrs: seq[MultiAddress];\n     protos: seq[string]; forceDial = false): Future[Connection]	
+new	libp2p/dialer.html#new,typeDialer,PeerId,ConnManager,seq[Transport],MultistreamSelect,NameResolver	dialer: new(T: type Dialer; localPeerId: PeerId; connManager: ConnManager;\n    transports: seq[Transport]; ms: MultistreamSelect;\n    nameResolver: NameResolver = nil): Dialer	

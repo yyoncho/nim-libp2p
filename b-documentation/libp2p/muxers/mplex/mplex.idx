@@ -1,0 +1,7 @@
+MplexCodec	libp2p/muxers/mplex/mplex.html#MplexCodec	mplex: MplexCodec	
+TooManyChannels	libp2p/muxers/mplex/mplex.html#TooManyChannels	mplex: TooManyChannels	
+InvalidChannelIdError	libp2p/muxers/mplex/mplex.html#InvalidChannelIdError	mplex: InvalidChannelIdError	
+Mplex	libp2p/muxers/mplex/mplex.html#Mplex	mplex: Mplex	
+shortLog	libp2p/muxers/mplex/mplex.html#shortLog,Mplex	mplex: shortLog(m: Mplex): auto	
+formatItIMPL	libp2p/muxers/mplex/mplex.html#formatItIMPL.t,Mplex	mplex: formatItIMPL(it: Mplex): auto	
+new	libp2p/muxers/mplex/mplex.html#new,typeMplex,Connection,Duration,Duration,int	mplex: new(M: type Mplex; conn: Connection;\n    inTimeout, outTimeout: Duration = DefaultChanTimeout;\n    maxChannCount: int = MaxChannelCount): Mplex	
