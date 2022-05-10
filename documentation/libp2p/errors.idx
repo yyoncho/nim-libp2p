@@ -1,0 +1,6 @@
+LPError	libp2p/errors.html#LPError	errors: LPError	
+toException	libp2p/errors.html#toException,cstring	errors: toException(e: cstring): ref LPError	
+toException	libp2p/errors.html#toException,string	errors: toException(e: string): ref LPError	
+checkFutures	libp2p/errors.html#checkFutures.m,seq[Future[T]],untyped	errors: checkFutures[T](futs: seq[Future[T]]; exclude: untyped = []): untyped	
+allFuturesThrowing	libp2p/errors.html#allFuturesThrowing,varargs[Future[T]]	errors: allFuturesThrowing[T](args: varargs[Future[T]]): Future[void]	
+tryAndWarn	libp2p/errors.html#tryAndWarn.t,static[string],untyped	errors: tryAndWarn(message: static[string]; body: untyped): untyped	

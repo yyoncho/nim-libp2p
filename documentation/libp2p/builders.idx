@@ -1,0 +1,21 @@
+TransportProvider	libp2p/builders.html#TransportProvider	builders: TransportProvider	
+SecureProtocol	libp2p/builders.html#SecureProtocol	builders: SecureProtocol	
+SwitchBuilder	libp2p/builders.html#SwitchBuilder	builders: SwitchBuilder	
+new	libp2p/builders.html#new,type[SwitchBuilder]	builders: new(T: type[SwitchBuilder]): T:type	
+withPrivateKey	libp2p/builders.html#withPrivateKey,SwitchBuilder,PrivateKey	builders: withPrivateKey(b: SwitchBuilder; privateKey: PrivateKey): SwitchBuilder	
+withAddress	libp2p/builders.html#withAddress,SwitchBuilder,MultiAddress	builders: withAddress(b: SwitchBuilder; address: MultiAddress): SwitchBuilder	
+withAddresses	libp2p/builders.html#withAddresses,SwitchBuilder,seq[MultiAddress]	builders: withAddresses(b: SwitchBuilder; addresses: seq[MultiAddress]): SwitchBuilder	
+withSignedPeerRecord	libp2p/builders.html#withSignedPeerRecord,SwitchBuilder	builders: withSignedPeerRecord(b: SwitchBuilder; sendIt = true): SwitchBuilder	
+withMplex	libp2p/builders.html#withMplex,SwitchBuilder	builders: withMplex(b: SwitchBuilder; inTimeout = 5.minutes; outTimeout = 5.minutes): SwitchBuilder	
+withNoise	libp2p/builders.html#withNoise,SwitchBuilder	builders: withNoise(b: SwitchBuilder): SwitchBuilder	
+withTransport	libp2p/builders.html#withTransport,SwitchBuilder,TransportProvider	builders: withTransport(b: SwitchBuilder; prov: TransportProvider): SwitchBuilder	
+withTcpTransport	libp2p/builders.html#withTcpTransport,SwitchBuilder,set[ServerFlags]	builders: withTcpTransport(b: SwitchBuilder; flags: set[ServerFlags] = {}): SwitchBuilder	
+withRng	libp2p/builders.html#withRng,SwitchBuilder,ref.HmacDrbgContext	builders: withRng(b: SwitchBuilder; rng: ref BrHmacDrbgContext): SwitchBuilder	
+withMaxConnections	libp2p/builders.html#withMaxConnections,SwitchBuilder,int	builders: withMaxConnections(b: SwitchBuilder; maxConnections: int): SwitchBuilder	
+withMaxIn	libp2p/builders.html#withMaxIn,SwitchBuilder,int	builders: withMaxIn(b: SwitchBuilder; maxIn: int): SwitchBuilder	
+withMaxOut	libp2p/builders.html#withMaxOut,SwitchBuilder,int	builders: withMaxOut(b: SwitchBuilder; maxOut: int): SwitchBuilder	
+withMaxConnsPerPeer	libp2p/builders.html#withMaxConnsPerPeer,SwitchBuilder,int	builders: withMaxConnsPerPeer(b: SwitchBuilder; maxConnsPerPeer: int): SwitchBuilder	
+withProtoVersion	libp2p/builders.html#withProtoVersion,SwitchBuilder,string	builders: withProtoVersion(b: SwitchBuilder; protoVersion: string): SwitchBuilder	
+withAgentVersion	libp2p/builders.html#withAgentVersion,SwitchBuilder,string	builders: withAgentVersion(b: SwitchBuilder; agentVersion: string): SwitchBuilder	
+withNameResolver	libp2p/builders.html#withNameResolver,SwitchBuilder,NameResolver	builders: withNameResolver(b: SwitchBuilder; nameResolver: NameResolver): SwitchBuilder	
+newStandardSwitch	libp2p/builders.html#newStandardSwitch,openArray[SecureProtocol],set[ServerFlags],Duration,Duration,int,int,NameResolver	builders: newStandardSwitch(privKey = none(PrivateKey); addrs: MultiAddress |\n    seq[MultiAddress] = init(MultiAddress, &quot;/ip4/127.0.0.1/tcp/0&quot;).tryGet();\n    secureManagers: openArray[SecureProtocol] = [SecureProtocol.Noise];\n                  transportFlags: set[ServerFlags] = {}; rng = newRng();\n                  inTimeout: Duration = 5.minutes;\n                  outTimeout: Duration = 5.minutes;\n                  maxConnections = MaxConnections; maxIn = -1; maxOut = -1;\n                  maxConnsPerPeer = MaxConnectionsPerPeer;\n                  nameResolver: NameResolver = nil; sendSignedPeerRecord = false): Switch	

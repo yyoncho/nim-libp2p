@@ -1,0 +1,13 @@
+WsTransportTrackerName	libp2p/transports/wstransport.html#WsTransportTrackerName	wstransport: WsTransportTrackerName	
+new	libp2p/transports/wstransport.html#new,typeWsStream,WSSession,Direction,MultiAddress	wstransport: new(T: type WsStream; session: WSSession; dir: Direction; timeout = 10.minutes;\n    observedAddr: MultiAddress = MultiAddress()): T:type	
+readOnce	libp2p/transports/wstransport.html#readOnce.e,WsStream,pointer,int	wstransport: readOnce(s: WsStream; pbytes: pointer; nbytes: int): Future[int]	
+write	libp2p/transports/wstransport.html#write.e,WsStream,seq[byte]	wstransport: write(s: WsStream; msg: seq[byte]): Future[void]	
+closeImpl	libp2p/transports/wstransport.html#closeImpl.e,WsStream	wstransport: closeImpl(s: WsStream): Future[void]	
+WsTransport	libp2p/transports/wstransport.html#WsTransport	wstransport: WsTransport	
+secure	libp2p/transports/wstransport.html#secure,WsTransport	wstransport: secure(self: WsTransport): bool	
+start	libp2p/transports/wstransport.html#start.e,WsTransport,seq[MultiAddress]	wstransport: start(self: WsTransport; addrs: seq[MultiAddress]): Future[void]	
+stop	libp2p/transports/wstransport.html#stop.e,WsTransport	wstransport: stop(self: WsTransport): Future[void]	
+accept	libp2p/transports/wstransport.html#accept.e,WsTransport	wstransport: accept(self: WsTransport): Future[Connection]	
+handles	libp2p/transports/wstransport.html#handles.e,WsTransport,MultiAddress	wstransport: handles(t: WsTransport; address: MultiAddress): bool	
+new	libp2p/transports/wstransport.html#new,typedesc[WsTransport],Upgrade,TLSPrivateKey,TLSCertificate,set[TLSFlags],set[ServerFlags],openArray[ExtFactory],Rng	wstransport: new(T: typedesc[WsTransport]; upgrade: Upgrade; tlsPrivateKey: TLSPrivateKey;\n    tlsCertificate: TLSCertificate; tlsFlags: set[TLSFlags] = {};\n    flags: set[ServerFlags] = {}; factories: openArray[ExtFactory] = [];\n    rng: Rng = nil; handshakeTimeout = DefaultHeadersTimeout): T:type	
+new	libp2p/transports/wstransport.html#new,typedesc[WsTransport],Upgrade,set[ServerFlags],openArray[ExtFactory],Rng	wstransport: new(T: typedesc[WsTransport]; upgrade: Upgrade; flags: set[ServerFlags] = {};\n    factories: openArray[ExtFactory] = []; rng: Rng = nil;\n    handshakeTimeout = DefaultHeadersTimeout): T:type	

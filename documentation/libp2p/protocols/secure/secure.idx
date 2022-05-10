@@ -1,0 +1,13 @@
+SecureConnTrackerName	libp2p/protocols/secure/secure.html#SecureConnTrackerName	secure: SecureConnTrackerName	
+Secure	libp2p/protocols/secure/secure.html#Secure	secure: Secure	
+SecureConn	libp2p/protocols/secure/secure.html#SecureConn	secure: SecureConn	
+shortLog	libp2p/protocols/secure/secure.html#shortLog,SecureConn	secure: shortLog(conn: SecureConn): auto	
+formatItIMPL	libp2p/protocols/secure/secure.html#formatItIMPL.t,SecureConn	secure: formatItIMPL(it: SecureConn): auto	
+new	libp2p/protocols/secure/secure.html#new,typeSecureConn,Connection,PeerId,MultiAddress,Duration	secure: new(T: type SecureConn; conn: Connection; peerId: PeerId;\n    observedAddr: MultiAddress; timeout: Duration = DefaultConnectionTimeout): T:type	
+initStream	libp2p/protocols/secure/secure.html#initStream.e,SecureConn	secure: initStream(s: SecureConn)	
+closeImpl	libp2p/protocols/secure/secure.html#closeImpl.e,SecureConn	secure: closeImpl(s: SecureConn): Future[void]	
+readMessage	libp2p/protocols/secure/secure.html#readMessage.e,SecureConn	secure: readMessage(c: SecureConn): Future[seq[byte]]	
+handshake	libp2p/protocols/secure/secure.html#handshake.e,Secure,Connection,bool	secure: handshake(s: Secure; conn: Connection; initiator: bool): Future[SecureConn]	
+init	libp2p/protocols/secure/secure.html#init.e,Secure	secure: init(s: Secure)	
+secure	libp2p/protocols/secure/secure.html#secure.e,Secure,Connection,bool	secure: secure(s: Secure; conn: Connection; initiator: bool): Future[Connection]	
+readOnce	libp2p/protocols/secure/secure.html#readOnce.e,SecureConn,pointer,int	secure: readOnce(s: SecureConn; pbytes: pointer; nbytes: int): Future[int]	

@@ -1,0 +1,10 @@
+Curve25519KeySize	libp2p/crypto/curve25519.html#Curve25519KeySize	curve25519: Curve25519KeySize	
+Curve25519	libp2p/crypto/curve25519.html#Curve25519	curve25519: Curve25519	
+Curve25519Key	libp2p/crypto/curve25519.html#Curve25519Key	curve25519: Curve25519Key	
+Curver25519GenError	libp2p/crypto/curve25519.html#Curver25519GenError	Curve25519Error.Curver25519GenError	
+Curve25519Error	libp2p/crypto/curve25519.html#Curve25519Error	curve25519: Curve25519Error	
+intoCurve25519Key	libp2p/crypto/curve25519.html#intoCurve25519Key,openArray[byte]	curve25519: intoCurve25519Key(s: openArray[byte]): Curve25519Key	
+getBytes	libp2p/crypto/curve25519.html#getBytes,Curve25519Key	curve25519: getBytes(key: Curve25519Key): seq[byte]	
+mul	libp2p/crypto/curve25519.html#mul,type[Curve25519],Curve25519Key,Curve25519Key	curve25519: mul(_: type[Curve25519]; point: var Curve25519Key; multiplier: Curve25519Key)	
+public	libp2p/crypto/curve25519.html#public,Curve25519Key	curve25519: public(private: Curve25519Key): Curve25519Key	
+random	libp2p/crypto/curve25519.html#random,type[Curve25519Key],HmacDrbgContext	curve25519: random(_: type[Curve25519Key]; rng: var BrHmacDrbgContext): Curve25519Key	

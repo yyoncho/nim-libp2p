@@ -1,0 +1,30 @@
+maxInlineKeyLength	libp2p/peerid.html#maxInlineKeyLength	peerid: maxInlineKeyLength	
+PeerId	libp2p/peerid.html#PeerId	peerid: PeerId	
+`$`	libp2p/peerid.html#$,PeerId	peerid: `$`(pid: PeerId): string	
+shortLog	libp2p/peerid.html#shortLog,PeerId	peerid: shortLog(pid: PeerId): string	
+formatItIMPL	libp2p/peerid.html#formatItIMPL.t,PeerId	peerid: formatItIMPL(it: PeerId): auto	
+toBytes	libp2p/peerid.html#toBytes,PeerId,openArray[byte]	peerid: toBytes(pid: PeerId; data: var openArray[byte]): int	
+getBytes	libp2p/peerid.html#getBytes.t,PeerId	peerid: getBytes(pid: PeerId): seq[byte]	
+hex	libp2p/peerid.html#hex,PeerId	peerid: hex(pid: PeerId): string	
+len	libp2p/peerid.html#len.t,PeerId	peerid: len(pid: PeerId): int	
+cmp	libp2p/peerid.html#cmp,PeerId,PeerId	peerid: cmp(a, b: PeerId): int	
+`&lt;=`	libp2p/peerid.html#<=.t,PeerId,PeerId	peerid: `&lt;=`(a, b: PeerId): bool	
+`&lt;`	libp2p/peerid.html#<.t,PeerId,PeerId	peerid: `&lt;`(a, b: PeerId): bool	
+`&gt;=`	libp2p/peerid.html#>=.t,PeerId,PeerId	peerid: `&gt;=`(a, b: PeerId): bool	
+`&gt;`	libp2p/peerid.html#>.t,PeerId,PeerId	peerid: `&gt;`(a, b: PeerId): bool	
+`==`	libp2p/peerid.html#==.t,PeerId,PeerId	peerid: `==`(a, b: PeerId): bool	
+hash	libp2p/peerid.html#hash.t,PeerId	peerid: hash(pid: PeerId): Hash	
+validate	libp2p/peerid.html#validate,PeerId	peerid: validate(pid: PeerId): bool	
+hasPublicKey	libp2p/peerid.html#hasPublicKey,PeerId	peerid: hasPublicKey(pid: PeerId): bool	
+extractPublicKey	libp2p/peerid.html#extractPublicKey,PeerId,PublicKey	peerid: extractPublicKey(pid: PeerId; pubkey: var PublicKey): bool	
+init	libp2p/peerid.html#init,PeerId,openArray[byte]	peerid: init(pid: var PeerId; data: openArray[byte]): bool	
+init	libp2p/peerid.html#init,PeerId,string	peerid: init(pid: var PeerId; data: string): bool	
+init	libp2p/peerid.html#init,typedesc[PeerId],openArray[byte]	peerid: init(t: typedesc[PeerId]; data: openArray[byte]): Result[PeerId, cstring]	
+init	libp2p/peerid.html#init,typedesc[PeerId],string	peerid: init(t: typedesc[PeerId]; data: string): Result[PeerId, cstring]	
+init	libp2p/peerid.html#init,typedesc[PeerId],PublicKey	peerid: init(t: typedesc[PeerId]; pubkey: PublicKey): Result[PeerId, cstring]	
+init	libp2p/peerid.html#init,typedesc[PeerId],PrivateKey	peerid: init(t: typedesc[PeerId]; seckey: PrivateKey): Result[PeerId, cstring]	
+match	libp2p/peerid.html#match,PeerId,PublicKey	peerid: match(pid: PeerId; pubkey: PublicKey): bool	
+match	libp2p/peerid.html#match,PeerId,PrivateKey	peerid: match(pid: PeerId; seckey: PrivateKey): bool	
+write	libp2p/peerid.html#write,VBuffer,PeerId	peerid: write(vb: var VBuffer; pid: PeerId)	
+write	libp2p/peerid.html#write,ProtoBuffer,int,PeerId	peerid: write(pb: var ProtoBuffer; field: int; pid: PeerId)	
+getField	libp2p/peerid.html#getField,ProtoBuffer,int,PeerId	peerid: getField(pb: ProtoBuffer; field: int; pid: var PeerId): ProtoResult[bool]	

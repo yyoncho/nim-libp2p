@@ -1,0 +1,54 @@
+Asn1Error	libp2p/crypto/minasn1.html#Asn1Error	minasn1: Asn1Error	
+Asn1Result	libp2p/crypto/minasn1.html#Asn1Result	minasn1: Asn1Result	
+Asn1Class	libp2p/crypto/minasn1.html#Asn1Class	minasn1: Asn1Class	
+Asn1Tag	libp2p/crypto/minasn1.html#Asn1Tag	minasn1: Asn1Tag	
+Asn1Buffer	libp2p/crypto/minasn1.html#Asn1Buffer	minasn1: Asn1Buffer	
+Asn1Field	libp2p/crypto/minasn1.html#Asn1Field	minasn1: Asn1Field	
+Asn1Composite	libp2p/crypto/minasn1.html#Asn1Composite	minasn1: Asn1Composite	
+Asn1OidSecp256r1	libp2p/crypto/minasn1.html#Asn1OidSecp256r1	minasn1: Asn1OidSecp256r1	
+Asn1OidSecp384r1	libp2p/crypto/minasn1.html#Asn1OidSecp384r1	minasn1: Asn1OidSecp384r1	
+Asn1OidSecp521r1	libp2p/crypto/minasn1.html#Asn1OidSecp521r1	minasn1: Asn1OidSecp521r1	
+Asn1OidSecp256k1	libp2p/crypto/minasn1.html#Asn1OidSecp256k1	minasn1: Asn1OidSecp256k1	
+Asn1OidEcPublicKey	libp2p/crypto/minasn1.html#Asn1OidEcPublicKey	minasn1: Asn1OidEcPublicKey	
+Asn1OidRsaEncryption	libp2p/crypto/minasn1.html#Asn1OidRsaEncryption	minasn1: Asn1OidRsaEncryption	
+Asn1True	libp2p/crypto/minasn1.html#Asn1True	minasn1: Asn1True	
+Asn1False	libp2p/crypto/minasn1.html#Asn1False	minasn1: Asn1False	
+Asn1Null	libp2p/crypto/minasn1.html#Asn1Null	minasn1: Asn1Null	
+toOpenArray	libp2p/crypto/minasn1.html#toOpenArray.t,Asn1Buffer	minasn1: toOpenArray(ab: Asn1Buffer): untyped	
+toOpenArray	libp2p/crypto/minasn1.html#toOpenArray.t,Asn1Composite	minasn1: toOpenArray(ac: Asn1Composite): untyped	
+toOpenArray	libp2p/crypto/minasn1.html#toOpenArray.t,Asn1Field	minasn1: toOpenArray(af: Asn1Field): untyped	
+isEmpty	libp2p/crypto/minasn1.html#isEmpty.t,Asn1Buffer	minasn1: isEmpty(ab: Asn1Buffer): bool	
+isEnough	libp2p/crypto/minasn1.html#isEnough.t,Asn1Buffer,int	minasn1: isEnough(ab: Asn1Buffer; length: int): bool	
+len	libp2p/crypto/minasn1.html#len,T	minasn1: len[T: Asn1Buffer | Asn1Composite](abc: T): int	
+len	libp2p/crypto/minasn1.html#len,Asn1Field	minasn1: len(field: Asn1Field): int	
+getPtr	libp2p/crypto/minasn1.html#getPtr.t,untyped	minasn1: getPtr(field: untyped): pointer	
+extend	libp2p/crypto/minasn1.html#extend,T,int	minasn1: extend[T: Asn1Buffer | Asn1Composite](abc: var T; length: int)	
+code	libp2p/crypto/minasn1.html#code,Asn1Tag	minasn1: code(tag: Asn1Tag): byte	
+asn1EncodeLength	libp2p/crypto/minasn1.html#asn1EncodeLength,openArray[byte],uint64	minasn1: asn1EncodeLength(dest: var openArray[byte]; length: uint64): int	
+asn1EncodeInteger	libp2p/crypto/minasn1.html#asn1EncodeInteger,openArray[byte],openArray[byte]	minasn1: asn1EncodeInteger(dest: var openArray[byte]; value: openArray[byte]): int	
+asn1EncodeInteger	libp2p/crypto/minasn1.html#asn1EncodeInteger,openArray[byte],T	minasn1: asn1EncodeInteger[T: SomeUnsignedInt](dest: var openArray[byte]; value: T): int	
+asn1EncodeBoolean	libp2p/crypto/minasn1.html#asn1EncodeBoolean,openArray[byte],bool	minasn1: asn1EncodeBoolean(dest: var openArray[byte]; value: bool): int	
+asn1EncodeNull	libp2p/crypto/minasn1.html#asn1EncodeNull,openArray[byte]	minasn1: asn1EncodeNull(dest: var openArray[byte]): int	
+asn1EncodeOctetString	libp2p/crypto/minasn1.html#asn1EncodeOctetString,openArray[byte],openArray[byte]	minasn1: asn1EncodeOctetString(dest: var openArray[byte]; value: openArray[byte]): int	
+asn1EncodeBitString	libp2p/crypto/minasn1.html#asn1EncodeBitString,openArray[byte],openArray[byte],int	minasn1: asn1EncodeBitString(dest: var openArray[byte]; value: openArray[byte]; bits = 0): int	
+asn1EncodeOid	libp2p/crypto/minasn1.html#asn1EncodeOid,openArray[byte],openArray[int]	minasn1: asn1EncodeOid(dest: var openArray[byte]; value: openArray[int]): int	
+asn1EncodeOid	libp2p/crypto/minasn1.html#asn1EncodeOid,openArray[byte],openArray[byte]	minasn1: asn1EncodeOid(dest: var openArray[byte]; value: openArray[byte]): int	
+asn1EncodeSequence	libp2p/crypto/minasn1.html#asn1EncodeSequence,openArray[byte],openArray[byte]	minasn1: asn1EncodeSequence(dest: var openArray[byte]; value: openArray[byte]): int	
+asn1EncodeComposite	libp2p/crypto/minasn1.html#asn1EncodeComposite,openArray[byte],Asn1Composite	minasn1: asn1EncodeComposite(dest: var openArray[byte]; value: Asn1Composite): int	
+asn1EncodeContextTag	libp2p/crypto/minasn1.html#asn1EncodeContextTag,openArray[byte],openArray[byte],int	minasn1: asn1EncodeContextTag(dest: var openArray[byte]; value: openArray[byte]; tag: int): int	
+read	libp2p/crypto/minasn1.html#read,Asn1Buffer	minasn1: read(ab: var Asn1Buffer): Asn1Result[Asn1Field]	
+getBuffer	libp2p/crypto/minasn1.html#getBuffer,Asn1Field	minasn1: getBuffer(field: Asn1Field): Asn1Buffer	
+`==`	libp2p/crypto/minasn1.html#==,Asn1Field,openArray[byte]	minasn1: `==`(field: Asn1Field; data: openArray[byte]): bool	
+init	libp2p/crypto/minasn1.html#init,typedesc[Asn1Buffer],openArray[byte]	minasn1: init(t: typedesc[Asn1Buffer]; data: openArray[byte]): Asn1Buffer	
+init	libp2p/crypto/minasn1.html#init,typedesc[Asn1Buffer],string	minasn1: init(t: typedesc[Asn1Buffer]; data: string): Asn1Buffer	
+init	libp2p/crypto/minasn1.html#init,typedesc[Asn1Buffer]	minasn1: init(t: typedesc[Asn1Buffer]): Asn1Buffer	
+init	libp2p/crypto/minasn1.html#init,typedesc[Asn1Composite],Asn1Tag	minasn1: init(t: typedesc[Asn1Composite]; tag: Asn1Tag): Asn1Composite	
+init	libp2p/crypto/minasn1.html#init,typedesc[Asn1Composite],int	minasn1: init(t: typedesc[Asn1Composite]; idx: int): Asn1Composite	
+`$`	libp2p/crypto/minasn1.html#$,Asn1Buffer	minasn1: `$`(buffer: Asn1Buffer): string	
+`$`	libp2p/crypto/minasn1.html#$,Asn1Field	minasn1: `$`(field: Asn1Field): string	
+write	libp2p/crypto/minasn1.html#write,T,Asn1Tag	minasn1: write[T: Asn1Buffer | Asn1Composite](abc: var T; tag: Asn1Tag)	
+write	libp2p/crypto/minasn1.html#write,T,uint64	minasn1: write[T: Asn1Buffer | Asn1Composite](abc: var T; value: uint64)	
+write	libp2p/crypto/minasn1.html#write,T,bool	minasn1: write[T: Asn1Buffer | Asn1Composite](abc: var T; value: bool)	
+write	libp2p/crypto/minasn1.html#write,T,Asn1Tag,openArray[byte],int	minasn1: write[T: Asn1Buffer | Asn1Composite](abc: var T; tag: Asn1Tag;\n                                     value: openArray[byte]; bits = 0)	
+write	libp2p/crypto/minasn1.html#write,T,Asn1Composite	minasn1: write[T: Asn1Buffer | Asn1Composite](abc: var T; value: Asn1Composite)	
+finish	libp2p/crypto/minasn1.html#finish,T	minasn1: finish[T: Asn1Buffer | Asn1Composite](abc: var T)	

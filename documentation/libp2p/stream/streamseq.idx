@@ -1,0 +1,11 @@
+StreamSeq	libp2p/stream/streamseq.html#StreamSeq	streamseq: StreamSeq	
+len	libp2p/stream/streamseq.html#len.t,StreamSeq	streamseq: len(v: StreamSeq): int	
+prepare	libp2p/stream/streamseq.html#prepare.t,StreamSeq,int	streamseq: prepare(v: var StreamSeq; n: int): var openArray[byte]	
+commit	libp2p/stream/streamseq.html#commit.t,StreamSeq,int	streamseq: commit(v: var StreamSeq; n: int)	
+add	libp2p/stream/streamseq.html#add,StreamSeq,openArray[byte]	streamseq: add(v: var StreamSeq; data: openArray[byte])	
+data	libp2p/stream/streamseq.html#data.t,StreamSeq	streamseq: data(v: StreamSeq): openArray[byte]	
+toOpenArray	libp2p/stream/streamseq.html#toOpenArray.t,StreamSeq,int,int	streamseq: toOpenArray(v: StreamSeq; b, e: int): openArray[byte]	
+consume	libp2p/stream/streamseq.html#consume,StreamSeq,int	streamseq: consume(v: var StreamSeq; n: int)	
+consumeTo	libp2p/stream/streamseq.html#consumeTo,StreamSeq,openArray[byte]	streamseq: consumeTo(v: var StreamSeq; buf: var openArray[byte]): int	
+clear	libp2p/stream/streamseq.html#clear,StreamSeq	streamseq: clear(v: var StreamSeq)	
+assign	libp2p/stream/streamseq.html#assign,StreamSeq,openArray[byte]	streamseq: assign(v: var StreamSeq; buf: openArray[byte])	

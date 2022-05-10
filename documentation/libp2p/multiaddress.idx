@@ -1,0 +1,90 @@
+None	libp2p/multiaddress.html#None	MAKind.None	
+Fixed	libp2p/multiaddress.html#Fixed	MAKind.Fixed	
+Length	libp2p/multiaddress.html#Length	MAKind.Length	
+Path	libp2p/multiaddress.html#Path	MAKind.Path	
+Marker	libp2p/multiaddress.html#Marker	MAKind.Marker	
+MAKind	libp2p/multiaddress.html#MAKind	multiaddress: MAKind	
+MAProtocol	libp2p/multiaddress.html#MAProtocol	multiaddress: MAProtocol	
+MultiAddress	libp2p/multiaddress.html#MultiAddress	multiaddress: MultiAddress	
+Eq	libp2p/multiaddress.html#Eq	MaPatternOp.Eq	
+Or	libp2p/multiaddress.html#Or	MaPatternOp.Or	
+And	libp2p/multiaddress.html#And	MaPatternOp.And	
+MaPatternOp	libp2p/multiaddress.html#MaPatternOp	multiaddress: MaPatternOp	
+MaPattern	libp2p/multiaddress.html#MaPattern	multiaddress: MaPattern	
+MaPatResult	libp2p/multiaddress.html#MaPatResult	multiaddress: MaPatResult	
+MaResult	libp2p/multiaddress.html#MaResult	multiaddress: MaResult	
+MaError	libp2p/multiaddress.html#MaError	multiaddress: MaError	
+MaInvalidAddress	libp2p/multiaddress.html#MaInvalidAddress	multiaddress: MaInvalidAddress	
+tcpProtocol	libp2p/multiaddress.html#tcpProtocol	IpTransportProtocol.tcpProtocol	
+udpProtocol	libp2p/multiaddress.html#udpProtocol	IpTransportProtocol.udpProtocol	
+IpTransportProtocol	libp2p/multiaddress.html#IpTransportProtocol	multiaddress: IpTransportProtocol	
+hash	libp2p/multiaddress.html#hash,MultiAddress	multiaddress: hash(a: MultiAddress): Hash	
+mapEq	libp2p/multiaddress.html#mapEq,string	multiaddress: mapEq(codec: string): MaPattern	
+mapOr	libp2p/multiaddress.html#mapOr,varargs[MaPattern]	multiaddress: mapOr(args: varargs[MaPattern]): MaPattern	
+mapAnd	libp2p/multiaddress.html#mapAnd,varargs[MaPattern]	multiaddress: mapAnd(args: varargs[MaPattern]): MaPattern	
+TranscoderIP4	libp2p/multiaddress.html#TranscoderIP4	multiaddress: TranscoderIP4	
+TranscoderIP6	libp2p/multiaddress.html#TranscoderIP6	multiaddress: TranscoderIP6	
+TranscoderIP6Zone	libp2p/multiaddress.html#TranscoderIP6Zone	multiaddress: TranscoderIP6Zone	
+TranscoderUnix	libp2p/multiaddress.html#TranscoderUnix	multiaddress: TranscoderUnix	
+TranscoderP2P	libp2p/multiaddress.html#TranscoderP2P	multiaddress: TranscoderP2P	
+TranscoderPort	libp2p/multiaddress.html#TranscoderPort	multiaddress: TranscoderPort	
+TranscoderOnion	libp2p/multiaddress.html#TranscoderOnion	multiaddress: TranscoderOnion	
+TranscoderDNS	libp2p/multiaddress.html#TranscoderDNS	multiaddress: TranscoderDNS	
+DNSANY	libp2p/multiaddress.html#DNSANY	multiaddress: DNSANY	
+DNS4	libp2p/multiaddress.html#DNS4	multiaddress: DNS4	
+DNS6	libp2p/multiaddress.html#DNS6	multiaddress: DNS6	
+DNSADDR	libp2p/multiaddress.html#DNSADDR	multiaddress: DNSADDR	
+IP4	libp2p/multiaddress.html#IP4	multiaddress: IP4	
+IP6	libp2p/multiaddress.html#IP6	multiaddress: IP6	
+DNS	libp2p/multiaddress.html#DNS	multiaddress: DNS	
+IP	libp2p/multiaddress.html#IP	multiaddress: IP	
+TCP	libp2p/multiaddress.html#TCP	multiaddress: TCP	
+UDP	libp2p/multiaddress.html#UDP	multiaddress: UDP	
+UTP	libp2p/multiaddress.html#UTP	multiaddress: UTP	
+QUIC	libp2p/multiaddress.html#QUIC	multiaddress: QUIC	
+UNIX	libp2p/multiaddress.html#UNIX	multiaddress: UNIX	
+WS	libp2p/multiaddress.html#WS	multiaddress: WS	
+WSS	libp2p/multiaddress.html#WSS	multiaddress: WSS	
+WebSockets	libp2p/multiaddress.html#WebSockets	multiaddress: WebSockets	
+Unreliable	libp2p/multiaddress.html#Unreliable	multiaddress: Unreliable	
+Reliable	libp2p/multiaddress.html#Reliable	multiaddress: Reliable	
+IPFS	libp2p/multiaddress.html#IPFS	multiaddress: IPFS	
+HTTP	libp2p/multiaddress.html#HTTP	multiaddress: HTTP	
+HTTPS	libp2p/multiaddress.html#HTTPS	multiaddress: HTTPS	
+WebRTCDirect	libp2p/multiaddress.html#WebRTCDirect	multiaddress: WebRTCDirect	
+shcopy	libp2p/multiaddress.html#shcopy,MultiAddress,MultiAddress	multiaddress: shcopy(m1: var MultiAddress; m2: MultiAddress)	
+protoCode	libp2p/multiaddress.html#protoCode,MultiAddress	multiaddress: protoCode(ma: MultiAddress): MaResult[MultiCodec]	
+protoName	libp2p/multiaddress.html#protoName,MultiAddress	multiaddress: protoName(ma: MultiAddress): MaResult[string]	
+protoArgument	libp2p/multiaddress.html#protoArgument,MultiAddress,openArray[byte]	multiaddress: protoArgument(ma: MultiAddress; value: var openArray[byte]): MaResult[int]	
+protoAddress	libp2p/multiaddress.html#protoAddress,MultiAddress	multiaddress: protoAddress(ma: MultiAddress): MaResult[seq[byte]]	
+`[]`	libp2p/multiaddress.html#[],MultiAddress,int	multiaddress: `[]`(ma: MultiAddress; i: int): MaResult[MultiAddress]	
+items	libp2p/multiaddress.html#items.i,MultiAddress	multiaddress: items(ma: MultiAddress): MaResult[MultiAddress]	
+contains	libp2p/multiaddress.html#contains,MultiAddress,MultiCodec	multiaddress: contains(ma: MultiAddress; codec: MultiCodec): MaResult[bool]	
+`[]`	libp2p/multiaddress.html#[],MultiAddress,MultiCodec	multiaddress: `[]`(ma: MultiAddress; codec: MultiCodec): MaResult[MultiAddress]	
+toString	libp2p/multiaddress.html#toString,MultiAddress	multiaddress: toString(value: MultiAddress): MaResult[string]	
+`$`	libp2p/multiaddress.html#$,MultiAddress	multiaddress: `$`(value: MultiAddress): string	
+protocols	libp2p/multiaddress.html#protocols,MultiAddress	multiaddress: protocols(value: MultiAddress): MaResult[seq[MultiCodec]]	
+hex	libp2p/multiaddress.html#hex,MultiAddress	multiaddress: hex(value: MultiAddress): string	
+write	libp2p/multiaddress.html#write,VBuffer,MultiAddress	multiaddress: write(vb: var VBuffer; ma: MultiAddress)	
+encode	libp2p/multiaddress.html#encode,typedesc[MultiBase],string,MultiAddress	multiaddress: encode(mbtype: typedesc[MultiBase]; encoding: string; ma: MultiAddress): string	
+validate	libp2p/multiaddress.html#validate,MultiAddress	multiaddress: validate(ma: MultiAddress): bool	
+init	libp2p/multiaddress.html#init,typedesc[MultiAddress],MultiCodec,openArray[byte]	multiaddress: init(mtype: typedesc[MultiAddress]; protocol: MultiCodec;\n     value: openArray[byte] = []): MaResult[MultiAddress]	
+init	libp2p/multiaddress.html#init,typedesc[MultiAddress],MultiCodec,PeerId	multiaddress: init(mtype: typedesc[MultiAddress]; protocol: MultiCodec; value: PeerId): MaResult[\n    MultiAddress]	
+init	libp2p/multiaddress.html#init,typedesc[MultiAddress],MultiCodec,int	multiaddress: init(mtype: typedesc[MultiAddress]; protocol: MultiCodec; value: int): MaResult[\n    MultiAddress]	
+init	libp2p/multiaddress.html#init,typedesc[MultiAddress],string	multiaddress: init(mtype: typedesc[MultiAddress]; value: string): MaResult[MultiAddress]	
+init	libp2p/multiaddress.html#init,typedesc[MultiAddress],openArray[byte]	multiaddress: init(mtype: typedesc[MultiAddress]; data: openArray[byte]): MaResult[\n    MultiAddress]	
+init	libp2p/multiaddress.html#init,typedesc[MultiAddress]	multiaddress: init(mtype: typedesc[MultiAddress]): MultiAddress	
+init	libp2p/multiaddress.html#init,typedesc[MultiAddress],ValidIpAddress,IpTransportProtocol,Port	multiaddress: init(mtype: typedesc[MultiAddress]; address: ValidIpAddress;\n     protocol: IpTransportProtocol; port: Port): MultiAddress	
+init	libp2p/multiaddress.html#init,typedesc[MultiAddress],TransportAddress	multiaddress: init(mtype: typedesc[MultiAddress]; address: TransportAddress;\n     protocol = IPPROTO_TCP): MaResult[MultiAddress]	
+isEmpty	libp2p/multiaddress.html#isEmpty,MultiAddress	multiaddress: isEmpty(ma: MultiAddress): bool	
+concat	libp2p/multiaddress.html#concat,MultiAddress,MultiAddress	multiaddress: concat(m1, m2: MultiAddress): MaResult[MultiAddress]	
+append	libp2p/multiaddress.html#append,MultiAddress,MultiAddress	multiaddress: append(m1: var MultiAddress; m2: MultiAddress): MaResult[void]	
+`&amp;`	libp2p/multiaddress.html#&,MultiAddress,MultiAddress	multiaddress: `&amp;`(m1, m2: MultiAddress): MultiAddress	
+`&amp;=`	libp2p/multiaddress.html#&=,MultiAddress,MultiAddress	multiaddress: `&amp;=`(m1: var MultiAddress; m2: MultiAddress)	
+`==`	libp2p/multiaddress.html#==,MultiAddress,MultiAddress	multiaddress: `==`(m1: var MultiAddress; m2: MultiAddress): bool	
+match	libp2p/multiaddress.html#match,MaPattern,MultiAddress	multiaddress: match(pat: MaPattern; address: MultiAddress): bool	
+matchPartial	libp2p/multiaddress.html#matchPartial,MaPattern,MultiAddress	multiaddress: matchPartial(pat: MaPattern; address: MultiAddress): bool	
+`$`	libp2p/multiaddress.html#$,MaPattern	multiaddress: `$`(pat: MaPattern): string	
+write	libp2p/multiaddress.html#write,ProtoBuffer,int,MultiAddress	multiaddress: write(pb: var ProtoBuffer; field: int; value: MultiAddress)	
+getField	libp2p/multiaddress.html#getField,ProtoBuffer,int,MultiAddress	multiaddress: getField(pb: ProtoBuffer; field: int; value: var MultiAddress): ProtoResult[bool]	
+getRepeatedField	libp2p/multiaddress.html#getRepeatedField,ProtoBuffer,int,seq[MultiAddress]	multiaddress: getRepeatedField(pb: ProtoBuffer; field: int; value: var seq[MultiAddress]): ProtoResult[\n    bool]	
