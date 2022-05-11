@@ -1,8 +1,0 @@
-MultiBaseStatus	libp2p/multibase.html#MultiBaseStatus	multibase: MultiBaseStatus	
-MultiBase	libp2p/multibase.html#MultiBase	multibase: MultiBase	
-encodedLength	libp2p/multibase.html#encodedLength,typedesc[MultiBase],string,int	multibase: encodedLength(mbtype: typedesc[MultiBase]; encoding: string; length: int): int	
-decodedLength	libp2p/multibase.html#decodedLength,typedesc[MultiBase],char,int	multibase: decodedLength(mbtype: typedesc[MultiBase]; encoding: char; length: int): int	
-encode	libp2p/multibase.html#encode,typedesc[MultiBase],string,openArray[byte],openArray[char],int	multibase: encode(mbtype: typedesc[MultiBase]; encoding: string; inbytes: openArray[byte];\n       outbytes: var openArray[char]; outlen: var int): MultiBaseStatus	
-decode	libp2p/multibase.html#decode,typedesc[MultiBase],openArray[char],openArray[byte],int	multibase: decode(mbtype: typedesc[MultiBase]; inbytes: openArray[char];\n       outbytes: var openArray[byte]; outlen: var int): MultiBaseStatus	
-encode	libp2p/multibase.html#encode,typedesc[MultiBase],string,openArray[byte]	multibase: encode(mbtype: typedesc[MultiBase]; encoding: string; inbytes: openArray[byte]): Result[\n    string, string]	
-decode	libp2p/multibase.html#decode,typedesc[MultiBase],openArray[char]	multibase: decode(mbtype: typedesc[MultiBase]; inbytes: openArray[char]): Result[seq[byte],\n    string]	

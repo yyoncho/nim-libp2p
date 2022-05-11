@@ -1,5 +1,0 @@
-NameResolver	libp2p/nameresolving/nameresolver.html#NameResolver	nameresolver: NameResolver	
-resolveTxt	libp2p/nameresolving/nameresolver.html#resolveTxt.e,NameResolver,string	nameresolver: resolveTxt(self: NameResolver; address: string): Future[seq[string]]	
-resolveIp	libp2p/nameresolving/nameresolver.html#resolveIp.e,NameResolver,string,Port,Domain	nameresolver: resolveIp(self: NameResolver; address: string; port: Port;\n          domain: Domain = Domain.AF_UNSPEC): Future[seq[TransportAddress]]	
-getHostname	libp2p/nameresolving/nameresolver.html#getHostname,MultiAddress	nameresolver: getHostname(ma: MultiAddress): string	
-resolveMAddress	libp2p/nameresolving/nameresolver.html#resolveMAddress,NameResolver,MultiAddress	nameresolver: resolveMAddress(self: NameResolver; address: MultiAddress): Future[\n    seq[MultiAddress]]	

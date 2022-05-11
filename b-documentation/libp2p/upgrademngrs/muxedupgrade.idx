@@ -1,6 +1,0 @@
-MuxedUpgrade	libp2p/upgrademngrs/muxedupgrade.html#MuxedUpgrade	muxedupgrade: MuxedUpgrade	
-identify	libp2p/upgrademngrs/muxedupgrade.html#identify,MuxedUpgrade,Muxer	muxedupgrade: identify(self: MuxedUpgrade; muxer: Muxer): Future[void]	
-mux	libp2p/upgrademngrs/muxedupgrade.html#mux,MuxedUpgrade,Connection	muxedupgrade: mux(self: MuxedUpgrade; conn: Connection): Future[Muxer]	
-upgradeOutgoing	libp2p/upgrademngrs/muxedupgrade.html#upgradeOutgoing.e,MuxedUpgrade,Connection	muxedupgrade: upgradeOutgoing(self: MuxedUpgrade; conn: Connection): Future[Connection]	
-upgradeIncoming	libp2p/upgrademngrs/muxedupgrade.html#upgradeIncoming.e,MuxedUpgrade,Connection	muxedupgrade: upgradeIncoming(self: MuxedUpgrade; incomingConn: Connection): Future[void]	
-new	libp2p/upgrademngrs/muxedupgrade.html#new,typeMuxedUpgrade,Identify,Table[string,MuxerProvider],openArray[Secure],ConnManager,MultistreamSelect	muxedupgrade: new(T: type MuxedUpgrade; identity: Identify;\n    muxers: Table[string, MuxerProvider];\n    secureManagers: openArray[Secure] = []; connManager: ConnManager;\n    ms: MultistreamSelect): T:type	

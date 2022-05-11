@@ -1,8 +1,0 @@
-PingCodec	libp2p/protocols/ping.html#PingCodec	ping: PingCodec	
-PingError	libp2p/protocols/ping.html#PingError	ping: PingError	
-WrongPingAckError	libp2p/protocols/ping.html#WrongPingAckError	ping: WrongPingAckError	
-PingHandler	libp2p/protocols/ping.html#PingHandler	ping: PingHandler	
-Ping	libp2p/protocols/ping.html#Ping	ping: Ping	
-new	libp2p/protocols/ping.html#new,typedesc[Ping],PingHandler,ref.HmacDrbgContext	ping: new(T: typedesc[Ping]; handler: PingHandler = nil;\n    rng: ref BrHmacDrbgContext = newRng()): T:type	
-init	libp2p/protocols/ping.html#init.e,Ping	ping: init(p: Ping)	
-ping	libp2p/protocols/ping.html#ping,Ping,Connection	ping: ping(p: Ping; conn: Connection): Future[Duration]	

@@ -1,3 +1,0 @@
-public	libp2p/utility.html#public.t	utility: public()	
-shortLog	libp2p/utility.html#shortLog,openArray[byte]	utility: shortLog(item: openArray[byte]): string	
-shortLog	libp2p/utility.html#shortLog,string	utility: shortLog(item: string): string	

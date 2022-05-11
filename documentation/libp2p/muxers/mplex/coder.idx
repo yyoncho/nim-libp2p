@@ -1,8 +1,0 @@
-MessageType	libp2p/muxers/mplex/coder.html#MessageType	coder: MessageType	
-Msg	libp2p/muxers/mplex/coder.html#Msg	coder: Msg	
-InvalidMplexMsgType	libp2p/muxers/mplex/coder.html#InvalidMplexMsgType	coder: InvalidMplexMsgType	
-MaxMsgSize	libp2p/muxers/mplex/coder.html#MaxMsgSize	coder: MaxMsgSize	
-newInvalidMplexMsgType	libp2p/muxers/mplex/coder.html#newInvalidMplexMsgType	coder: newInvalidMplexMsgType(): ref InvalidMplexMsgType	
-readMsg	libp2p/muxers/mplex/coder.html#readMsg,Connection	coder: readMsg(conn: Connection): Future[Msg]	
-writeMsg	libp2p/muxers/mplex/coder.html#writeMsg,Connection,uint64,MessageType,seq[byte]	coder: writeMsg(conn: Connection; id: uint64; msgType: MessageType;\n         data: seq[byte] = @[]): Future[void]	
-writeMsg	libp2p/muxers/mplex/coder.html#writeMsg,Connection,uint64,MessageType,string	coder: writeMsg(conn: Connection; id: uint64; msgType: MessageType; data: string): Future[\n    void]	

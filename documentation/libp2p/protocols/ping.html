@@ -202,10 +202,10 @@ window.addEventListener("DOMContentLoaded", main2);
   <li><a class="reference" href="#PingError"
     title="PingError = object of LPError">PingError</a></li>
   <li><a class="reference" href="#PingHandler"
-    title="PingHandler = proc (peer: PeerId): Future[void] {.gcsafe, raises: [Defect],
-    public().}">PingHandler</a></li>
+    title="PingHandler {.public.} = proc (peer: PeerId): Future[void] {.gcsafe,
+    raises: [Defect].}">PingHandler</a></li>
   <li><a class="reference" href="#WrongPingAckError"
-    title="WrongPingAckError = object of LPError">WrongPingAckError</a></li>
+    title="WrongPingAckError = object of PingError">WrongPingAckError</a></li>
 
   </ul>
 </li>
@@ -295,8 +295,8 @@ class="link-seesrc" target="_blank">Source</a>
 </dd>
 </div>
 <div id="PingHandler" class="tohide">
-<dt><pre><a href="ping.html#PingHandler"><span class="Identifier">PingHandler</span></a> <span class="Other">=</span> <span class="Keyword">proc</span> <span class="Other">(</span><span class="Identifier">peer</span><span class="Other">:</span> <a href="../peerid.html#PeerId"><span class="Identifier">PeerId</span></a><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">Future</span><span class="Other">[</span><span class="Identifier">void</span><span class="Other">]</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">gcsafe</span><span class="Other">,</span> <span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Defect</span><span class="Other">]</span><span class="Other">,</span>
-    </span><span class="Identifier">public</span><span class="Other">(</span><span class="Other">)</span>.}</pre></dt>
+<dt><pre><a href="ping.html#PingHandler"><span class="Identifier">PingHandler</span></a> {.<span class="Identifier">public</span>.} <span class="Other">=</span> <span class="Keyword">proc</span> <span class="Other">(</span><span class="Identifier">peer</span><span class="Other">:</span> <a href="../peerid.html#PeerId"><span class="Identifier">PeerId</span></a><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">Future</span><span class="Other">[</span><span class="Identifier">void</span><span class="Other">]</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">gcsafe</span><span class="Other">,</span>
+    <span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Defect</span><span class="Other">]</span></span>.}</pre></dt>
 <dd>
 
 
@@ -308,7 +308,7 @@ class="link-seesrc" target="_blank">Source</a>
 </dd>
 </div>
 <div id="WrongPingAckError" class="tohide">
-<dt><pre><a href="ping.html#WrongPingAckError"><span class="Identifier">WrongPingAckError</span></a> <span class="Other">=</span> <span class="Keyword">object</span> <span class="Keyword">of</span> <a href="../errors.html#LPError"><span class="Identifier">LPError</span></a></pre></dt>
+<dt><pre><a href="ping.html#WrongPingAckError"><span class="Identifier">WrongPingAckError</span></a> <span class="Other">=</span> <span class="Keyword">object</span> <span class="Keyword">of</span> <a href="ping.html#PingError"><span class="Identifier">PingError</span></a></pre></dt>
 <dd>
 
 
@@ -396,7 +396,7 @@ class="link-seesrc" target="_blank">Source</a>
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br/>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2022-05-10 07:18:54 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2022-05-11 09:19:28 UTC</small>
       </div>
     </div>
   </div>

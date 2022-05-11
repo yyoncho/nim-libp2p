@@ -1,7 +1,0 @@
-libp2p_failed_upgrade	libp2p/upgrademngrs/upgrade.html#libp2p_failed_upgrade	upgrade: libp2p_failed_upgrade	
-UpgradeFailedError	libp2p/upgrademngrs/upgrade.html#UpgradeFailedError	upgrade: UpgradeFailedError	
-Upgrade	libp2p/upgrademngrs/upgrade.html#Upgrade	upgrade: Upgrade	
-upgradeIncoming	libp2p/upgrademngrs/upgrade.html#upgradeIncoming.e,Upgrade,Connection	upgrade: upgradeIncoming(self: Upgrade; conn: Connection): Future[void]	
-upgradeOutgoing	libp2p/upgrademngrs/upgrade.html#upgradeOutgoing.e,Upgrade,Connection	upgrade: upgradeOutgoing(self: Upgrade; conn: Connection): Future[Connection]	
-secure	libp2p/upgrademngrs/upgrade.html#secure,Upgrade,Connection	upgrade: secure(self: Upgrade; conn: Connection): Future[Connection]	
-identify	libp2p/upgrademngrs/upgrade.html#identify,Upgrade,Connection	upgrade: identify(self: Upgrade; conn: Connection): Future[void]	

@@ -1,9 +1,0 @@
-RTRANSPMA	libp2p/wire.html#RTRANSPMA	wire: RTRANSPMA	
-TRANSPMA	libp2p/wire.html#TRANSPMA	wire: TRANSPMA	
-initTAddress	libp2p/wire.html#initTAddress,MultiAddress	wire: initTAddress(ma: MultiAddress): MaResult[TransportAddress]	
-connect	libp2p/wire.html#connect,MultiAddress,StreamTransport	wire: connect(ma: MultiAddress; bufferSize = DefaultStreamBufferSize;\n        child: StreamTransport = nil): Future[StreamTransport]	
-createStreamServer	libp2p/wire.html#createStreamServer,MultiAddress,StreamCallback,set[ServerFlags],ref.T,AsyncFD,int,int,StreamServer,TransportInitCallback	wire: createStreamServer[T](ma: MultiAddress; cbproc: StreamCallback;\n                      flags: set[ServerFlags] = {}; udata: ref T;\n                      sock: AsyncFD = asyncInvalidSocket; backlog: int = 100;\n                      bufferSize: int = DefaultStreamBufferSize;\n                      child: StreamServer = nil;\n                      init: TransportInitCallback = nil): StreamServer	
-createStreamServer	libp2p/wire.html#createStreamServer,MultiAddress,set[ServerFlags],ref.T,AsyncFD,int,int,StreamServer,TransportInitCallback	wire: createStreamServer[T](ma: MultiAddress; flags: set[ServerFlags] = {};\n                      udata: ref T; sock: AsyncFD = asyncInvalidSocket;\n                      backlog: int = 100;\n                      bufferSize: int = DefaultStreamBufferSize;\n                      child: StreamServer = nil;\n                      init: TransportInitCallback = nil): StreamServer	
-createAsyncSocket	libp2p/wire.html#createAsyncSocket,MultiAddress	wire: createAsyncSocket(ma: MultiAddress): AsyncFD	
-bindAsyncSocket	libp2p/wire.html#bindAsyncSocket,AsyncFD,MultiAddress	wire: bindAsyncSocket(sock: AsyncFD; ma: MultiAddress): bool	
-getLocalAddress	libp2p/wire.html#getLocalAddress,AsyncFD	wire: getLocalAddress(sock: AsyncFD): TransportAddress	

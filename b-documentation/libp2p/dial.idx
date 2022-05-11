@@ -1,4 +1,0 @@
-Dial	libp2p/dial.html#Dial	dial: Dial	
-connect	libp2p/dial.html#connect.e,Dial,PeerId,seq[MultiAddress]	dial: connect(self: Dial; peerId: PeerId; addrs: seq[MultiAddress]; forceDial = false): Future[\n    void]	
-dial	libp2p/dial.html#dial.e,Dial,PeerId,seq[string]	dial: dial(self: Dial; peerId: PeerId; protos: seq[string]): Future[Connection]	
-dial	libp2p/dial.html#dial.e,Dial,PeerId,seq[MultiAddress],seq[string]	dial: dial(self: Dial; peerId: PeerId; addrs: seq[MultiAddress]; protos: seq[string];\n     forceDial = false): Future[Connection]	

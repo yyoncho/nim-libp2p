@@ -1,5 +1,0 @@
-LPProtoHandler	libp2p/protocols/protocol.html#LPProtoHandler	protocol: LPProtoHandler	
-LPProtocol	libp2p/protocols/protocol.html#LPProtocol	protocol: LPProtocol	
-init	libp2p/protocols/protocol.html#init.e,LPProtocol	protocol: init(p: LPProtocol)	
-codec	libp2p/protocols/protocol.html#codec,LPProtocol	protocol: codec(p: LPProtocol): string	
-codec=	libp2p/protocols/protocol.html#codec=,LPProtocol,string	protocol: codec=(p: LPProtocol; codec: string)	

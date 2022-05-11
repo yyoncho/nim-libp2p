@@ -1,2 +1,0 @@
-HKDFResult	libp2p/crypto/hkdf.html#HKDFResult	hkdf: HKDFResult	
-hkdf	libp2p/crypto/hkdf.html#hkdf,type[T],openArray[byte],openArray[byte],openArray[byte],openArray[HKDFResult[len]]	hkdf: hkdf[T: sha256; len: static int](_: type[T]; salt, ikm, info: openArray[byte];\n                                 outputs: var openArray[HKDFResult[len]])	
