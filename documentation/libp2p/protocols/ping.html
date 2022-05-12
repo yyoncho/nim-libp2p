@@ -112,8 +112,16 @@ function main2() {
 `);
 
 	var sliderInst = firstSlider.after(newSlider);
+
+	// Restore slider state from storage
+	var currentMode = localStorage.getItem('privateMode');
+	if (currentMode == "private") {
+		document.getElementById("internalcheckbox").checked = true;
+	} else {
+		hidePrivateProcs();
+	}
+
 	document.getElementById("internalcheckbox").onclick = togglePrivateProcs;
-	hidePrivateProcs();
 }
 
 function hidePrivateProcs() {
@@ -178,8 +186,10 @@ function showPrivateProcs() {
 
 function togglePrivateProcs() {
 	if (document.getElementById("internalcheckbox").checked) {
+		localStorage.setItem('privateMode', 'private');
 		showPrivateProcs();
 	} else {
+		localStorage.setItem('privateMode', 'public');
 		hidePrivateProcs();
 	}
 }
@@ -396,7 +406,7 @@ class="link-seesrc" target="_blank">Source</a>
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br/>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2022-05-11 09:19:28 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2022-05-12 09:12:10 UTC</small>
       </div>
     </div>
   </div>

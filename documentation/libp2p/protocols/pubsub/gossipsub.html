@@ -112,8 +112,16 @@ function main2() {
 `);
 
 	var sliderInst = firstSlider.after(newSlider);
+
+	// Restore slider state from storage
+	var currentMode = localStorage.getItem('privateMode');
+	if (currentMode == "private") {
+		document.getElementById("internalcheckbox").checked = true;
+	} else {
+		hidePrivateProcs();
+	}
+
 	document.getElementById("internalcheckbox").onclick = togglePrivateProcs;
-	hidePrivateProcs();
 }
 
 function hidePrivateProcs() {
@@ -178,8 +186,10 @@ function showPrivateProcs() {
 
 function togglePrivateProcs() {
 	if (document.getElementById("internalcheckbox").checked) {
+		localStorage.setItem('privateMode', 'private');
 		showPrivateProcs();
 	} else {
+		localStorage.setItem('privateMode', 'public');
 		hidePrivateProcs();
 	}
 }
@@ -218,12 +228,7 @@ window.addEventListener("DOMContentLoaded", main2);
 <li>
   <a class="reference reference-toplevel" href="#14" id="64">Methods</a>
   <ul class="simple simple-toc-section">
-      <ul class="simple nested-toc-section">init
-      <li><a class="reference" href="#init.e%2CGossipSub"
-    title="init(g: GossipSub)">init(g: GossipSub)</a></li>
-
-  </ul>
-  <ul class="simple nested-toc-section">initPubSub
+      <ul class="simple nested-toc-section">initPubSub
       <li><a class="reference" href="#initPubSub.e%2CGossipSub"
     title="initPubSub(g: GossipSub)">initPubSub(g: GossipSub)</a></li>
 
@@ -236,16 +241,6 @@ window.addEventListener("DOMContentLoaded", main2);
   <ul class="simple nested-toc-section">onTopicSubscription
       <li><a class="reference" href="#onTopicSubscription.e%2CGossipSub%2Cstring%2Cbool"
     title="onTopicSubscription(g: GossipSub; topic: string; subscribed: bool)">onTopicSubscription(g: GossipSub; topic: string; subscribed: bool)</a></li>
-
-  </ul>
-  <ul class="simple nested-toc-section">publish
-      <li><a class="reference" href="#publish.e%2CGossipSub%2Cstring%2Cseq%5Bbyte%5D"
-    title="publish(g: GossipSub; topic: string; data: seq[byte]): Future[int]">publish(g: GossipSub; topic: string; data: seq[byte]): Future[int]</a></li>
-
-  </ul>
-  <ul class="simple nested-toc-section">rpcHandler
-      <li><a class="reference" href="#rpcHandler.e%2CGossipSub%2CPubSubPeer%2CRPCMsg"
-    title="rpcHandler(g: GossipSub; peer: PubSubPeer; rpcMsg: RPCMsg): Future[void]">rpcHandler(g: GossipSub; peer: PubSubPeer; rpcMsg: RPCMsg): Future[void]</a></li>
 
   </ul>
   <ul class="simple nested-toc-section">start
@@ -284,14 +279,7 @@ class="link-seesrc" target="_blank">Source</a>
   <div class="nine columns" id="content">
   <div id="tocRoot"></div>
   
-  <p class="module-desc">Nim-LibP2P Copyright (c) 2019 Status Research &amp; Development GmbH<dl class="docutils"><dt>Licensed under either of</dt>
-<dd><ul class="simple"><li>Apache License, version 2.0, (<a class="reference external" href="LICENSE-APACHE">LICENSE-APACHE</a>)</li>
-<li>MIT license (<a class="reference external" href="LICENSE-MIT">LICENSE-MIT</a>)</li>
-</ul>
-</dd>
-</dl>
-<p>at your option. This file may not be copied, modified, or distributed except according to those terms.</p>
-</p>
+  <p class="module-desc">Gossip based publishing</p>
   <div class="section" id="6">
 <h1><a class="toc-backref" href="#6">Imports</a></h1>
 <dl class="item">
@@ -302,14 +290,14 @@ class="link-seesrc" target="_blank">Source</a>
 <dl class="item">
 <div id="handleSubscribe,GossipSub,PubSubPeer,string,bool" class="tohide">
 <dt><pre><span class="Keyword">proc</span> <a href="#handleSubscribe%2CGossipSub%2CPubSubPeer%2Cstring%2Cbool"><span class="Identifier">handleSubscribe</span></a><span class="Other">(</span><span class="Identifier">g</span><span class="Other">:</span> <a href="gossipsub/types.html#GossipSub"><span class="Identifier">GossipSub</span></a><span class="Other">;</span> <span class="Identifier">peer</span><span class="Other">:</span> <a href="pubsubpeer.html#PubSubPeer"><span class="Identifier">PubSubPeer</span></a><span class="Other">;</span> <span class="Identifier">topic</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span>
-                     <span class="Identifier">subscribe</span><span class="Other">:</span> <span class="Identifier">bool</span><span class="Other">)</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Defect</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">RootEffect</span><span class="Other">]</span></span>.}</pre></dt>
+                     <span class="Identifier">subscribe</span><span class="Other">:</span> <span class="Identifier">bool</span><span class="Other">)</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Defect</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
 <dd>
 
 
 &nbsp;&nbsp;<a
-href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/protocols/pubsub/gossipsub.nim#L210"
+href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/protocols/pubsub/gossipsub.nim#L212"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/protocols/pubsub/gossipsub.nim#L210" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/protocols/pubsub/gossipsub.nim#L212" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -319,9 +307,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 
 &nbsp;&nbsp;<a
-href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/protocols/pubsub/gossipsub.nim#L44"
+href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/protocols/pubsub/gossipsub.nim#L46"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/protocols/pubsub/gossipsub.nim#L44" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/protocols/pubsub/gossipsub.nim#L46" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -332,9 +320,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 
 &nbsp;&nbsp;<a
-href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/protocols/pubsub/gossipsub.nim#L77"
+href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/protocols/pubsub/gossipsub.nim#L79"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/protocols/pubsub/gossipsub.nim#L77" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/protocols/pubsub/gossipsub.nim#L79" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -345,9 +333,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 
 &nbsp;&nbsp;<a
-href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/protocols/pubsub/gossipsub.nim#L108"
+href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/protocols/pubsub/gossipsub.nim#L110"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/protocols/pubsub/gossipsub.nim#L108" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/protocols/pubsub/gossipsub.nim#L110" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -356,82 +344,42 @@ class="link-seesrc" target="_blank">Source</a>
 <div class="section" id="14">
 <h1><a class="toc-backref" href="#14">Methods</a></h1>
 <dl class="item">
-<div id="init.e,GossipSub" class="tohide">
-<dt><pre><span class="Keyword">method</span> <a href="#init.e%2CGossipSub"><span class="Identifier">init</span></a><span class="Other">(</span><span class="Identifier">g</span><span class="Other">:</span> <a href="gossipsub/types.html#GossipSub"><span class="Identifier">GossipSub</span></a><span class="Other">)</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Defect</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
-<dd>
-
-
-&nbsp;&nbsp;<a
-href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/protocols/pubsub/gossipsub.nim#L128"
-class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/protocols/pubsub/gossipsub.nim#L128" class="link-seesrc" target="_blank" >Edit</a>
-
-</dd>
-</div>
 <div id="initPubSub.e,GossipSub" class="tohide">
 <dt><pre><span class="Keyword">method</span> <a href="#initPubSub.e%2CGossipSub"><span class="Identifier">initPubSub</span></a><span class="Other">(</span><span class="Identifier">g</span><span class="Other">:</span> <a href="gossipsub/types.html#GossipSub"><span class="Identifier">GossipSub</span></a><span class="Other">)</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Defect</span><span class="Other">,</span> <a href="pubsub.html#InitializationError"><span class="Identifier">InitializationError</span></a><span class="Other">]</span><span class="Other">,</span>
-                                  <span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Defect</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+                                  <span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Defect</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">RootEffect</span><span class="Other">]</span></span>.}</pre></dt>
 <dd>
 
 
 &nbsp;&nbsp;<a
-href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/protocols/pubsub/gossipsub.nim#L609"
+href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/protocols/pubsub/gossipsub.nim#L611"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/protocols/pubsub/gossipsub.nim#L609" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/protocols/pubsub/gossipsub.nim#L611" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
 <div id="onPubSubPeerEvent.e,GossipSub,PubSubPeer,PubsubPeerEvent" class="tohide">
 <dt><pre><span class="Keyword">method</span> <a href="#onPubSubPeerEvent.e%2CGossipSub%2CPubSubPeer%2CPubsubPeerEvent"><span class="Identifier">onPubSubPeerEvent</span></a><span class="Other">(</span><span class="Identifier">p</span><span class="Other">:</span> <a href="gossipsub/types.html#GossipSub"><span class="Identifier">GossipSub</span></a><span class="Other">;</span> <span class="Identifier">peer</span><span class="Other">:</span> <a href="pubsubpeer.html#PubSubPeer"><span class="Identifier">PubSubPeer</span></a><span class="Other">;</span> <span class="Identifier">event</span><span class="Other">:</span> <a href="pubsubpeer.html#PubsubPeerEvent"><span class="Identifier">PubsubPeerEvent</span></a><span class="Other">)</span> {.
-    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">gcsafe</span><span class="Other">,</span> <span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Defect</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">RootEffect</span><span class="Other">,</span> <span class="Identifier">WriteIOEffect</span><span class="Other">,</span> <span class="Identifier">TimeEffect</span><span class="Other">]</span></span>.}</pre></dt>
+    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">gcsafe</span><span class="Other">,</span> <span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Defect</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
 <dd>
 
 
 &nbsp;&nbsp;<a
-href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/protocols/pubsub/gossipsub.nim#L158"
+href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/protocols/pubsub/gossipsub.nim#L160"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/protocols/pubsub/gossipsub.nim#L158" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/protocols/pubsub/gossipsub.nim#L160" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
 <div id="onTopicSubscription.e,GossipSub,string,bool" class="tohide">
 <dt><pre><span class="Keyword">method</span> <a href="#onTopicSubscription.e%2CGossipSub%2Cstring%2Cbool"><span class="Identifier">onTopicSubscription</span></a><span class="Other">(</span><span class="Identifier">g</span><span class="Other">:</span> <a href="gossipsub/types.html#GossipSub"><span class="Identifier">GossipSub</span></a><span class="Other">;</span> <span class="Identifier">topic</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">subscribed</span><span class="Other">:</span> <span class="Identifier">bool</span><span class="Other">)</span> {.
-    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Defect</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">RootEffect</span><span class="Other">,</span> <span class="Identifier">WriteIOEffect</span><span class="Other">,</span> <span class="Identifier">TimeEffect</span><span class="Other">]</span></span>.}</pre></dt>
+    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Defect</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">RootEffect</span><span class="Other">]</span></span>.}</pre></dt>
 <dd>
 
 
 &nbsp;&nbsp;<a
-href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/protocols/pubsub/gossipsub.nim#L430"
+href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/protocols/pubsub/gossipsub.nim#L432"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/protocols/pubsub/gossipsub.nim#L430" class="link-seesrc" target="_blank" >Edit</a>
-
-</dd>
-</div>
-<div id="publish.e,GossipSub,string,seq[byte]" class="tohide">
-<dt><pre><span class="Keyword">method</span> <a href="#publish.e%2CGossipSub%2Cstring%2Cseq%5Bbyte%5D"><span class="Identifier">publish</span></a><span class="Other">(</span><span class="Identifier">g</span><span class="Other">:</span> <a href="gossipsub/types.html#GossipSub"><span class="Identifier">GossipSub</span></a><span class="Other">;</span> <span class="Identifier">topic</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">data</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">byte</span><span class="Other">]</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">Future</span><span class="Other">[</span><span class="Identifier">int</span><span class="Other">]</span> {.
-    <span class="Identifier">stackTrace</span><span class="Other">:</span> <span class="DecNumber">false</span><span class="Other">,</span> <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">gcsafe</span><span class="Other">,</span> <span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Defect</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Defect</span><span class="Other">]</span><span class="Other">,</span>
-    <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">RootEffect</span><span class="Other">]</span></span>.}</pre></dt>
-<dd>
-
-
-&nbsp;&nbsp;<a
-href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/protocols/pubsub/gossipsub.nim#L463"
-class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/protocols/pubsub/gossipsub.nim#L463" class="link-seesrc" target="_blank" >Edit</a>
-
-</dd>
-</div>
-<div id="rpcHandler.e,GossipSub,PubSubPeer,RPCMsg" class="tohide">
-<dt><pre><span class="Keyword">method</span> <a href="#rpcHandler.e%2CGossipSub%2CPubSubPeer%2CRPCMsg"><span class="Identifier">rpcHandler</span></a><span class="Other">(</span><span class="Identifier">g</span><span class="Other">:</span> <a href="gossipsub/types.html#GossipSub"><span class="Identifier">GossipSub</span></a><span class="Other">;</span> <span class="Identifier">peer</span><span class="Other">:</span> <a href="pubsubpeer.html#PubSubPeer"><span class="Identifier">PubSubPeer</span></a><span class="Other">;</span> <span class="Identifier">rpcMsg</span><span class="Other">:</span> <a href="rpc/messages.html#RPCMsg"><span class="Identifier">RPCMsg</span></a><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">Future</span><span class="Other">[</span><span class="Identifier">void</span><span class="Other">]</span> {.
-    <span class="Identifier">stackTrace</span><span class="Other">:</span> <span class="DecNumber">false</span><span class="Other">,</span> <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">gcsafe</span><span class="Other">,</span> <span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Defect</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Defect</span><span class="Other">]</span><span class="Other">,</span>
-    <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">RootEffect</span><span class="Other">]</span></span>.}</pre></dt>
-<dd>
-
-
-&nbsp;&nbsp;<a
-href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/protocols/pubsub/gossipsub.nim#L352"
-class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/protocols/pubsub/gossipsub.nim#L352" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/protocols/pubsub/gossipsub.nim#L432" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -442,9 +390,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 
 &nbsp;&nbsp;<a
-href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/protocols/pubsub/gossipsub.nim#L583"
+href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/protocols/pubsub/gossipsub.nim#L585"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/protocols/pubsub/gossipsub.nim#L583" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/protocols/pubsub/gossipsub.nim#L585" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -455,22 +403,22 @@ class="link-seesrc" target="_blank">Source</a>
 
 
 &nbsp;&nbsp;<a
-href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/protocols/pubsub/gossipsub.nim#L594"
+href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/protocols/pubsub/gossipsub.nim#L596"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/protocols/pubsub/gossipsub.nim#L594" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/protocols/pubsub/gossipsub.nim#L596" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
 <div id="unsubscribePeer.e,GossipSub,PeerId" class="tohide">
 <dt><pre><span class="Keyword">method</span> <a href="#unsubscribePeer.e%2CGossipSub%2CPeerId"><span class="Identifier">unsubscribePeer</span></a><span class="Other">(</span><span class="Identifier">g</span><span class="Other">:</span> <a href="gossipsub/types.html#GossipSub"><span class="Identifier">GossipSub</span></a><span class="Other">;</span> <span class="Identifier">peer</span><span class="Other">:</span> <a href="../../peerid.html#PeerId"><span class="Identifier">PeerId</span></a><span class="Other">)</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Defect</span><span class="Other">]</span><span class="Other">,</span>
-    <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">WriteIOEffect</span><span class="Other">,</span> <span class="Identifier">TimeEffect</span><span class="Other">]</span></span>.}</pre></dt>
+    <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">RootEffect</span><span class="Other">]</span></span>.}</pre></dt>
 <dd>
 
 handle peer disconnects 
 &nbsp;&nbsp;<a
-href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/protocols/pubsub/gossipsub.nim#L174"
+href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/protocols/pubsub/gossipsub.nim#L176"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/protocols/pubsub/gossipsub.nim#L174" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/protocols/pubsub/gossipsub.nim#L176" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -479,7 +427,7 @@ class="link-seesrc" target="_blank">Source</a>
 <div class="section" id="19">
 <h1><a class="toc-backref" href="#19">Exports</a></h1>
 <dl class="item">
-<a href="gossipsub/types.html#GossipBackoffPeriod"><span class="Identifier">GossipBackoffPeriod</span></a>, <a href="gossipsub/types.html#BackoffSlackTime"><span class="Identifier">BackoffSlackTime</span></a>, <a href="gossipsub/types.html#GossipSubCodec_10"><span class="Identifier">GossipSubCodec_10</span></a>, <a href="gossipsub/types.html#GossipSubHistoryGossip"><span class="Identifier">GossipSubHistoryGossip</span></a>, <a href="gossipsub/types.html#GossipSubDlo"><span class="Identifier">GossipSubDlo</span></a>, <a href="gossipsub/types.html#IHaveMaxLength"><span class="Identifier">IHaveMaxLength</span></a>, <a href="gossipsub/types.html#TopicInfo"><span class="Identifier">TopicInfo</span></a>, <a href="gossipsub/types.html#ValidationSeenTable"><span class="Identifier">ValidationSeenTable</span></a>, <a href="gossipsub/types.html#IHavePeerBudget"><span class="Identifier">IHavePeerBudget</span></a>, <a href="gossipsub/types.html#IWantPeerBudget"><span class="Identifier">IWantPeerBudget</span></a>, <a href="gossipsub/types.html#RoutingRecordsHandler"><span class="Identifier">RoutingRecordsHandler</span></a>, <a href="gossipsub/types.html#GossipSubCodec"><span class="Identifier">GossipSubCodec</span></a>, <a href="gossipsub/types.html#GossipSubD"><span class="Identifier">GossipSubD</span></a>, <a href="gossipsub/types.html#GossipSubDhi"><span class="Identifier">GossipSubDhi</span></a>, <a href="gossipsub/types.html#RoutingRecordsPair"><span class="Identifier">RoutingRecordsPair</span></a>, <a href="gossipsub/types.html#GossipSubHeartbeatInterval"><span class="Identifier">GossipSubHeartbeatInterval</span></a>, <a href="gossipsub/types.html#PeerStats"><span class="Identifier">PeerStats</span></a>, <a href="gossipsub/types.html#GossipSubHistoryLength"><span class="Identifier">GossipSubHistoryLength</span></a>, <a href="gossipsub/types.html#GossipSubFanoutTTL"><span class="Identifier">GossipSubFanoutTTL</span></a>, <a href="gossipsub/types.html#BackoffTable"><span class="Identifier">BackoffTable</span></a>, <a href="gossipsub/types.html#TopicParams"><span class="Identifier">TopicParams</span></a>, <a href="gossipsub/types.html#GossipSub"><span class="Identifier">GossipSub</span></a>, <a href="gossipsub/types.html#MeshMetrics"><span class="Identifier">MeshMetrics</span></a>, <a href="gossipsub/types.html#GossipSubParams"><span class="Identifier">GossipSubParams</span></a>, <a href="gossipsub/scoring.html#updateScores,GossipSub"><span class="Identifier">updateScores</span></a>, <a href="gossipsub/scoring.html#init,type[TopicParams]"><span class="Identifier">init</span></a>, <a href="gossipsub/scoring.html#addCapped,T,T,T"><span class="Identifier">addCapped</span></a>, <a href="gossipsub/scoring.html#withPeerStats,GossipSub,PeerId,proc(PeerStats)"><span class="Identifier">withPeerStats</span></a>, <a href="gossipsub/scoring.html#byScore,PubSubPeer,PubSubPeer"><span class="Identifier">byScore</span></a>, <a href="gossipsub/scoring.html#punishInvalidMessage,GossipSub,PubSubPeer,seq[string]"><span class="Identifier">punishInvalidMessage</span></a>, <a href="gossipsub/scoring.html#rewardDelivered,GossipSub,PubSubPeer,openArray[string],bool"><span class="Identifier">rewardDelivered</span></a>, <a href="gossipsub/behavior.html#getGossipPeers,GossipSub"><span class="Identifier">getGossipPeers</span></a>, <a href="gossipsub/behavior.html#replenishFanout,GossipSub,string"><span class="Identifier">replenishFanout</span></a>, <a href="gossipsub/behavior.html#rebalanceMesh,GossipSub,string,ptr.MeshMetrics"><span class="Identifier">rebalanceMesh</span></a>, <a href="gossipsub/behavior.html#dropFanoutPeers,GossipSub"><span class="Identifier">dropFanoutPeers</span></a>, <a href="gossipsub/behavior.html#handleIWant,GossipSub,PubSubPeer,seq[ControlIWant]"><span class="Identifier">handleIWant</span></a>, <a href="gossipsub/behavior.html#pruned,GossipSub,PubSubPeer,string,bool"><span class="Identifier">pruned</span></a>, <a href="gossipsub/behavior.html#handleBackingOff,BackoffTable,string"><span class="Identifier">handleBackingOff</span></a>, <a href="gossipsub/behavior.html#peerExchangeList,GossipSub,string"><span class="Identifier">peerExchangeList</span></a>, <a href="gossipsub/behavior.html#handleGraft,GossipSub,PubSubPeer,seq[ControlGraft]"><span class="Identifier">handleGraft</span></a>, <a href="gossipsub/behavior.html#grafted,GossipSub,PubSubPeer,string"><span class="Identifier">grafted</span></a>, <a href="gossipsub/behavior.html#handleIHave,GossipSub,PubSubPeer,seq[ControlIHave]"><span class="Identifier">handleIHave</span></a>, <a href="gossipsub/behavior.html#handlePrune,GossipSub,PubSubPeer,seq[ControlPrune]"><span class="Identifier">handlePrune</span></a>, <a href="gossipsub/behavior.html#heartbeat,GossipSub"><span class="Identifier">heartbeat</span></a>, <a href="pubsub.html#sendSubs,PubSub,PubSubPeer,openArray[string],bool"><span class="Identifier">sendSubs</span></a>, <a href="pubsub.html#MsgIdProvider"><span class="Identifier">MsgIdProvider</span></a>, <a href="pubsub.html#onTopicSubscription.e,PubSub,string,bool"><span class="Identifier">onTopicSubscription</span></a>, <a href="../protocol.html#init.e,LPProtocol"><span class="Identifier">init</span></a>, <a href="pubsub.html#unsubscribe,PubSub,string,TopicHandler"><span class="Identifier">unsubscribe</span></a>, <a href="pubsubpeer.html#PubSubObserver"><span class="Identifier">PubSubObserver</span></a>, <a href="../protocol.html#codec=,LPProtocol,string"><span class="Identifier">codec=</span></a>, <a href="pubsub.html#removeObserver,PubSub,PubSubObserver"><span class="Identifier">removeObserver</span></a>, <a href="pubsub.html#send,PubSub,PubSubPeer,RPCMsg"><span class="Identifier">send</span></a>, <a href="pubsub.html#libp2p_pubsub_received_subscriptions"><span class="Identifier">libp2p_pubsub_received_subscriptions</span></a>, <a href="pubsub.html#initPubSub.e,PubSub"><span class="Identifier">initPubSub</span></a>, <a href="pubsub.html#subscribe,PubSub,string,TopicHandler"><span class="Identifier">subscribe</span></a>, <a href="pubsub.html#libp2p_pubsub_broadcast_prune"><span class="Identifier">libp2p_pubsub_broadcast_prune</span></a>, <a href="pubsubpeer.html#PubSubPeer"><span class="Identifier">PubSubPeer</span></a>, <a href="pubsub.html#libp2p_pubsub_broadcast_ihave"><span class="Identifier">libp2p_pubsub_broadcast_ihave</span></a>, <a href="pubsub.html#libp2p_pubsub_received_iwant"><span class="Identifier">libp2p_pubsub_received_iwant</span></a>, <a href="../protocol.html#codec,LPProtocol"><span class="Identifier">codec</span></a>, <a href="pubsub.html#unsubscribe,PubSub,openArray[TopicPair]"><span class="Identifier">unsubscribe</span></a>, <a href="pubsub.html#getOrCreatePeer,PubSub,PeerId,seq[string]"><span class="Identifier">getOrCreatePeer</span></a>, <a href="pubsub.html#libp2p_pubsub_messages_rebroadcasted"><span class="Identifier">libp2p_pubsub_messages_rebroadcasted</span></a>, <a href="pubsub.html#SubscriptionValidator"><span class="Identifier">SubscriptionValidator</span></a>, <a href="pubsub.html#removeValidator.e,PubSub,varargs[string],ValidatorHandler"><span class="Identifier">removeValidator</span></a>, <a href="pubsub.html#PubSub"><span class="Identifier">PubSub</span></a>, <a href="pubsub.html#libp2p_pubsub_received_unsubscriptions"><span class="Identifier">libp2p_pubsub_received_unsubscriptions</span></a>, <a href="pubsub.html#libp2p_pubsub_broadcast_messages"><span class="Identifier">libp2p_pubsub_broadcast_messages</span></a>, <a href="pubsub.html#start.e,PubSub"><span class="Identifier">start</span></a>, <a href="pubsub.html#broadcast,PubSub,auto,RPCMsg"><span class="Identifier">broadcast</span></a>, <a href="pubsub.html#rpcHandler.e,PubSub,PubSubPeer,RPCMsg"><span class="Identifier">rpcHandler</span></a>, <a href="pubsub.html#libp2p_pubsub_received_prune"><span class="Identifier">libp2p_pubsub_received_prune</span></a>, <a href="pubsub.html#KnownLibP2PTopicsSeq"><span class="Identifier">KnownLibP2PTopicsSeq</span></a>, <a href="pubsub.html#libp2p_pubsub_messages_published"><span class="Identifier">libp2p_pubsub_messages_published</span></a>, <a href="../protocol.html#LPProtoHandler"><span class="Identifier">LPProtoHandler</span></a>, <a href="pubsub.html#ValidatorHandler"><span class="Identifier">ValidatorHandler</span></a>, <a href="pubsub.html#handleConn.e,PubSub,Connection,string"><span class="Identifier">handleConn</span></a>, <a href="pubsub.html#TopicHandler"><span class="Identifier">TopicHandler</span></a>, <a href="pubsub.html#libp2p_pubsub_broadcast_unsubscriptions"><span class="Identifier">libp2p_pubsub_broadcast_unsubscriptions</span></a>, <a href="pubsub.html#libp2p_pubsub_received_graft"><span class="Identifier">libp2p_pubsub_received_graft</span></a>, <a href="pubsub.html#libp2p_pubsub_broadcast_iwant"><span class="Identifier">libp2p_pubsub_broadcast_iwant</span></a>, <a href="errors.html#ValidationResult"><span class="Identifier">ValidationResult</span></a>, <a href="pubsub.html#init,typedesc[PubSub],Switch,bool,bool,bool,bool,MsgIdProvider,SubscriptionValidator,int,ref.HmacDrbgContext,PubParams"><span class="Identifier">init</span></a>, <a href="pubsub.html#updateMetrics,PubSub,RPCMsg"><span class="Identifier">updateMetrics</span></a>, <a href="pubsub.html#libp2p_pubsub_broadcast_subscriptions"><span class="Identifier">libp2p_pubsub_broadcast_subscriptions</span></a>, <a href="pubsub.html#InitializationError"><span class="Identifier">InitializationError</span></a>, <a href="pubsub.html#libp2p_pubsub_received_messages"><span class="Identifier">libp2p_pubsub_received_messages</span></a>, <a href="pubsub.html#unsubscribePeer.e,PubSub,PeerId"><span class="Identifier">unsubscribePeer</span></a>, <a href="pubsub.html#addObserver,PubSub,PubSubObserver"><span class="Identifier">addObserver</span></a>, <a href="pubsub.html#addValidator.e,PubSub,varargs[string],ValidatorHandler"><span class="Identifier">addValidator</span></a>, <a href="pubsub.html#libp2p_pubsub_received_ihave"><span class="Identifier">libp2p_pubsub_received_ihave</span></a>, <a href="pubsub.html#handleData,PubSub,string,seq[byte]"><span class="Identifier">handleData</span></a>, <a href="pubsub.html#validate.e,PubSub,Message"><span class="Identifier">validate</span></a>, <a href="pubsub.html#unsubscribeAll,PubSub,string"><span class="Identifier">unsubscribeAll</span></a>, <a href="pubsub.html#KnownLibP2PTopics"><span class="Identifier">KnownLibP2PTopics</span></a>, <a href="pubsub.html#TopicPair"><span class="Identifier">TopicPair</span></a>, <a href="pubsub.html#onPubSubPeerEvent.e,PubSub,PubSubPeer,PubsubPeerEvent"><span class="Identifier">onPubSubPeerEvent</span></a>, <a href="pubsub.html#libp2p_pubsub_broadcast_graft"><span class="Identifier">libp2p_pubsub_broadcast_graft</span></a>, <a href="pubsub.html#publish.e,PubSub,string,seq[byte]"><span class="Identifier">publish</span></a>, <a href="../protocol.html#LPProtocol"><span class="Identifier">LPProtocol</span></a>, <a href="pubsub.html#stop.e,PubSub"><span class="Identifier">stop</span></a>, <a href="pubsub.html#subscribePeer.e,PubSub,PeerId"><span class="Identifier">subscribePeer</span></a>
+<a href="gossipsub/types.html#GossipBackoffPeriod"><span class="Identifier">GossipBackoffPeriod</span></a>, <a href="gossipsub/types.html#BackoffSlackTime"><span class="Identifier">BackoffSlackTime</span></a>, <a href="gossipsub/types.html#GossipSubCodec_10"><span class="Identifier">GossipSubCodec_10</span></a>, <a href="gossipsub/types.html#GossipSubHistoryGossip"><span class="Identifier">GossipSubHistoryGossip</span></a>, <a href="gossipsub/types.html#GossipSubDlo"><span class="Identifier">GossipSubDlo</span></a>, <a href="gossipsub/types.html#IHaveMaxLength"><span class="Identifier">IHaveMaxLength</span></a>, <a href="gossipsub/types.html#TopicInfo"><span class="Identifier">TopicInfo</span></a>, <a href="gossipsub/types.html#ValidationSeenTable"><span class="Identifier">ValidationSeenTable</span></a>, <a href="gossipsub/types.html#IHavePeerBudget"><span class="Identifier">IHavePeerBudget</span></a>, <a href="gossipsub/types.html#IWantPeerBudget"><span class="Identifier">IWantPeerBudget</span></a>, <a href="gossipsub/types.html#RoutingRecordsHandler"><span class="Identifier">RoutingRecordsHandler</span></a>, <a href="gossipsub/types.html#GossipSubCodec"><span class="Identifier">GossipSubCodec</span></a>, <a href="gossipsub/types.html#GossipSubD"><span class="Identifier">GossipSubD</span></a>, <a href="gossipsub/types.html#GossipSubDhi"><span class="Identifier">GossipSubDhi</span></a>, <a href="gossipsub/types.html#RoutingRecordsPair"><span class="Identifier">RoutingRecordsPair</span></a>, <a href="gossipsub/types.html#GossipSubHeartbeatInterval"><span class="Identifier">GossipSubHeartbeatInterval</span></a>, <a href="gossipsub/types.html#PeerStats"><span class="Identifier">PeerStats</span></a>, <a href="gossipsub/types.html#GossipSubHistoryLength"><span class="Identifier">GossipSubHistoryLength</span></a>, <a href="gossipsub/types.html#GossipSubFanoutTTL"><span class="Identifier">GossipSubFanoutTTL</span></a>, <a href="gossipsub/types.html#BackoffTable"><span class="Identifier">BackoffTable</span></a>, <a href="gossipsub/types.html#TopicParams"><span class="Identifier">TopicParams</span></a>, <a href="gossipsub/types.html#GossipSub"><span class="Identifier">GossipSub</span></a>, <a href="gossipsub/types.html#MeshMetrics"><span class="Identifier">MeshMetrics</span></a>, <a href="gossipsub/types.html#GossipSubParams"><span class="Identifier">GossipSubParams</span></a>, <a href="gossipsub/scoring.html#updateScores,GossipSub"><span class="Identifier">updateScores</span></a>, <a href="gossipsub/scoring.html#init,type[TopicParams]"><span class="Identifier">init</span></a>, <a href="gossipsub/scoring.html#addCapped,T,T,T"><span class="Identifier">addCapped</span></a>, <a href="gossipsub/scoring.html#withPeerStats,GossipSub,PeerId,proc(PeerStats)"><span class="Identifier">withPeerStats</span></a>, <a href="gossipsub/scoring.html#byScore,PubSubPeer,PubSubPeer"><span class="Identifier">byScore</span></a>, <a href="gossipsub/scoring.html#punishInvalidMessage,GossipSub,PubSubPeer,seq[string]"><span class="Identifier">punishInvalidMessage</span></a>, <a href="gossipsub/scoring.html#rewardDelivered,GossipSub,PubSubPeer,openArray[string],bool"><span class="Identifier">rewardDelivered</span></a>, <a href="gossipsub/behavior.html#getGossipPeers,GossipSub"><span class="Identifier">getGossipPeers</span></a>, <a href="gossipsub/behavior.html#replenishFanout,GossipSub,string"><span class="Identifier">replenishFanout</span></a>, <a href="gossipsub/behavior.html#rebalanceMesh,GossipSub,string,ptr.MeshMetrics"><span class="Identifier">rebalanceMesh</span></a>, <a href="gossipsub/behavior.html#dropFanoutPeers,GossipSub"><span class="Identifier">dropFanoutPeers</span></a>, <a href="gossipsub/behavior.html#handleIWant,GossipSub,PubSubPeer,seq[ControlIWant]"><span class="Identifier">handleIWant</span></a>, <a href="gossipsub/behavior.html#pruned,GossipSub,PubSubPeer,string,bool"><span class="Identifier">pruned</span></a>, <a href="gossipsub/behavior.html#handleBackingOff,BackoffTable,string"><span class="Identifier">handleBackingOff</span></a>, <a href="gossipsub/behavior.html#peerExchangeList,GossipSub,string"><span class="Identifier">peerExchangeList</span></a>, <a href="gossipsub/behavior.html#handleGraft,GossipSub,PubSubPeer,seq[ControlGraft]"><span class="Identifier">handleGraft</span></a>, <a href="gossipsub/behavior.html#grafted,GossipSub,PubSubPeer,string"><span class="Identifier">grafted</span></a>, <a href="gossipsub/behavior.html#handleIHave,GossipSub,PubSubPeer,seq[ControlIHave]"><span class="Identifier">handleIHave</span></a>, <a href="gossipsub/behavior.html#handlePrune,GossipSub,PubSubPeer,seq[ControlPrune]"><span class="Identifier">handlePrune</span></a>, <a href="gossipsub/behavior.html#heartbeat,GossipSub"><span class="Identifier">heartbeat</span></a>, <a href="pubsub.html#MsgIdProvider"><span class="Identifier">MsgIdProvider</span></a>, <a href="../protocol.html#init.e,LPProtocol"><span class="Identifier">init</span></a>, <a href="pubsubpeer.html#PubSubObserver"><span class="Identifier">PubSubObserver</span></a>, <a href="../protocol.html#codec=,LPProtocol,string"><span class="Identifier">codec=</span></a>, <a href="pubsub.html#libp2p_pubsub_received_subscriptions"><span class="Identifier">libp2p_pubsub_received_subscriptions</span></a>, <a href="pubsub.html#libp2p_pubsub_broadcast_prune"><span class="Identifier">libp2p_pubsub_broadcast_prune</span></a>, <a href="pubsubpeer.html#PubSubPeer"><span class="Identifier">PubSubPeer</span></a>, <a href="pubsub.html#libp2p_pubsub_broadcast_ihave"><span class="Identifier">libp2p_pubsub_broadcast_ihave</span></a>, <a href="pubsub.html#libp2p_pubsub_received_iwant"><span class="Identifier">libp2p_pubsub_received_iwant</span></a>, <a href="../protocol.html#codec,LPProtocol"><span class="Identifier">codec</span></a>, <a href="pubsub.html#libp2p_pubsub_messages_rebroadcasted"><span class="Identifier">libp2p_pubsub_messages_rebroadcasted</span></a>, <a href="pubsub.html#libp2p_pubsub_received_unsubscriptions"><span class="Identifier">libp2p_pubsub_received_unsubscriptions</span></a>, <a href="pubsub.html#libp2p_pubsub_broadcast_messages"><span class="Identifier">libp2p_pubsub_broadcast_messages</span></a>, <a href="pubsub.html#libp2p_pubsub_received_prune"><span class="Identifier">libp2p_pubsub_received_prune</span></a>, <a href="pubsub.html#KnownLibP2PTopicsSeq"><span class="Identifier">KnownLibP2PTopicsSeq</span></a>, <a href="pubsub.html#libp2p_pubsub_messages_published"><span class="Identifier">libp2p_pubsub_messages_published</span></a>, <a href="../protocol.html#LPProtoHandler"><span class="Identifier">LPProtoHandler</span></a>, <a href="pubsub.html#ValidatorHandler"><span class="Identifier">ValidatorHandler</span></a>, <a href="pubsub.html#TopicHandler"><span class="Identifier">TopicHandler</span></a>, <a href="pubsub.html#libp2p_pubsub_broadcast_unsubscriptions"><span class="Identifier">libp2p_pubsub_broadcast_unsubscriptions</span></a>, <a href="pubsub.html#libp2p_pubsub_received_graft"><span class="Identifier">libp2p_pubsub_received_graft</span></a>, <a href="pubsub.html#libp2p_pubsub_broadcast_iwant"><span class="Identifier">libp2p_pubsub_broadcast_iwant</span></a>, <a href="errors.html#ValidationResult"><span class="Identifier">ValidationResult</span></a>, <a href="pubsub.html#libp2p_pubsub_broadcast_subscriptions"><span class="Identifier">libp2p_pubsub_broadcast_subscriptions</span></a>, <a href="pubsub.html#InitializationError"><span class="Identifier">InitializationError</span></a>, <a href="pubsub.html#libp2p_pubsub_received_messages"><span class="Identifier">libp2p_pubsub_received_messages</span></a>, <a href="pubsub.html#libp2p_pubsub_received_ihave"><span class="Identifier">libp2p_pubsub_received_ihave</span></a>, <a href="pubsub.html#KnownLibP2PTopics"><span class="Identifier">KnownLibP2PTopics</span></a>, <a href="pubsub.html#TopicPair"><span class="Identifier">TopicPair</span></a>, <a href="pubsub.html#libp2p_pubsub_broadcast_graft"><span class="Identifier">libp2p_pubsub_broadcast_graft</span></a>, <a href="../protocol.html#LPProtocol"><span class="Identifier">LPProtocol</span></a>
 </dl></div>
 
   </div>
@@ -489,7 +437,7 @@ class="link-seesrc" target="_blank">Source</a>
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br/>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2022-05-11 09:19:29 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2022-05-12 09:12:11 UTC</small>
       </div>
     </div>
   </div>

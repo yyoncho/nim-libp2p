@@ -112,8 +112,16 @@ function main2() {
 `);
 
 	var sliderInst = firstSlider.after(newSlider);
+
+	// Restore slider state from storage
+	var currentMode = localStorage.getItem('privateMode');
+	if (currentMode == "private") {
+		document.getElementById("internalcheckbox").checked = true;
+	} else {
+		hidePrivateProcs();
+	}
+
 	document.getElementById("internalcheckbox").onclick = togglePrivateProcs;
-	hidePrivateProcs();
 }
 
 function hidePrivateProcs() {
@@ -178,8 +186,10 @@ function showPrivateProcs() {
 
 function togglePrivateProcs() {
 	if (document.getElementById("internalcheckbox").checked) {
+		localStorage.setItem('privateMode', 'private');
 		showPrivateProcs();
 	} else {
+		localStorage.setItem('privateMode', 'public');
 		hidePrivateProcs();
 	}
 }
@@ -220,11 +230,6 @@ window.addEventListener("DOMContentLoaded", main2);
     title="rewardDelivered(g: GossipSub; peer: PubSubPeer; topics: openArray[string];
                 first: bool)">rewardDelivered(g: GossipSub; peer: PubSubPeer; topics: openArray[string];
                 first: bool)</a></li>
-
-  </ul>
-  <ul class="simple nested-toc-section">updateScores
-      <li><a class="reference" href="#updateScores%2CGossipSub"
-    title="updateScores(g: GossipSub)">updateScores(g: GossipSub)</a></li>
 
   </ul>
   <ul class="simple nested-toc-section">withPeerStats
@@ -327,19 +332,6 @@ class="link-seesrc" target="_blank">Source</a>
 
 </dd>
 </div>
-<div id="updateScores,GossipSub" class="tohide">
-<dt><pre><span class="Keyword">proc</span> <a href="#updateScores%2CGossipSub"><span class="Identifier">updateScores</span></a><span class="Other">(</span><span class="Identifier">g</span><span class="Other">:</span> <a href="types.html#GossipSub"><span class="Identifier">GossipSub</span></a><span class="Other">)</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Defect</span><span class="Other">]</span><span class="Other">,</span>
-                                  <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">WriteIOEffect</span><span class="Other">,</span> <span class="Identifier">TimeEffect</span><span class="Other">,</span> <span class="Identifier">RootEffect</span><span class="Other">]</span></span>.}</pre></dt>
-<dd>
-
-<a class="reference external" href="https://github.com/libp2p/specs/blob/master/pubsub/gossipsub/gossipsub-v1.1.md#the-score-function">https://github.com/libp2p/specs/blob/master/pubsub/gossipsub/gossipsub-v1.1.md#the-score-function</a> 
-&nbsp;&nbsp;<a
-href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/protocols/pubsub/gossipsub/scoring.nim#L106"
-class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/protocols/pubsub/gossipsub/scoring.nim#L106" class="link-seesrc" target="_blank" >Edit</a>
-
-</dd>
-</div>
 <div id="withPeerStats,GossipSub,PeerId,proc(PeerStats)" class="tohide">
 <dt><pre><span class="Keyword">proc</span> <a href="#withPeerStats%2CGossipSub%2CPeerId%2Cproc%28PeerStats%29"><span class="Identifier">withPeerStats</span></a><span class="Other">(</span><span class="Identifier">g</span><span class="Other">:</span> <a href="types.html#GossipSub"><span class="Identifier">GossipSub</span></a><span class="Other">;</span> <span class="Identifier">peerId</span><span class="Other">:</span> <a href="../../../peerid.html#PeerId"><span class="Identifier">PeerId</span></a><span class="Other">;</span> <span class="Identifier">action</span><span class="Other">:</span> <span class="Keyword">proc</span> <span class="Other">(</span>
     <span class="Identifier">stats</span><span class="Other">:</span> <span class="Keyword">var</span> <a href="types.html#PeerStats"><span class="Identifier">PeerStats</span></a><span class="Other">)</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">gcsafe</span><span class="Other">,</span> <span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Defect</span><span class="Other">]</span></span>.}<span class="Other">)</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Defect</span><span class="Other">]</span><span class="Other">,</span>
@@ -364,7 +356,7 @@ class="link-seesrc" target="_blank">Source</a>
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br/>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2022-05-11 09:19:28 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2022-05-12 09:12:10 UTC</small>
       </div>
     </div>
   </div>
