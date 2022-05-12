@@ -247,6 +247,10 @@ window.addEventListener('DOMContentLoaded', main);
            matcher: Matcher = nil)" href="libp2p/multistream.html#addHandler%2CMultistreamSelect%2Cstring%2CLPProtoHandler%2CMatcher">multistream: addHandler(m: MultistreamSelect; codec: string; handler: LPProtoHandler;
            matcher: Matcher = nil)</a></li>
           </ul></dd>
+<dt><a name="addObserver" href="#addObserver"><span>addObserver:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="pubsub: addObserver(p: PubSub; observer: PubSubObserver)" href="libp2p/protocols/pubsub/pubsub.html#addObserver%2CPubSub%2CPubSubObserver">pubsub: addObserver(p: PubSub; observer: PubSubObserver)</a></li>
+          </ul></dd>
 <dt><a name="addPeer" href="#addPeer"><span>addPeer:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="peertable: addPeer(table: var PeerTable; topic: string; peer: PubSubPeer): bool" href="libp2p/protocols/pubsub/peertable.html#addPeer%2CPeerTable%2Cstring%2CPubSubPeer">peertable: addPeer(table: var PeerTable; topic: string; peer: PubSubPeer): bool</a></li>
@@ -266,6 +270,10 @@ window.addEventListener('DOMContentLoaded', main);
 <dt><a name="addSeen" href="#addSeen"><span>addSeen:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="floodsub: addSeen(f: FloodSub; msgId: MessageID): bool" href="libp2p/protocols/pubsub/floodsub.html#addSeen%2CFloodSub%2CMessageID">floodsub: addSeen(f: FloodSub; msgId: MessageID): bool</a></li>
+          </ul></dd>
+<dt><a name="addValidator" href="#addValidator"><span>addValidator:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="pubsub: addValidator(p: PubSub; topic: varargs[string]; hook: ValidatorHandler)" href="libp2p/protocols/pubsub/pubsub.html#addValidator.e%2CPubSub%2Cvarargs%5Bstring%5D%2CValidatorHandler">pubsub: addValidator(p: PubSub; topic: varargs[string]; hook: ValidatorHandler)</a></li>
           </ul></dd>
 <dt><a name="AgentVersion" href="#AgentVersion"><span>AgentVersion:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -430,6 +438,10 @@ window.addEventListener('DOMContentLoaded', main);
 <dt><a name="BiPrecomp" href="#BiPrecomp"><span>BiPrecomp:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="constants: BiPrecomp" href="libp2p/crypto/ed25519/constants.html#BiPrecomp">constants: BiPrecomp</a></li>
+          </ul></dd>
+<dt><a name="broadcast" href="#broadcast"><span>broadcast:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="pubsub: broadcast(p: PubSub; sendPeers: auto; msg: RPCMsg)" href="libp2p/protocols/pubsub/pubsub.html#broadcast%2CPubSub%2Cauto%2CRPCMsg">pubsub: broadcast(p: PubSub; sendPeers: auto; msg: RPCMsg)</a></li>
           </ul></dd>
 <dt><a name="BufferStream" href="#BufferStream"><span>BufferStream:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -1393,6 +1405,10 @@ window.addEventListener('DOMContentLoaded', main);
 <li><a class="reference external"
           data-doc-search-tag="wire: getLocalAddress(sock: AsyncFD): TransportAddress" href="libp2p/wire.html#getLocalAddress%2CAsyncFD">wire: getLocalAddress(sock: AsyncFD): TransportAddress</a></li>
           </ul></dd>
+<dt><a name="getOrCreatePeer" href="#getOrCreatePeer"><span>getOrCreatePeer:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="pubsub: getOrCreatePeer(p: PubSub; peerId: PeerId; protos: seq[string]): PubSubPeer" href="libp2p/protocols/pubsub/pubsub.html#getOrCreatePeer%2CPubSub%2CPeerId%2Cseq%5Bstring%5D">pubsub: getOrCreatePeer(p: PubSub; peerId: PeerId; protos: seq[string]): PubSubPeer</a></li>
+          </ul></dd>
 <dt><a name="getOrder" href="#getOrder"><span>getOrder:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="crypto: getOrder(remotePubkey, localNonce: openArray[byte];
@@ -1574,6 +1590,14 @@ window.addEventListener('DOMContentLoaded', main);
 <dt><a name="handleBackingOff" href="#handleBackingOff"><span>handleBackingOff:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="behavior: handleBackingOff(t: var BackoffTable; topic: string)" href="libp2p/protocols/pubsub/gossipsub/behavior.html#handleBackingOff%2CBackoffTable%2Cstring">behavior: handleBackingOff(t: var BackoffTable; topic: string)</a></li>
+          </ul></dd>
+<dt><a name="handleConn" href="#handleConn"><span>handleConn:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="pubsub: handleConn(p: PubSub; conn: Connection; proto: string): Future[void]" href="libp2p/protocols/pubsub/pubsub.html#handleConn.e%2CPubSub%2CConnection%2Cstring">pubsub: handleConn(p: PubSub; conn: Connection; proto: string): Future[void]</a></li>
+          </ul></dd>
+<dt><a name="handleData" href="#handleData"><span>handleData:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="pubsub: handleData(p: PubSub; topic: string; data: seq[byte]): Future[void]" href="libp2p/protocols/pubsub/pubsub.html#handleData%2CPubSub%2Cstring%2Cseq%5Bbyte%5D">pubsub: handleData(p: PubSub; topic: string; data: seq[byte]): Future[void]</a></li>
           </ul></dd>
 <dt><a name="handleGraft" href="#handleGraft"><span>handleGraft:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -1961,11 +1985,31 @@ window.addEventListener('DOMContentLoaded', main);
           <li><a class="reference external"
           data-doc-search-tag="protocol: init(p: LPProtocol)" href="libp2p/protocols/protocol.html#init.e%2CLPProtocol">protocol: init(p: LPProtocol)</a></li>
           <li><a class="reference external"
+          data-doc-search-tag="floodsub: init(f: FloodSub)" href="libp2p/protocols/pubsub/floodsub.html#init.e%2CFloodSub">floodsub: init(f: FloodSub)</a></li>
+          <li><a class="reference external"
           data-doc-search-tag="gossipsub: init(_: type[GossipSubParams]): GossipSubParams" href="libp2p/protocols/pubsub/gossipsub.html#init%2Ctype%5BGossipSubParams%5D">gossipsub: init(_: type[GossipSubParams]): GossipSubParams</a></li>
+          <li><a class="reference external"
+          data-doc-search-tag="gossipsub: init(g: GossipSub)" href="libp2p/protocols/pubsub/gossipsub.html#init.e%2CGossipSub">gossipsub: init(g: GossipSub)</a></li>
           <li><a class="reference external"
           data-doc-search-tag="scoring: init(_: type[TopicParams]): TopicParams" href="libp2p/protocols/pubsub/gossipsub/scoring.html#init%2Ctype%5BTopicParams%5D">scoring: init(_: type[TopicParams]): TopicParams</a></li>
           <li><a class="reference external"
           data-doc-search-tag="mcache: init(T: type MCache; window, history: Natural): T:type" href="libp2p/protocols/pubsub/mcache.html#init%2CtypeMCache%2CNatural%2CNatural">mcache: init(T: type MCache; window, history: Natural): T:type</a></li>
+          <li><a class="reference external"
+          data-doc-search-tag="pubsub: init[PubParams: object | bool](P: typedesc[PubSub]; switch: Switch;
+                               triggerSelf: bool = false;
+                               anonymize: bool = false;
+                               verifySignature: bool = true; sign: bool = true;
+    msgIdProvider: MsgIdProvider = defaultMsgIdProvider; subscriptionValidator: SubscriptionValidator = nil;
+                               maxMessageSize: int = 1024 * 1024;
+                               rng: ref BrHmacDrbgContext = newRng();
+                               parameters: PubParams = false): P:type" href="libp2p/protocols/pubsub/pubsub.html#init%2Ctypedesc%5BPubSub%5D%2CSwitch%2Cbool%2Cbool%2Cbool%2Cbool%2CMsgIdProvider%2CSubscriptionValidator%2Cint%2Cref.HmacDrbgContext%2CPubParams">pubsub: init[PubParams: object | bool](P: typedesc[PubSub]; switch: Switch;
+                               triggerSelf: bool = false;
+                               anonymize: bool = false;
+                               verifySignature: bool = true; sign: bool = true;
+    msgIdProvider: MsgIdProvider = defaultMsgIdProvider; subscriptionValidator: SubscriptionValidator = nil;
+                               maxMessageSize: int = 1024 * 1024;
+                               rng: ref BrHmacDrbgContext = newRng();
+                               parameters: PubParams = false): P:type</a></li>
           <li><a class="reference external"
           data-doc-search-tag="message: init(T: type Message; peer: Option[PeerInfo]; data: seq[byte]; topic: string;
      seqno: Option[uint64]; sign: bool = true): Message" href="libp2p/protocols/pubsub/rpc/message.html#init%2CtypeMessage%2COption%5BPeerInfo%5D%2Cseq%5Bbyte%5D%2Cstring%2COption%5Buint64%5D%2Cbool">message: init(T: type Message; peer: Option[PeerInfo]; data: seq[byte]; topic: string;
@@ -2017,7 +2061,11 @@ window.addEventListener('DOMContentLoaded', main);
           </ul></dd>
 <dt><a name="initPubSub" href="#initPubSub"><span>initPubSub:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
+          data-doc-search-tag="floodsub: initPubSub(f: FloodSub)" href="libp2p/protocols/pubsub/floodsub.html#initPubSub.e%2CFloodSub">floodsub: initPubSub(f: FloodSub)</a></li>
+          <li><a class="reference external"
           data-doc-search-tag="gossipsub: initPubSub(g: GossipSub)" href="libp2p/protocols/pubsub/gossipsub.html#initPubSub.e%2CGossipSub">gossipsub: initPubSub(g: GossipSub)</a></li>
+          <li><a class="reference external"
+          data-doc-search-tag="pubsub: initPubSub(p: PubSub)" href="libp2p/protocols/pubsub/pubsub.html#initPubSub.e%2CPubSub">pubsub: initPubSub(p: PubSub)</a></li>
           </ul></dd>
 <dt><a name="initRaw" href="#initRaw"><span>initRaw:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -2804,10 +2852,14 @@ window.addEventListener('DOMContentLoaded', main);
 <dt><a name="onPubSubPeerEvent" href="#onPubSubPeerEvent"><span>onPubSubPeerEvent:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="gossipsub: onPubSubPeerEvent(p: GossipSub; peer: PubSubPeer; event: PubsubPeerEvent)" href="libp2p/protocols/pubsub/gossipsub.html#onPubSubPeerEvent.e%2CGossipSub%2CPubSubPeer%2CPubsubPeerEvent">gossipsub: onPubSubPeerEvent(p: GossipSub; peer: PubSubPeer; event: PubsubPeerEvent)</a></li>
+          <li><a class="reference external"
+          data-doc-search-tag="pubsub: onPubSubPeerEvent(p: PubSub; peer: PubSubPeer; event: PubsubPeerEvent)" href="libp2p/protocols/pubsub/pubsub.html#onPubSubPeerEvent.e%2CPubSub%2CPubSubPeer%2CPubsubPeerEvent">pubsub: onPubSubPeerEvent(p: PubSub; peer: PubSubPeer; event: PubsubPeerEvent)</a></li>
           </ul></dd>
 <dt><a name="onTopicSubscription" href="#onTopicSubscription"><span>onTopicSubscription:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="gossipsub: onTopicSubscription(g: GossipSub; topic: string; subscribed: bool)" href="libp2p/protocols/pubsub/gossipsub.html#onTopicSubscription.e%2CGossipSub%2Cstring%2Cbool">gossipsub: onTopicSubscription(g: GossipSub; topic: string; subscribed: bool)</a></li>
+          <li><a class="reference external"
+          data-doc-search-tag="pubsub: onTopicSubscription(p: PubSub; topic: string; subscribed: bool)" href="libp2p/protocols/pubsub/pubsub.html#onTopicSubscription.e%2CPubSub%2Cstring%2Cbool">pubsub: onTopicSubscription(p: PubSub; topic: string; subscribed: bool)</a></li>
           </ul></dd>
 <dt><a name="onUpgrade" href="#onUpgrade"><span>onUpgrade:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -3053,6 +3105,18 @@ window.addEventListener('DOMContentLoaded', main);
 <li><a class="reference external"
           data-doc-search-tag="crypto: PublicKey" href="libp2p/crypto/crypto.html#PublicKey">crypto: PublicKey</a></li>
           </ul></dd>
+<dt><a name="publish" href="#publish"><span>publish:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="floodsub: publish(f: FloodSub; topic: string; data: seq[byte]): Future[int]" href="libp2p/protocols/pubsub/floodsub.html#publish.e%2CFloodSub%2Cstring%2Cseq%5Bbyte%5D">floodsub: publish(f: FloodSub; topic: string; data: seq[byte]): Future[int]</a></li>
+          <li><a class="reference external"
+          data-doc-search-tag="gossipsub: publish(g: GossipSub; topic: string; data: seq[byte]): Future[int]" href="libp2p/protocols/pubsub/gossipsub.html#publish.e%2CGossipSub%2Cstring%2Cseq%5Bbyte%5D">gossipsub: publish(g: GossipSub; topic: string; data: seq[byte]): Future[int]</a></li>
+          <li><a class="reference external"
+          data-doc-search-tag="pubsub: publish(p: PubSub; topic: string; data: seq[byte]): Future[int]" href="libp2p/protocols/pubsub/pubsub.html#publish.e%2CPubSub%2Cstring%2Cseq%5Bbyte%5D">pubsub: publish(p: PubSub; topic: string; data: seq[byte]): Future[int]</a></li>
+          </ul></dd>
+<dt><a name="PubSub" href="#PubSub"><span>PubSub:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="pubsub: PubSub" href="libp2p/protocols/pubsub/pubsub.html#PubSub">pubsub: PubSub</a></li>
+          </ul></dd>
 <dt><a name="PubSubObserver" href="#PubSubObserver"><span>PubSubObserver:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="pubsubpeer: PubSubObserver" href="libp2p/protocols/pubsub/pubsubpeer.html#PubSubObserver">pubsubpeer: PubSubObserver</a></li>
@@ -3229,6 +3293,10 @@ window.addEventListener('DOMContentLoaded', main);
           <li><a class="reference external"
           data-doc-search-tag="switch: removeConnEventHandler(s: Switch; handler: ConnEventHandler; kind: ConnEventKind)" href="libp2p/switch.html#removeConnEventHandler%2CSwitch%2CConnEventHandler%2CConnEventKind">switch: removeConnEventHandler(s: Switch; handler: ConnEventHandler; kind: ConnEventKind)</a></li>
           </ul></dd>
+<dt><a name="removeObserver" href="#removeObserver"><span>removeObserver:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="pubsub: removeObserver(p: PubSub; observer: PubSubObserver)" href="libp2p/protocols/pubsub/pubsub.html#removeObserver%2CPubSub%2CPubSubObserver">pubsub: removeObserver(p: PubSub; observer: PubSubObserver)</a></li>
+          </ul></dd>
 <dt><a name="removePeer" href="#removePeer"><span>removePeer:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="peertable: removePeer(table: var PeerTable; topic: string; peer: PubSubPeer)" href="libp2p/protocols/pubsub/peertable.html#removePeer%2CPeerTable%2Cstring%2CPubSubPeer">peertable: removePeer(table: var PeerTable; topic: string; peer: PubSubPeer)</a></li>
@@ -3240,6 +3308,10 @@ window.addEventListener('DOMContentLoaded', main);
                        kind: PeerEventKind)</a></li>
           <li><a class="reference external"
           data-doc-search-tag="switch: removePeerEventHandler(s: Switch; handler: PeerEventHandler; kind: PeerEventKind)" href="libp2p/switch.html#removePeerEventHandler%2CSwitch%2CPeerEventHandler%2CPeerEventKind">switch: removePeerEventHandler(s: Switch; handler: PeerEventHandler; kind: PeerEventKind)</a></li>
+          </ul></dd>
+<dt><a name="removeValidator" href="#removeValidator"><span>removeValidator:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="pubsub: removeValidator(p: PubSub; topic: varargs[string]; hook: ValidatorHandler)" href="libp2p/protocols/pubsub/pubsub.html#removeValidator.e%2CPubSub%2Cvarargs%5Bstring%5D%2CValidatorHandler">pubsub: removeValidator(p: PubSub; topic: varargs[string]; hook: ValidatorHandler)</a></li>
           </ul></dd>
 <dt><a name="replenishFanout" href="#replenishFanout"><span>replenishFanout:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -3274,6 +3346,14 @@ window.addEventListener('DOMContentLoaded', main);
 <dt><a name="RoutingRecordsPair" href="#RoutingRecordsPair"><span>RoutingRecordsPair:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="types: RoutingRecordsPair" href="libp2p/protocols/pubsub/gossipsub/types.html#RoutingRecordsPair">types: RoutingRecordsPair</a></li>
+          </ul></dd>
+<dt><a name="rpcHandler" href="#rpcHandler"><span>rpcHandler:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="floodsub: rpcHandler(f: FloodSub; peer: PubSubPeer; rpcMsg: RPCMsg): Future[void]" href="libp2p/protocols/pubsub/floodsub.html#rpcHandler.e%2CFloodSub%2CPubSubPeer%2CRPCMsg">floodsub: rpcHandler(f: FloodSub; peer: PubSubPeer; rpcMsg: RPCMsg): Future[void]</a></li>
+          <li><a class="reference external"
+          data-doc-search-tag="gossipsub: rpcHandler(g: GossipSub; peer: PubSubPeer; rpcMsg: RPCMsg): Future[void]" href="libp2p/protocols/pubsub/gossipsub.html#rpcHandler.e%2CGossipSub%2CPubSubPeer%2CRPCMsg">gossipsub: rpcHandler(g: GossipSub; peer: PubSubPeer; rpcMsg: RPCMsg): Future[void]</a></li>
+          <li><a class="reference external"
+          data-doc-search-tag="pubsub: rpcHandler(p: PubSub; peer: PubSubPeer; rpcMsg: RPCMsg): Future[void]" href="libp2p/protocols/pubsub/pubsub.html#rpcHandler.e%2CPubSub%2CPubSubPeer%2CRPCMsg">pubsub: rpcHandler(p: PubSub; peer: PubSubPeer; rpcMsg: RPCMsg): Future[void]</a></li>
           </ul></dd>
 <dt><a name="RPCHandler" href="#RPCHandler"><span>RPCHandler:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -3473,11 +3553,17 @@ window.addEventListener('DOMContentLoaded', main);
           </ul></dd>
 <dt><a name="send" href="#send"><span>send:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
+          data-doc-search-tag="pubsub: send(p: PubSub; peer: PubSubPeer; msg: RPCMsg)" href="libp2p/protocols/pubsub/pubsub.html#send%2CPubSub%2CPubSubPeer%2CRPCMsg">pubsub: send(p: PubSub; peer: PubSubPeer; msg: RPCMsg)</a></li>
+          <li><a class="reference external"
           data-doc-search-tag="pubsubpeer: send(p: PubSubPeer; msg: RPCMsg; anonymize: bool)" href="libp2p/protocols/pubsub/pubsubpeer.html#send%2CPubSubPeer%2CRPCMsg%2Cbool">pubsubpeer: send(p: PubSubPeer; msg: RPCMsg; anonymize: bool)</a></li>
           </ul></dd>
 <dt><a name="sendEncoded" href="#sendEncoded"><span>sendEncoded:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="pubsubpeer: sendEncoded(p: PubSubPeer; msg: seq[byte])" href="libp2p/protocols/pubsub/pubsubpeer.html#sendEncoded%2CPubSubPeer%2Cseq%5Bbyte%5D">pubsubpeer: sendEncoded(p: PubSubPeer; msg: seq[byte])</a></li>
+          </ul></dd>
+<dt><a name="sendSubs" href="#sendSubs"><span>sendSubs:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="pubsub: sendSubs(p: PubSub; peer: PubSubPeer; topics: openArray[string]; subscribe: bool)" href="libp2p/protocols/pubsub/pubsub.html#sendSubs%2CPubSub%2CPubSubPeer%2CopenArray%5Bstring%5D%2Cbool">pubsub: sendSubs(p: PubSub; peer: PubSubPeer; topics: openArray[string]; subscribe: bool)</a></li>
           </ul></dd>
 <dt><a name="Sha256" href="#Sha256"><span>Sha256:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -3633,6 +3719,8 @@ window.addEventListener('DOMContentLoaded', main);
 <li><a class="reference external"
           data-doc-search-tag="gossipsub: start(g: GossipSub): Future[void]" href="libp2p/protocols/pubsub/gossipsub.html#start.e%2CGossipSub">gossipsub: start(g: GossipSub): Future[void]</a></li>
           <li><a class="reference external"
+          data-doc-search-tag="pubsub: start(p: PubSub): Future[void]" href="libp2p/protocols/pubsub/pubsub.html#start.e%2CPubSub">pubsub: start(p: PubSub): Future[void]</a></li>
+          <li><a class="reference external"
           data-doc-search-tag="switch: start(s: Switch): Future[void]" href="libp2p/switch.html#start%2CSwitch">switch: start(s: Switch): Future[void]</a></li>
           <li><a class="reference external"
           data-doc-search-tag="tcptransport: start(self: TcpTransport; addrs: seq[MultiAddress]): Future[void]" href="libp2p/transports/tcptransport.html#start.e%2CTcpTransport%2Cseq%5BMultiAddress%5D">tcptransport: start(self: TcpTransport; addrs: seq[MultiAddress]): Future[void]</a></li>
@@ -3648,6 +3736,8 @@ window.addEventListener('DOMContentLoaded', main);
 <dt><a name="stop" href="#stop"><span>stop:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="gossipsub: stop(g: GossipSub): Future[void]" href="libp2p/protocols/pubsub/gossipsub.html#stop.e%2CGossipSub">gossipsub: stop(g: GossipSub): Future[void]</a></li>
+          <li><a class="reference external"
+          data-doc-search-tag="pubsub: stop(p: PubSub): Future[void]" href="libp2p/protocols/pubsub/pubsub.html#stop.e%2CPubSub">pubsub: stop(p: PubSub): Future[void]</a></li>
           <li><a class="reference external"
           data-doc-search-tag="tcptransport: stop(self: TcpTransport): Future[void]" href="libp2p/transports/tcptransport.html#stop.e%2CTcpTransport">tcptransport: stop(self: TcpTransport): Future[void]</a></li>
           <li><a class="reference external"
@@ -3682,6 +3772,14 @@ window.addEventListener('DOMContentLoaded', main);
 <dt><a name="SubOpts" href="#SubOpts"><span>SubOpts:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="messages: SubOpts" href="libp2p/protocols/pubsub/rpc/messages.html#SubOpts">messages: SubOpts</a></li>
+          </ul></dd>
+<dt><a name="subscribe" href="#subscribe"><span>subscribe:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="pubsub: subscribe(p: PubSub; topic: string; handler: TopicHandler)" href="libp2p/protocols/pubsub/pubsub.html#subscribe%2CPubSub%2Cstring%2CTopicHandler">pubsub: subscribe(p: PubSub; topic: string; handler: TopicHandler)</a></li>
+          </ul></dd>
+<dt><a name="subscribePeer" href="#subscribePeer"><span>subscribePeer:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="pubsub: subscribePeer(p: PubSub; peer: PeerId)" href="libp2p/protocols/pubsub/pubsub.html#subscribePeer.e%2CPubSub%2CPeerId">pubsub: subscribePeer(p: PubSub; peer: PeerId)</a></li>
           </ul></dd>
 <dt><a name="SubscriptionValidator" href="#SubscriptionValidator"><span>SubscriptionValidator:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -3947,15 +4045,35 @@ window.addEventListener('DOMContentLoaded', main);
 <li><a class="reference external"
           data-doc-search-tag="multiaddress: Unreliable" href="libp2p/multiaddress.html#Unreliable">multiaddress: Unreliable</a></li>
           </ul></dd>
+<dt><a name="unsubscribe" href="#unsubscribe"><span>unsubscribe:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="pubsub: unsubscribe(p: PubSub; topics: openArray[TopicPair])" href="libp2p/protocols/pubsub/pubsub.html#unsubscribe%2CPubSub%2CopenArray%5BTopicPair%5D">pubsub: unsubscribe(p: PubSub; topics: openArray[TopicPair])</a></li>
+          <li><a class="reference external"
+          data-doc-search-tag="pubsub: unsubscribe(p: PubSub; topic: string; handler: TopicHandler)" href="libp2p/protocols/pubsub/pubsub.html#unsubscribe%2CPubSub%2Cstring%2CTopicHandler">pubsub: unsubscribe(p: PubSub; topic: string; handler: TopicHandler)</a></li>
+          </ul></dd>
+<dt><a name="unsubscribeAll" href="#unsubscribeAll"><span>unsubscribeAll:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="pubsub: unsubscribeAll(p: PubSub; topic: string)" href="libp2p/protocols/pubsub/pubsub.html#unsubscribeAll%2CPubSub%2Cstring">pubsub: unsubscribeAll(p: PubSub; topic: string)</a></li>
+          </ul></dd>
 <dt><a name="unsubscribePeer" href="#unsubscribePeer"><span>unsubscribePeer:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="floodsub: unsubscribePeer(f: FloodSub; peer: PeerId)" href="libp2p/protocols/pubsub/floodsub.html#unsubscribePeer.e%2CFloodSub%2CPeerId">floodsub: unsubscribePeer(f: FloodSub; peer: PeerId)</a></li>
           <li><a class="reference external"
           data-doc-search-tag="gossipsub: unsubscribePeer(g: GossipSub; peer: PeerId)" href="libp2p/protocols/pubsub/gossipsub.html#unsubscribePeer.e%2CGossipSub%2CPeerId">gossipsub: unsubscribePeer(g: GossipSub; peer: PeerId)</a></li>
+          <li><a class="reference external"
+          data-doc-search-tag="pubsub: unsubscribePeer(p: PubSub; peerId: PeerId)" href="libp2p/protocols/pubsub/pubsub.html#unsubscribePeer.e%2CPubSub%2CPeerId">pubsub: unsubscribePeer(p: PubSub; peerId: PeerId)</a></li>
           </ul></dd>
 <dt><a name="update" href="#update"><span>update:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="peerinfo: update(p: PeerInfo)" href="libp2p/peerinfo.html#update%2CPeerInfo">peerinfo: update(p: PeerInfo)</a></li>
+          </ul></dd>
+<dt><a name="updateMetrics" href="#updateMetrics"><span>updateMetrics:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="pubsub: updateMetrics(p: PubSub; rpcMsg: RPCMsg)" href="libp2p/protocols/pubsub/pubsub.html#updateMetrics%2CPubSub%2CRPCMsg">pubsub: updateMetrics(p: PubSub; rpcMsg: RPCMsg)</a></li>
+          </ul></dd>
+<dt><a name="updateScores" href="#updateScores"><span>updateScores:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="scoring: updateScores(g: GossipSub)" href="libp2p/protocols/pubsub/gossipsub/scoring.html#updateScores%2CGossipSub">scoring: updateScores(g: GossipSub)</a></li>
           </ul></dd>
 <dt><a name="upgrade" href="#upgrade"><span>upgrade:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -3996,6 +4114,8 @@ window.addEventListener('DOMContentLoaded', main);
           data-doc-search-tag="multihash: validate(mhtype: typedesc[MultiHash]; data: openArray[byte]): bool" href="libp2p/multihash.html#validate%2Ctypedesc%5BMultiHash%5D%2CopenArray%5Bbyte%5D">multihash: validate(mhtype: typedesc[MultiHash]; data: openArray[byte]): bool</a></li>
           <li><a class="reference external"
           data-doc-search-tag="peerid: validate(pid: PeerId): bool" href="libp2p/peerid.html#validate%2CPeerId">peerid: validate(pid: PeerId): bool</a></li>
+          <li><a class="reference external"
+          data-doc-search-tag="pubsub: validate(p: PubSub; message: Message): Future[ValidationResult]" href="libp2p/protocols/pubsub/pubsub.html#validate.e%2CPubSub%2CMessage">pubsub: validate(p: PubSub; message: Message): Future[ValidationResult]</a></li>
           </ul></dd>
 <dt><a name="validateParameters" href="#validateParameters"><span>validateParameters:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -4302,7 +4422,7 @@ window.addEventListener('DOMContentLoaded', main);
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br/>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2022-05-12 10:06:51 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2022-05-12 11:15:49 UTC</small>
       </div>
     </div>
   </div>
