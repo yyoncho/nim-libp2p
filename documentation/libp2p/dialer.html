@@ -236,7 +236,12 @@ window.addEventListener("DOMContentLoaded", main2);
 <li>
   <a class="reference reference-toplevel" href="#14" id="64">Methods</a>
   <ul class="simple simple-toc-section">
-      <ul class="simple nested-toc-section">connect
+      <ul class="simple nested-toc-section">addTransport
+      <li><a class="reference" href="#addTransport.e%2CDialer%2CTransport"
+    title="addTransport(self: Dialer; t: Transport)">addTransport(self: Dialer; t: Transport)</a></li>
+
+  </ul>
+  <ul class="simple nested-toc-section">connect
       <li><a class="reference" href="#connect.e%2CDialer%2CPeerId%2Cseq%5BMultiAddress%5D"
     title="connect(self: Dialer; peerId: PeerId; addrs: seq[MultiAddress];
         forceDial = false): Future[void]">connect(self: Dialer; peerId: PeerId; addrs: seq[MultiAddress];
@@ -333,9 +338,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 
 &nbsp;&nbsp;<a
-href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/dialer.nim#L244"
+href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/dialer.nim#L247"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/dialer.nim#L244" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/dialer.nim#L247" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -344,13 +349,25 @@ class="link-seesrc" target="_blank">Source</a>
 <div class="section" id="14">
 <h1><a class="toc-backref" href="#14">Methods</a></h1>
 <dl class="item">
+<div id="addTransport.e,Dialer,Transport" class="tohide">
+<dt><pre><span class="Keyword">method</span> <a href="#addTransport.e%2CDialer%2CTransport"><span class="Identifier">addTransport</span></a><span class="Other">(</span><span class="Identifier">self</span><span class="Other">:</span> <a href="dialer.html#Dialer"><span class="Identifier">Dialer</span></a><span class="Other">;</span> <span class="Identifier">t</span><span class="Other">:</span> <a href="upgrademngrs/upgrade.html#Transport"><span class="Identifier">Transport</span></a><span class="Other">)</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+<dd>
+
+
+&nbsp;&nbsp;<a
+href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/dialer.nim#L244"
+class="link-seesrc" target="_blank">Source</a>
+&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/dialer.nim#L244" class="link-seesrc" target="_blank" >Edit</a>
+
+</dd>
+</div>
 <div id="connect.e,Dialer,PeerId,seq[MultiAddress]" class="tohide">
 <dt><pre><span class="Keyword">method</span> <a href="#connect.e%2CDialer%2CPeerId%2Cseq%5BMultiAddress%5D"><span class="Identifier">connect</span></a><span class="Other">(</span><span class="Identifier">self</span><span class="Other">:</span> <a href="dialer.html#Dialer"><span class="Identifier">Dialer</span></a><span class="Other">;</span> <span class="Identifier">peerId</span><span class="Other">:</span> <a href="peerid.html#PeerId"><span class="Identifier">PeerId</span></a><span class="Other">;</span> <span class="Identifier">addrs</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><a href="multiaddress.html#MultiAddress"><span class="Identifier">MultiAddress</span></a><span class="Other">]</span><span class="Other">;</span>
                <span class="Identifier">forceDial</span> <span class="Other">=</span> <span class="Identifier">false</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">Future</span><span class="Other">[</span><span class="Identifier">void</span><span class="Other">]</span> {.<span class="Identifier">stackTrace</span><span class="Other">:</span> <span class="DecNumber">false</span><span class="Other">,</span> <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">gcsafe</span><span class="Other">,</span>
     <span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">RootEffect</span><span class="Other">]</span></span>.}</pre></dt>
 <dd>
 
-
+connect remote peer without negotiating a protocol 
 &nbsp;&nbsp;<a
 href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/dialer.nim#L166"
 class="link-seesrc" target="_blank">Source</a>
@@ -364,7 +381,7 @@ class="link-seesrc" target="_blank">Source</a>
     <span class="Identifier">stackTrace</span><span class="Other">:</span> <span class="DecNumber">false</span><span class="Other">,</span> <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">gcsafe</span><span class="Other">,</span> <span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">RootEffect</span><span class="Other">]</span></span>.}</pre></dt>
 <dd>
 
-
+create a protocol stream and establish a connection if one doesn't exist already 
 &nbsp;&nbsp;<a
 href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/dialer.nim#L208"
 class="link-seesrc" target="_blank">Source</a>
@@ -377,7 +394,7 @@ class="link-seesrc" target="_blank">Source</a>
     <a href="stream/connection.html#Connection"><span class="Identifier">Connection</span></a><span class="Other">]</span> {.<span class="Identifier">stackTrace</span><span class="Other">:</span> <span class="DecNumber">false</span><span class="Other">,</span> <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">gcsafe</span><span class="Other">,</span> <span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">RootEffect</span><span class="Other">]</span></span>.}</pre></dt>
 <dd>
 
-
+create a protocol stream over an existing connection 
 &nbsp;&nbsp;<a
 href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/dialer.nim#L191"
 class="link-seesrc" target="_blank">Source</a>
@@ -390,7 +407,7 @@ class="link-seesrc" target="_blank">Source</a>
 <div class="section" id="19">
 <h1><a class="toc-backref" href="#19">Exports</a></h1>
 <dl class="item">
-<a href="dial.html#dial.e,Dial,PeerId,seq[string]"><span class="Identifier">dial</span></a>, <a href="dial.html#connect.e,Dial,PeerId,seq[MultiAddress]"><span class="Identifier">connect</span></a>, <a href="dial.html#Dial"><span class="Identifier">Dial</span></a>, <a href="dial.html#dial.e,Dial,PeerId,seq[MultiAddress],seq[string]"><span class="Identifier">dial</span></a>, <a href="errors.html#toException,cstring"><span class="Identifier">toException</span></a>, <a href="errors.html#toException,string"><span class="Identifier">toException</span></a>, <a href="errors.html#allFuturesThrowing,varargs[Future[T]]"><span class="Identifier">allFuturesThrowing</span></a>, <a href="errors.html#tryAndWarn.t,static[string],untyped"><span class="Identifier">tryAndWarn</span></a>, <a href="errors.html#checkFutures.m,seq[Future[T]],untyped"><span class="Identifier">checkFutures</span></a>, <a href="errors.html#LPError"><span class="Identifier">LPError</span></a>
+<a href="dial.html#dial.e,Dial,PeerId,seq[string]"><span class="Identifier">dial</span></a>, <a href="dial.html#connect.e,Dial,PeerId,seq[MultiAddress]"><span class="Identifier">connect</span></a>, <a href="dial.html#Dial"><span class="Identifier">Dial</span></a>, <a href="dial.html#addTransport.e,Dial,Transport"><span class="Identifier">addTransport</span></a>, <a href="dial.html#dial.e,Dial,PeerId,seq[MultiAddress],seq[string]"><span class="Identifier">dial</span></a>, <a href="errors.html#toException,cstring"><span class="Identifier">toException</span></a>, <a href="errors.html#toException,string"><span class="Identifier">toException</span></a>, <a href="errors.html#allFuturesThrowing,varargs[Future[T]]"><span class="Identifier">allFuturesThrowing</span></a>, <a href="errors.html#tryAndWarn.t,static[string],untyped"><span class="Identifier">tryAndWarn</span></a>, <a href="errors.html#checkFutures.m,seq[Future[T]],untyped"><span class="Identifier">checkFutures</span></a>, <a href="errors.html#LPError"><span class="Identifier">LPError</span></a>
 </dl></div>
 
   </div>
@@ -400,7 +417,7 @@ class="link-seesrc" target="_blank">Source</a>
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br/>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2022-05-24 13:55:48 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2022-05-31 12:40:14 UTC</small>
       </div>
     </div>
   </div>

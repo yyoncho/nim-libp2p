@@ -1019,6 +1019,12 @@ class="link-seesrc" target="_blank">Source</a>
     <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">RootEffect</span><span class="Other">]</span></span>.}</pre></dt>
 <dd>
 
+<p>handle incoming connections</p>
+<p>this proc will:</p>
+<ol class="simple"><li>register a new PubSubPeer for the connection</li>
+<li>register a handler with the peer; this handler gets called on every rpc message that the peer receives</li>
+<li>ask the peer to subscribe us to every topic that we're interested in</li>
+</ol>
 
 &nbsp;&nbsp;<a
 href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/protocols/pubsub/pubsub.nim#L356"
@@ -1073,6 +1079,8 @@ class="link-seesrc" target="_blank">Source</a>
     <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">RootEffect</span><span class="Other">]</span></span>.}</pre></dt>
 <dd>
 
+<p>publish to a <tt class="docutils literal"><span class="pre">topic</span></tt></p>
+<p>The return value is the number of neighbours that we attempted to send the message to, excluding self. Note that this is an optimistic number of attempts - the number of peers that actually receive the message might be lower.</p>
 
 &nbsp;&nbsp;<a
 href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/protocols/pubsub/pubsub.nim#L482"
@@ -1113,7 +1121,7 @@ class="link-seesrc" target="_blank">Source</a>
                                         <span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Defect</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">RootEffect</span><span class="Other">]</span></span>.}</pre></dt>
 <dd>
 
-
+start pubsub
 &nbsp;&nbsp;<a
 href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/protocols/pubsub/pubsub.nim#L501"
 class="link-seesrc" target="_blank">Source</a>
@@ -1127,7 +1135,7 @@ class="link-seesrc" target="_blank">Source</a>
                                        <span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Defect</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">RootEffect</span><span class="Other">]</span></span>.}</pre></dt>
 <dd>
 
-
+stop pubsub
 &nbsp;&nbsp;<a
 href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/protocols/pubsub/pubsub.nim#L505"
 class="link-seesrc" target="_blank">Source</a>
@@ -1190,7 +1198,7 @@ class="link-seesrc" target="_blank">Source</a>
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br/>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2022-05-24 13:55:50 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2022-05-31 12:40:16 UTC</small>
       </div>
     </div>
   </div>
