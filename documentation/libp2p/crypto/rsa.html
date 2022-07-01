@@ -217,14 +217,14 @@ window.addEventListener("DOMContentLoaded", main2);
   <li><a class="reference" href="#RsaPrivateKey"
     title="RsaPrivateKey = ref object
   buffer*: seq[byte]
-  seck*: BrRsaPrivateKey
-  pubk*: BrRsaPublicKey
-  pexp*: ptr char
-  pexplen*: int">RsaPrivateKey</a></li>
+  seck*: rsa.RsaPrivateKey
+  pubk*: rsa.RsaPublicKey
+  pexp*: ptr byte
+  pexplen*: uint">RsaPrivateKey</a></li>
   <li><a class="reference" href="#RsaPublicKey"
     title="RsaPublicKey = ref object
   buffer*: seq[byte]
-  key*: BrRsaPublicKey">RsaPublicKey</a></li>
+  key*: rsa.RsaPublicKey">RsaPublicKey</a></li>
   <li><a class="reference" href="#RsaResult"
     title="RsaResult[T] = Result[T, RsaError]">RsaResult</a></li>
   <li><a class="reference" href="#RsaSignature"
@@ -243,19 +243,15 @@ window.addEventListener("DOMContentLoaded", main2);
   <li><a class="reference" href="#MinKeySize"
     title="MinKeySize = 2048">MinKeySize</a></li>
   <li><a class="reference" href="#RsaOidSha1"
-    title="RsaOidSha1 = [0x05'u8, 0x2B'u8, 0x0E'u8, 0x03'u8, 0x02'u8, 0x1A'u8]">RsaOidSha1</a></li>
+    title="RsaOidSha1 = [5'u, 43'u, 14'u, 3'u, 2'u, 26'u]">RsaOidSha1</a></li>
   <li><a class="reference" href="#RsaOidSha224"
-    title="RsaOidSha224 = [0x09'u8, 0x60'u8, 0x86'u8, 0x48'u8, 0x01'u8, 0x65'u8, 0x03'u8,
-                0x04'u8, 0x02'u8, 0x04'u8]">RsaOidSha224</a></li>
+    title="RsaOidSha224 = [9'u, 96'u, 134'u, 72'u, 1'u, 101'u, 3'u, 4'u, 2'u, 4'u]">RsaOidSha224</a></li>
   <li><a class="reference" href="#RsaOidSha256"
-    title="RsaOidSha256 = [0x09'u8, 0x60'u8, 0x86'u8, 0x48'u8, 0x01'u8, 0x65'u8, 0x03'u8,
-                0x04'u8, 0x02'u8, 0x01'u8]">RsaOidSha256</a></li>
+    title="RsaOidSha256 = [9'u, 96'u, 134'u, 72'u, 1'u, 101'u, 3'u, 4'u, 2'u, 1'u]">RsaOidSha256</a></li>
   <li><a class="reference" href="#RsaOidSha384"
-    title="RsaOidSha384 = [0x09'u8, 0x60'u8, 0x86'u8, 0x48'u8, 0x01'u8, 0x65'u8, 0x03'u8,
-                0x04'u8, 0x02'u8, 0x02'u8]">RsaOidSha384</a></li>
+    title="RsaOidSha384 = [9'u, 96'u, 134'u, 72'u, 1'u, 101'u, 3'u, 4'u, 2'u, 2'u]">RsaOidSha384</a></li>
   <li><a class="reference" href="#RsaOidSha512"
-    title="RsaOidSha512 = [0x09'u8, 0x60'u8, 0x86'u8, 0x48'u8, 0x01'u8, 0x65'u8, 0x03'u8,
-                0x04'u8, 0x02'u8, 0x03'u8]">RsaOidSha512</a></li>
+    title="RsaOidSha512 = [9'u, 96'u, 134'u, 72'u, 1'u, 101'u, 3'u, 4'u, 2'u, 3'u]">RsaOidSha512</a></li>
 
   </ul>
 </li>
@@ -330,9 +326,9 @@ window.addEventListener("DOMContentLoaded", main2);
   </ul>
   <ul class="simple nested-toc-section">random
       <li><a class="reference" href="#random%2Ctypedesc%5BT%5D%2CHmacDrbgContext"
-    title="random[T: RsaKP](t: typedesc[T]; rng: var BrHmacDrbgContext;
+    title="random[T: RsaKP](t: typedesc[T]; rng: var HmacDrbgContext;
                  bits = DefaultKeySize; pubexp = DefaultPublicExponent): RsaResult[
-    T]">random[T: RsaKP](t: typedesc[T]; rng: var BrHmacDrbgContext;
+    T]">random[T: RsaKP](t: typedesc[T]; rng: var HmacDrbgContext;
                  bits = DefaultKeySize; pubexp = DefaultPublicExponent): RsaResult[
     T]</a></li>
 
@@ -460,10 +456,10 @@ class="link-seesrc" target="_blank">Source</a>
 <div id="RsaPrivateKey" class="tohide">
 <dt><pre><a href="rsa.html#RsaPrivateKey"><span class="Identifier">RsaPrivateKey</span></a> <span class="Other">=</span> <span class="Keyword">ref</span> <span class="Keyword">object</span>
   <span class="Identifier">buffer</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">byte</span><span class="Other">]</span>
-  <span class="Identifier">seck</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">BrRsaPrivateKey</span>
-  <span class="Identifier">pubk</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">BrRsaPublicKey</span>
-  <span class="Identifier">pexp</span><span class="Operator">*</span><span class="Other">:</span> <span class="Keyword">ptr</span> <span class="Identifier">char</span>
-  <span class="Identifier">pexplen</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">int</span>
+  <span class="Identifier">seck</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">rsa</span><span class="Other">.</span><span class="Identifier">RsaPrivateKey</span>
+  <span class="Identifier">pubk</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">rsa</span><span class="Other">.</span><span class="Identifier">RsaPublicKey</span>
+  <span class="Identifier">pexp</span><span class="Operator">*</span><span class="Other">:</span> <span class="Keyword">ptr</span> <span class="Identifier">byte</span>
+  <span class="Identifier">pexplen</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">uint</span>
 </pre></dt>
 <dd>
 
@@ -478,7 +474,7 @@ class="link-seesrc" target="_blank">Source</a>
 <div id="RsaPublicKey" class="tohide">
 <dt><pre><a href="rsa.html#RsaPublicKey"><span class="Identifier">RsaPublicKey</span></a> <span class="Other">=</span> <span class="Keyword">ref</span> <span class="Keyword">object</span>
   <span class="Identifier">buffer</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">byte</span><span class="Other">]</span>
-  <span class="Identifier">key</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">BrRsaPublicKey</span>
+  <span class="Identifier">key</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">rsa</span><span class="Other">.</span><span class="Identifier">RsaPublicKey</span>
 </pre></dt>
 <dd>
 
@@ -558,7 +554,7 @@ class="link-seesrc" target="_blank">Source</a>
 </dd>
 </div>
 <div id="RsaOidSha1" class="tohide">
-<dt><pre><a href="rsa.html#RsaOidSha1"><span class="Identifier">RsaOidSha1</span></a> <span class="Other">=</span> <span class="Other">[</span><span class="DecNumber">0x05'u8</span><span class="Other">,</span> <span class="DecNumber">0x2B'u8</span><span class="Other">,</span> <span class="DecNumber">0x0E'u8</span><span class="Other">,</span> <span class="DecNumber">0x03'u8</span><span class="Other">,</span> <span class="DecNumber">0x02'u8</span><span class="Other">,</span> <span class="DecNumber">0x1A'u8</span><span class="Other">]</span></pre></dt>
+<dt><pre><a href="rsa.html#RsaOidSha1"><span class="Identifier">RsaOidSha1</span></a> <span class="Other">=</span> <span class="Other">[</span><span class="DecNumber">5'u</span><span class="Other">,</span> <span class="DecNumber">43'u</span><span class="Other">,</span> <span class="DecNumber">14'u</span><span class="Other">,</span> <span class="DecNumber">3'u</span><span class="Other">,</span> <span class="DecNumber">2'u</span><span class="Other">,</span> <span class="DecNumber">26'u</span><span class="Other">]</span></pre></dt>
 <dd>
 
 RSA PKCS#1.5 SHA-1 hash object identifier.
@@ -570,8 +566,7 @@ class="link-seesrc" target="_blank">Source</a>
 </dd>
 </div>
 <div id="RsaOidSha224" class="tohide">
-<dt><pre><a href="rsa.html#RsaOidSha224"><span class="Identifier">RsaOidSha224</span></a> <span class="Other">=</span> <span class="Other">[</span><span class="DecNumber">0x09'u8</span><span class="Other">,</span> <span class="DecNumber">0x60'u8</span><span class="Other">,</span> <span class="DecNumber">0x86'u8</span><span class="Other">,</span> <span class="DecNumber">0x48'u8</span><span class="Other">,</span> <span class="DecNumber">0x01'u8</span><span class="Other">,</span> <span class="DecNumber">0x65'u8</span><span class="Other">,</span> <span class="DecNumber">0x03'u8</span><span class="Other">,</span>
-                <span class="DecNumber">0x04'u8</span><span class="Other">,</span> <span class="DecNumber">0x02'u8</span><span class="Other">,</span> <span class="DecNumber">0x04'u8</span><span class="Other">]</span></pre></dt>
+<dt><pre><a href="rsa.html#RsaOidSha224"><span class="Identifier">RsaOidSha224</span></a> <span class="Other">=</span> <span class="Other">[</span><span class="DecNumber">9'u</span><span class="Other">,</span> <span class="DecNumber">96'u</span><span class="Other">,</span> <span class="DecNumber">134'u</span><span class="Other">,</span> <span class="DecNumber">72'u</span><span class="Other">,</span> <span class="DecNumber">1'u</span><span class="Other">,</span> <span class="DecNumber">101'u</span><span class="Other">,</span> <span class="DecNumber">3'u</span><span class="Other">,</span> <span class="DecNumber">4'u</span><span class="Other">,</span> <span class="DecNumber">2'u</span><span class="Other">,</span> <span class="DecNumber">4'u</span><span class="Other">]</span></pre></dt>
 <dd>
 
 RSA PKCS#1.5 SHA-224 hash object identifier.
@@ -583,8 +578,7 @@ class="link-seesrc" target="_blank">Source</a>
 </dd>
 </div>
 <div id="RsaOidSha256" class="tohide">
-<dt><pre><a href="rsa.html#RsaOidSha256"><span class="Identifier">RsaOidSha256</span></a> <span class="Other">=</span> <span class="Other">[</span><span class="DecNumber">0x09'u8</span><span class="Other">,</span> <span class="DecNumber">0x60'u8</span><span class="Other">,</span> <span class="DecNumber">0x86'u8</span><span class="Other">,</span> <span class="DecNumber">0x48'u8</span><span class="Other">,</span> <span class="DecNumber">0x01'u8</span><span class="Other">,</span> <span class="DecNumber">0x65'u8</span><span class="Other">,</span> <span class="DecNumber">0x03'u8</span><span class="Other">,</span>
-                <span class="DecNumber">0x04'u8</span><span class="Other">,</span> <span class="DecNumber">0x02'u8</span><span class="Other">,</span> <span class="DecNumber">0x01'u8</span><span class="Other">]</span></pre></dt>
+<dt><pre><a href="rsa.html#RsaOidSha256"><span class="Identifier">RsaOidSha256</span></a> <span class="Other">=</span> <span class="Other">[</span><span class="DecNumber">9'u</span><span class="Other">,</span> <span class="DecNumber">96'u</span><span class="Other">,</span> <span class="DecNumber">134'u</span><span class="Other">,</span> <span class="DecNumber">72'u</span><span class="Other">,</span> <span class="DecNumber">1'u</span><span class="Other">,</span> <span class="DecNumber">101'u</span><span class="Other">,</span> <span class="DecNumber">3'u</span><span class="Other">,</span> <span class="DecNumber">4'u</span><span class="Other">,</span> <span class="DecNumber">2'u</span><span class="Other">,</span> <span class="DecNumber">1'u</span><span class="Other">]</span></pre></dt>
 <dd>
 
 RSA PKCS#1.5 SHA-256 hash object identifier.
@@ -596,8 +590,7 @@ class="link-seesrc" target="_blank">Source</a>
 </dd>
 </div>
 <div id="RsaOidSha384" class="tohide">
-<dt><pre><a href="rsa.html#RsaOidSha384"><span class="Identifier">RsaOidSha384</span></a> <span class="Other">=</span> <span class="Other">[</span><span class="DecNumber">0x09'u8</span><span class="Other">,</span> <span class="DecNumber">0x60'u8</span><span class="Other">,</span> <span class="DecNumber">0x86'u8</span><span class="Other">,</span> <span class="DecNumber">0x48'u8</span><span class="Other">,</span> <span class="DecNumber">0x01'u8</span><span class="Other">,</span> <span class="DecNumber">0x65'u8</span><span class="Other">,</span> <span class="DecNumber">0x03'u8</span><span class="Other">,</span>
-                <span class="DecNumber">0x04'u8</span><span class="Other">,</span> <span class="DecNumber">0x02'u8</span><span class="Other">,</span> <span class="DecNumber">0x02'u8</span><span class="Other">]</span></pre></dt>
+<dt><pre><a href="rsa.html#RsaOidSha384"><span class="Identifier">RsaOidSha384</span></a> <span class="Other">=</span> <span class="Other">[</span><span class="DecNumber">9'u</span><span class="Other">,</span> <span class="DecNumber">96'u</span><span class="Other">,</span> <span class="DecNumber">134'u</span><span class="Other">,</span> <span class="DecNumber">72'u</span><span class="Other">,</span> <span class="DecNumber">1'u</span><span class="Other">,</span> <span class="DecNumber">101'u</span><span class="Other">,</span> <span class="DecNumber">3'u</span><span class="Other">,</span> <span class="DecNumber">4'u</span><span class="Other">,</span> <span class="DecNumber">2'u</span><span class="Other">,</span> <span class="DecNumber">2'u</span><span class="Other">]</span></pre></dt>
 <dd>
 
 RSA PKCS#1.5 SHA-384 hash object identifier.
@@ -609,8 +602,7 @@ class="link-seesrc" target="_blank">Source</a>
 </dd>
 </div>
 <div id="RsaOidSha512" class="tohide">
-<dt><pre><a href="rsa.html#RsaOidSha512"><span class="Identifier">RsaOidSha512</span></a> <span class="Other">=</span> <span class="Other">[</span><span class="DecNumber">0x09'u8</span><span class="Other">,</span> <span class="DecNumber">0x60'u8</span><span class="Other">,</span> <span class="DecNumber">0x86'u8</span><span class="Other">,</span> <span class="DecNumber">0x48'u8</span><span class="Other">,</span> <span class="DecNumber">0x01'u8</span><span class="Other">,</span> <span class="DecNumber">0x65'u8</span><span class="Other">,</span> <span class="DecNumber">0x03'u8</span><span class="Other">,</span>
-                <span class="DecNumber">0x04'u8</span><span class="Other">,</span> <span class="DecNumber">0x02'u8</span><span class="Other">,</span> <span class="DecNumber">0x03'u8</span><span class="Other">]</span></pre></dt>
+<dt><pre><a href="rsa.html#RsaOidSha512"><span class="Identifier">RsaOidSha512</span></a> <span class="Other">=</span> <span class="Other">[</span><span class="DecNumber">9'u</span><span class="Other">,</span> <span class="DecNumber">96'u</span><span class="Other">,</span> <span class="DecNumber">134'u</span><span class="Other">,</span> <span class="DecNumber">72'u</span><span class="Other">,</span> <span class="DecNumber">1'u</span><span class="Other">,</span> <span class="DecNumber">101'u</span><span class="Other">,</span> <span class="DecNumber">3'u</span><span class="Other">,</span> <span class="DecNumber">4'u</span><span class="Other">,</span> <span class="DecNumber">2'u</span><span class="Other">,</span> <span class="DecNumber">3'u</span><span class="Other">]</span></pre></dt>
 <dd>
 
 RSA PKCS#1.5 SHA-512 hash object identifier.
@@ -899,7 +891,7 @@ class="link-seesrc" target="_blank">Source</a>
 </dd>
 </div>
 <div id="random,typedesc[T],HmacDrbgContext" class="tohide">
-<dt><pre><span class="Keyword">proc</span> <a href="#random%2Ctypedesc%5BT%5D%2CHmacDrbgContext"><span class="Identifier">random</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">:</span> <a href="rsa.html#RsaKP"><span class="Identifier">RsaKP</span></a><span class="Other">]</span><span class="Other">(</span><span class="Identifier">t</span><span class="Other">:</span> <span class="Identifier">typedesc</span><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">rng</span><span class="Other">:</span> <span class="Keyword">var</span> <span class="Identifier">BrHmacDrbgContext</span><span class="Other">;</span>
+<dt><pre><span class="Keyword">proc</span> <a href="#random%2Ctypedesc%5BT%5D%2CHmacDrbgContext"><span class="Identifier">random</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">:</span> <a href="rsa.html#RsaKP"><span class="Identifier">RsaKP</span></a><span class="Other">]</span><span class="Other">(</span><span class="Identifier">t</span><span class="Other">:</span> <span class="Identifier">typedesc</span><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">rng</span><span class="Other">:</span> <span class="Keyword">var</span> <span class="Identifier">HmacDrbgContext</span><span class="Other">;</span>
                       <span class="Identifier">bits</span> <span class="Other">=</span> <span class="Identifier">DefaultKeySize</span><span class="Other">;</span> <span class="Identifier">pubexp</span> <span class="Other">=</span> <span class="Identifier">DefaultPublicExponent</span><span class="Other">)</span><span class="Other">:</span> <a href="rsa.html#RsaResult"><span class="Identifier">RsaResult</span></a><span class="Other">[</span>
     <span class="Identifier">T</span><span class="Other">]</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Identifier">Defect</span></span>.}</pre></dt>
 <dd>
@@ -1032,7 +1024,7 @@ class="link-seesrc" target="_blank">Source</a>
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br/>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2022-06-10 11:47:38 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2022-07-01 11:11:38 UTC</small>
       </div>
     </div>
   </div>

@@ -357,11 +357,9 @@ window.addEventListener("DOMContentLoaded", main2);
   </ul>
   <ul class="simple nested-toc-section">ephemeral
       <li><a class="reference" href="#ephemeral%2CEcCurveKind%2CHmacDrbgContext"
-    title="ephemeral(scheme: ECDHEScheme; rng: var BrHmacDrbgContext): CryptoResult[
-    EcKeyPair]">ephemeral(scheme: ECDHEScheme; rng: var BrHmacDrbgContext): CryptoResult[
-    EcKeyPair]</a></li>
+    title="ephemeral(scheme: ECDHEScheme; rng: var HmacDrbgContext): CryptoResult[EcKeyPair]">ephemeral(scheme: ECDHEScheme; rng: var HmacDrbgContext): CryptoResult[EcKeyPair]</a></li>
   <li><a class="reference" href="#ephemeral%2Cstring%2CHmacDrbgContext"
-    title="ephemeral(scheme: string; rng: var BrHmacDrbgContext): CryptoResult[EcKeyPair]">ephemeral(scheme: string; rng: var BrHmacDrbgContext): CryptoResult[EcKeyPair]</a></li>
+    title="ephemeral(scheme: string; rng: var HmacDrbgContext): CryptoResult[EcKeyPair]">ephemeral(scheme: string; rng: var HmacDrbgContext): CryptoResult[EcKeyPair]</a></li>
 
   </ul>
   <ul class="simple nested-toc-section">getBytes
@@ -455,25 +453,25 @@ window.addEventListener("DOMContentLoaded", main2);
   </ul>
   <ul class="simple nested-toc-section">newRng
       <li><a class="reference" href="#newRng"
-    title="newRng(): ref BrHmacDrbgContext">newRng(): ref BrHmacDrbgContext</a></li>
+    title="newRng(): ref HmacDrbgContext">newRng(): ref HmacDrbgContext</a></li>
 
   </ul>
   <ul class="simple nested-toc-section">random
       <li><a class="reference" href="#random%2Ctypedesc%5BKeyPair%5D%2CHmacDrbgContext"
-    title="random(T: typedesc[KeyPair]; rng: var BrHmacDrbgContext;
-       bits = RsaDefaultKeySize): CryptoResult[KeyPair]">random(T: typedesc[KeyPair]; rng: var BrHmacDrbgContext;
-       bits = RsaDefaultKeySize): CryptoResult[KeyPair]</a></li>
+    title="random(T: typedesc[KeyPair]; rng: var HmacDrbgContext; bits = RsaDefaultKeySize): CryptoResult[
+    KeyPair]">random(T: typedesc[KeyPair]; rng: var HmacDrbgContext; bits = RsaDefaultKeySize): CryptoResult[
+    KeyPair]</a></li>
   <li><a class="reference" href="#random%2Ctypedesc%5BKeyPair%5D%2CPKScheme%2CHmacDrbgContext"
-    title="random(T: typedesc[KeyPair]; scheme: PKScheme; rng: var BrHmacDrbgContext;
-       bits = RsaDefaultKeySize): CryptoResult[KeyPair]">random(T: typedesc[KeyPair]; scheme: PKScheme; rng: var BrHmacDrbgContext;
+    title="random(T: typedesc[KeyPair]; scheme: PKScheme; rng: var HmacDrbgContext;
+       bits = RsaDefaultKeySize): CryptoResult[KeyPair]">random(T: typedesc[KeyPair]; scheme: PKScheme; rng: var HmacDrbgContext;
        bits = RsaDefaultKeySize): CryptoResult[KeyPair]</a></li>
   <li><a class="reference" href="#random%2Ctypedesc%5BPrivateKey%5D%2CHmacDrbgContext"
-    title="random(T: typedesc[PrivateKey]; rng: var BrHmacDrbgContext;
-       bits = RsaDefaultKeySize): CryptoResult[PrivateKey]">random(T: typedesc[PrivateKey]; rng: var BrHmacDrbgContext;
+    title="random(T: typedesc[PrivateKey]; rng: var HmacDrbgContext;
+       bits = RsaDefaultKeySize): CryptoResult[PrivateKey]">random(T: typedesc[PrivateKey]; rng: var HmacDrbgContext;
        bits = RsaDefaultKeySize): CryptoResult[PrivateKey]</a></li>
   <li><a class="reference" href="#random%2Ctypedesc%5BPrivateKey%5D%2CPKScheme%2CHmacDrbgContext"
-    title="random(T: typedesc[PrivateKey]; scheme: PKScheme; rng: var BrHmacDrbgContext;
-       bits = RsaDefaultKeySize): CryptoResult[PrivateKey]">random(T: typedesc[PrivateKey]; scheme: PKScheme; rng: var BrHmacDrbgContext;
+    title="random(T: typedesc[PrivateKey]; scheme: PKScheme; rng: var HmacDrbgContext;
+       bits = RsaDefaultKeySize): CryptoResult[PrivateKey]">random(T: typedesc[PrivateKey]; scheme: PKScheme; rng: var HmacDrbgContext;
        bits = RsaDefaultKeySize): CryptoResult[PrivateKey]</a></li>
 
   </ul>
@@ -489,7 +487,7 @@ window.addEventListener("DOMContentLoaded", main2);
   </ul>
   <ul class="simple nested-toc-section">shuffle
       <li><a class="reference" href="#shuffle%2Cref.HmacDrbgContext%2CopenArray%5BT%5D"
-    title="shuffle[T](rng: ref BrHmacDrbgContext; x: var openArray[T])">shuffle[T](rng: ref BrHmacDrbgContext; x: var openArray[T])</a></li>
+    title="shuffle[T](rng: ref HmacDrbgContext; x: var openArray[T])">shuffle[T](rng: ref HmacDrbgContext; x: var openArray[T])</a></li>
 
   </ul>
   <ul class="simple nested-toc-section">sign
@@ -867,9 +865,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 Get string representation of private/public key <tt class="docutils literal"><span class="pre">key</span></tt>.
 &nbsp;&nbsp;<a
-href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L661"
+href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L663"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L661" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L663" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -879,9 +877,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 Get string representation of signature <tt class="docutils literal"><span class="pre">sig</span></tt>.
 &nbsp;&nbsp;<a
-href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L709"
+href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L711"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L709" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L711" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -891,9 +889,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 Return <tt class="docutils literal"><span class="pre">true</span></tt> if two private keys <tt class="docutils literal"><span class="pre">key1</span></tt> and <tt class="docutils literal"><span class="pre">key2</span></tt> of the same scheme and equal.
 &nbsp;&nbsp;<a
-href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L633"
+href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L635"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L633" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L635" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -903,9 +901,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 Return <tt class="docutils literal"><span class="pre">true</span></tt> if two public keys <tt class="docutils literal"><span class="pre">key1</span></tt> and <tt class="docutils literal"><span class="pre">key2</span></tt> of the same scheme and equal.
 &nbsp;&nbsp;<a
-href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L605"
+href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L607"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L605" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L607" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -916,9 +914,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 Create SecIO exchange message using ephemeral public key <tt class="docutils literal"><span class="pre">epubkey</span></tt> and signature of proposal blocks <tt class="docutils literal"><span class="pre">signature</span></tt>.
 &nbsp;&nbsp;<a
-href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L978"
+href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L980"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L978" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L980" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -930,9 +928,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 Create SecIO proposal message using random <tt class="docutils literal"><span class="pre">nonce</span></tt>, local public key <tt class="docutils literal"><span class="pre">pubkey</span></tt>, comma-delimieted list of supported exchange schemes <tt class="docutils literal"><span class="pre">exchanges</span></tt>, comma-delimeted list of supported ciphers <tt class="docutils literal"><span class="pre">ciphers</span></tt> and comma-delimeted list of supported hashes <tt class="docutils literal"><span class="pre">hashes</span></tt>.
 &nbsp;&nbsp;<a
-href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L944"
+href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L946"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L944" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L946" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -945,9 +943,9 @@ class="link-seesrc" target="_blank">Source</a>
 <p>Procedure returns <tt class="docutils literal"><span class="pre">true</span></tt> on success and <tt class="docutils literal"><span class="pre">false</span></tt> on error.</p>
 
 &nbsp;&nbsp;<a
-href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L987"
+href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L989"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L987" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L989" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -961,37 +959,37 @@ class="link-seesrc" target="_blank">Source</a>
 <p>Procedure returns <tt class="docutils literal"><span class="pre">true</span></tt> on success and <tt class="docutils literal"><span class="pre">false</span></tt> on error.</p>
 
 &nbsp;&nbsp;<a
-href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L959"
+href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L961"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L959" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L961" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
 <div id="ephemeral,EcCurveKind,HmacDrbgContext" class="tohide">
-<dt><pre><span class="Keyword">proc</span> <a href="#ephemeral%2CEcCurveKind%2CHmacDrbgContext"><span class="Identifier">ephemeral</span></a><span class="Other">(</span><span class="Identifier">scheme</span><span class="Other">:</span> <a href="crypto.html#ECDHEScheme"><span class="Identifier">ECDHEScheme</span></a><span class="Other">;</span> <span class="Identifier">rng</span><span class="Other">:</span> <span class="Keyword">var</span> <span class="Identifier">BrHmacDrbgContext</span><span class="Other">)</span><span class="Other">:</span> <a href="crypto.html#CryptoResult"><span class="Identifier">CryptoResult</span></a><span class="Other">[</span>
+<dt><pre><span class="Keyword">proc</span> <a href="#ephemeral%2CEcCurveKind%2CHmacDrbgContext"><span class="Identifier">ephemeral</span></a><span class="Other">(</span><span class="Identifier">scheme</span><span class="Other">:</span> <a href="crypto.html#ECDHEScheme"><span class="Identifier">ECDHEScheme</span></a><span class="Other">;</span> <span class="Identifier">rng</span><span class="Other">:</span> <span class="Keyword">var</span> <span class="Identifier">HmacDrbgContext</span><span class="Other">)</span><span class="Other">:</span> <a href="crypto.html#CryptoResult"><span class="Identifier">CryptoResult</span></a><span class="Other">[</span>
     <a href="ecnist.html#EcKeyPair"><span class="Identifier">EcKeyPair</span></a><span class="Other">]</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Defect</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
 <dd>
 
 Generate ephemeral keys used to perform ECDHE.
 &nbsp;&nbsp;<a
-href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L871"
+href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L873"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L871" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L873" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
 <div id="ephemeral,string,HmacDrbgContext" class="tohide">
-<dt><pre><span class="Keyword">proc</span> <a href="#ephemeral%2Cstring%2CHmacDrbgContext"><span class="Identifier">ephemeral</span></a><span class="Other">(</span><span class="Identifier">scheme</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">rng</span><span class="Other">:</span> <span class="Keyword">var</span> <span class="Identifier">BrHmacDrbgContext</span><span class="Other">)</span><span class="Other">:</span> <a href="crypto.html#CryptoResult"><span class="Identifier">CryptoResult</span></a><span class="Other">[</span>
-    <a href="ecnist.html#EcKeyPair"><span class="Identifier">EcKeyPair</span></a><span class="Other">]</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Defect</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+<dt><pre><span class="Keyword">proc</span> <a href="#ephemeral%2Cstring%2CHmacDrbgContext"><span class="Identifier">ephemeral</span></a><span class="Other">(</span><span class="Identifier">scheme</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">rng</span><span class="Other">:</span> <span class="Keyword">var</span> <span class="Identifier">HmacDrbgContext</span><span class="Other">)</span><span class="Other">:</span> <a href="crypto.html#CryptoResult"><span class="Identifier">CryptoResult</span></a><span class="Other">[</span><a href="ecnist.html#EcKeyPair"><span class="Identifier">EcKeyPair</span></a><span class="Other">]</span> {.
+    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Defect</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
 <dd>
 
 <p>Generate ephemeral keys used to perform ECDHE using string encoding.</p>
 <p>Currently supported encoding strings are P-256, P-384, P-521, if encoding string is not supported P-521 key will be generated.</p>
 
 &nbsp;&nbsp;<a
-href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L884"
+href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L886"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L884" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L886" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -1002,9 +1000,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 Return private key <tt class="docutils literal"><span class="pre">key</span></tt> in binary form (using libp2p's protobuf serialization).
 &nbsp;&nbsp;<a
-href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L434"
+href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L436"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L434" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L436" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -1015,9 +1013,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 Return public key <tt class="docutils literal"><span class="pre">key</span></tt> in binary form (using libp2p's protobuf serialization).
 &nbsp;&nbsp;<a
-href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L443"
+href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L445"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L443" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L445" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -1027,9 +1025,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 Return signature <tt class="docutils literal"><span class="pre">sig</span></tt> in binary form.
 &nbsp;&nbsp;<a
-href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L452"
+href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L454"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L452" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L454" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -1042,9 +1040,9 @@ class="link-seesrc" target="_blank">Source</a>
 <p>On success deserialized signature will be stored in <tt class="docutils literal"><span class="pre">value</span></tt>.</p>
 
 &nbsp;&nbsp;<a
-href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L1042"
+href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L1044"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L1042" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L1044" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -1057,9 +1055,9 @@ class="link-seesrc" target="_blank">Source</a>
 <p>On success deserialized key will be stored in <tt class="docutils literal"><span class="pre">value</span></tt>.</p>
 
 &nbsp;&nbsp;<a
-href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L1024"
+href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L1026"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L1024" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L1026" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -1071,9 +1069,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 Compare values and calculate <tt class="docutils literal"><span class="pre"><span class="Identifier">order</span></span></tt> parameter.
 &nbsp;&nbsp;<a
-href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L899"
+href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L901"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L899" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L901" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -1084,9 +1082,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 Get public key from corresponding private key <tt class="docutils literal"><span class="pre">key</span></tt>.
 &nbsp;&nbsp;<a
-href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L317"
+href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L319"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L317" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L319" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -1097,9 +1095,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 Return private key <tt class="docutils literal"><span class="pre">key</span></tt> in binary form (using scheme's own serialization).
 &nbsp;&nbsp;<a
-href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L373"
+href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L375"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L373" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L375" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -1112,9 +1110,9 @@ class="link-seesrc" target="_blank">Source</a>
 <p>Returns <tt class="docutils literal"><span class="pre">true</span></tt> on success.</p>
 
 &nbsp;&nbsp;<a
-href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L518"
+href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L520"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L518" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L520" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -1126,9 +1124,9 @@ class="link-seesrc" target="_blank">Source</a>
 <p>Returns <tt class="docutils literal"><span class="pre">true</span></tt> on success.</p>
 
 &nbsp;&nbsp;<a
-href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L533"
+href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L535"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L533" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L535" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -1139,9 +1137,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 Create new private key from libp2p's protobuf serialized binary form.
 &nbsp;&nbsp;<a
-href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L540"
+href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L542"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L540" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L542" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -1152,92 +1150,14 @@ class="link-seesrc" target="_blank">Source</a>
 
 Create new private key from libp2p's protobuf serialized hexadecimal string form.
 &nbsp;&nbsp;<a
-href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L567"
+href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L569"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L567" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L569" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
 <div id="init,typedesc[PrivateKey],_2" class="tohide">
 <dt><pre><span class="Keyword">proc</span> <a href="#init%2Ctypedesc%5BPrivateKey%5D%2C_2"><span class="Identifier">init</span></a><span class="Other">(</span><span class="Identifier">t</span><span class="Other">:</span> <span class="Identifier">typedesc</span><span class="Other">[</span><a href="crypto.html#PrivateKey"><span class="Identifier">PrivateKey</span></a><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">key</span><span class="Other">:</span> <span class="Identifier">ecnist</span><span class="Other">.</span><span class="Identifier">EcPrivateKey</span><span class="Other">)</span><span class="Other">:</span> <a href="crypto.html#PrivateKey"><span class="Identifier">PrivateKey</span></a> {.
-    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Defect</span><span class="Other">]</span></span>.}</pre></dt>
-<dd>
-
-
-&nbsp;&nbsp;<a
-href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L591"
-class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L591" class="link-seesrc" target="_blank" >Edit</a>
-
-</dd>
-</div>
-<div id="init,typedesc[PrivateKey],EdPrivateKey" class="tohide">
-<dt><pre><span class="Keyword">proc</span> <a href="#init%2Ctypedesc%5BPrivateKey%5D%2CEdPrivateKey"><span class="Identifier">init</span></a><span class="Other">(</span><span class="Identifier">t</span><span class="Other">:</span> <span class="Identifier">typedesc</span><span class="Other">[</span><a href="crypto.html#PrivateKey"><span class="Identifier">PrivateKey</span></a><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">key</span><span class="Other">:</span> <a href="ed25519/ed25519.html#EdPrivateKey"><span class="Identifier">EdPrivateKey</span></a><span class="Other">)</span><span class="Other">:</span> <a href="crypto.html#PrivateKey"><span class="Identifier">PrivateKey</span></a> {.
-    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Defect</span><span class="Other">]</span></span>.}</pre></dt>
-<dd>
-
-
-&nbsp;&nbsp;<a
-href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L579"
-class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L579" class="link-seesrc" target="_blank" >Edit</a>
-
-</dd>
-</div>
-<div id="init,typedesc[PrivateKey]," class="tohide">
-<dt><pre><span class="Keyword">proc</span> <a href="#init%2Ctypedesc%5BPrivateKey%5D%2C"><span class="Identifier">init</span></a><span class="Other">(</span><span class="Identifier">t</span><span class="Other">:</span> <span class="Identifier">typedesc</span><span class="Other">[</span><a href="crypto.html#PrivateKey"><span class="Identifier">PrivateKey</span></a><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">key</span><span class="Other">:</span> <span class="Identifier">rsa</span><span class="Other">.</span><span class="Identifier">RsaPrivateKey</span><span class="Other">)</span><span class="Other">:</span> <a href="crypto.html#PrivateKey"><span class="Identifier">PrivateKey</span></a> {.
-    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Defect</span><span class="Other">]</span></span>.}</pre></dt>
-<dd>
-
-
-&nbsp;&nbsp;<a
-href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L573"
-class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L573" class="link-seesrc" target="_blank" >Edit</a>
-
-</dd>
-</div>
-<div id="init,typedesc[PrivateKey],SkPrivateKey" class="tohide">
-<dt><pre><span class="Keyword">proc</span> <a href="#init%2Ctypedesc%5BPrivateKey%5D%2CSkPrivateKey"><span class="Identifier">init</span></a><span class="Other">(</span><span class="Identifier">t</span><span class="Other">:</span> <span class="Identifier">typedesc</span><span class="Other">[</span><a href="crypto.html#PrivateKey"><span class="Identifier">PrivateKey</span></a><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">key</span><span class="Other">:</span> <a href="secp.html#SkPrivateKey"><span class="Identifier">SkPrivateKey</span></a><span class="Other">)</span><span class="Other">:</span> <a href="crypto.html#PrivateKey"><span class="Identifier">PrivateKey</span></a> {.
-    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Defect</span><span class="Other">]</span></span>.}</pre></dt>
-<dd>
-
-
-&nbsp;&nbsp;<a
-href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L585"
-class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L585" class="link-seesrc" target="_blank" >Edit</a>
-
-</dd>
-</div>
-<div id="init,typedesc[PublicKey],openArray[byte]" class="tohide">
-<dt><pre><span class="Keyword">proc</span> <a href="#init%2Ctypedesc%5BPublicKey%5D%2CopenArray%5Bbyte%5D"><span class="Identifier">init</span></a><span class="Other">(</span><span class="Identifier">t</span><span class="Other">:</span> <span class="Identifier">typedesc</span><span class="Other">[</span><a href="crypto.html#PublicKey"><span class="Identifier">PublicKey</span></a><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">data</span><span class="Other">:</span> <span class="Identifier">openArray</span><span class="Other">[</span><span class="Identifier">byte</span><span class="Other">]</span><span class="Other">)</span><span class="Other">:</span> <a href="crypto.html#CryptoResult"><span class="Identifier">CryptoResult</span></a><span class="Other">[</span><a href="crypto.html#PublicKey"><span class="Identifier">PublicKey</span></a><span class="Other">]</span> {.
-    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Defect</span><span class="Other">]</span></span>.}</pre></dt>
-<dd>
-
-Create new public key from libp2p's protobuf serialized binary form.
-&nbsp;&nbsp;<a
-href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L549"
-class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L549" class="link-seesrc" target="_blank" >Edit</a>
-
-</dd>
-</div>
-<div id="init,typedesc[PublicKey],string" class="tohide">
-<dt><pre><span class="Keyword">proc</span> <a href="#init%2Ctypedesc%5BPublicKey%5D%2Cstring"><span class="Identifier">init</span></a><span class="Other">(</span><span class="Identifier">t</span><span class="Other">:</span> <span class="Identifier">typedesc</span><span class="Other">[</span><a href="crypto.html#PublicKey"><span class="Identifier">PublicKey</span></a><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">data</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">)</span><span class="Other">:</span> <a href="crypto.html#CryptoResult"><span class="Identifier">CryptoResult</span></a><span class="Other">[</span><a href="crypto.html#PublicKey"><span class="Identifier">PublicKey</span></a><span class="Other">]</span> {.
-    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Defect</span><span class="Other">]</span></span>.}</pre></dt>
-<dd>
-
-Create new public key from libp2p's protobuf serialized hexadecimal string form.
-&nbsp;&nbsp;<a
-href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L596"
-class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L596" class="link-seesrc" target="_blank" >Edit</a>
-
-</dd>
-</div>
-<div id="init,typedesc[PublicKey],_2" class="tohide">
-<dt><pre><span class="Keyword">proc</span> <a href="#init%2Ctypedesc%5BPublicKey%5D%2C_2"><span class="Identifier">init</span></a><span class="Other">(</span><span class="Identifier">t</span><span class="Other">:</span> <span class="Identifier">typedesc</span><span class="Other">[</span><a href="crypto.html#PublicKey"><span class="Identifier">PublicKey</span></a><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">key</span><span class="Other">:</span> <span class="Identifier">ecnist</span><span class="Other">.</span><span class="Identifier">EcPublicKey</span><span class="Other">)</span><span class="Other">:</span> <a href="crypto.html#PublicKey"><span class="Identifier">PublicKey</span></a> {.
     <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Defect</span><span class="Other">]</span></span>.}</pre></dt>
 <dd>
 
@@ -1249,8 +1169,8 @@ class="link-seesrc" target="_blank">Source</a>
 
 </dd>
 </div>
-<div id="init,typedesc[PublicKey],EdPublicKey" class="tohide">
-<dt><pre><span class="Keyword">proc</span> <a href="#init%2Ctypedesc%5BPublicKey%5D%2CEdPublicKey"><span class="Identifier">init</span></a><span class="Other">(</span><span class="Identifier">t</span><span class="Other">:</span> <span class="Identifier">typedesc</span><span class="Other">[</span><a href="crypto.html#PublicKey"><span class="Identifier">PublicKey</span></a><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">key</span><span class="Other">:</span> <a href="ed25519/ed25519.html#EdPublicKey"><span class="Identifier">EdPublicKey</span></a><span class="Other">)</span><span class="Other">:</span> <a href="crypto.html#PublicKey"><span class="Identifier">PublicKey</span></a> {.
+<div id="init,typedesc[PrivateKey],EdPrivateKey" class="tohide">
+<dt><pre><span class="Keyword">proc</span> <a href="#init%2Ctypedesc%5BPrivateKey%5D%2CEdPrivateKey"><span class="Identifier">init</span></a><span class="Other">(</span><span class="Identifier">t</span><span class="Other">:</span> <span class="Identifier">typedesc</span><span class="Other">[</span><a href="crypto.html#PrivateKey"><span class="Identifier">PrivateKey</span></a><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">key</span><span class="Other">:</span> <a href="ed25519/ed25519.html#EdPrivateKey"><span class="Identifier">EdPrivateKey</span></a><span class="Other">)</span><span class="Other">:</span> <a href="crypto.html#PrivateKey"><span class="Identifier">PrivateKey</span></a> {.
     <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Defect</span><span class="Other">]</span></span>.}</pre></dt>
 <dd>
 
@@ -1262,8 +1182,8 @@ class="link-seesrc" target="_blank">Source</a>
 
 </dd>
 </div>
-<div id="init,typedesc[PublicKey]," class="tohide">
-<dt><pre><span class="Keyword">proc</span> <a href="#init%2Ctypedesc%5BPublicKey%5D%2C"><span class="Identifier">init</span></a><span class="Other">(</span><span class="Identifier">t</span><span class="Other">:</span> <span class="Identifier">typedesc</span><span class="Other">[</span><a href="crypto.html#PublicKey"><span class="Identifier">PublicKey</span></a><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">key</span><span class="Other">:</span> <span class="Identifier">rsa</span><span class="Other">.</span><span class="Identifier">RsaPublicKey</span><span class="Other">)</span><span class="Other">:</span> <a href="crypto.html#PublicKey"><span class="Identifier">PublicKey</span></a> {.
+<div id="init,typedesc[PrivateKey]," class="tohide">
+<dt><pre><span class="Keyword">proc</span> <a href="#init%2Ctypedesc%5BPrivateKey%5D%2C"><span class="Identifier">init</span></a><span class="Other">(</span><span class="Identifier">t</span><span class="Other">:</span> <span class="Identifier">typedesc</span><span class="Other">[</span><a href="crypto.html#PrivateKey"><span class="Identifier">PrivateKey</span></a><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">key</span><span class="Other">:</span> <span class="Identifier">rsa</span><span class="Other">.</span><span class="Identifier">RsaPrivateKey</span><span class="Other">)</span><span class="Other">:</span> <a href="crypto.html#PrivateKey"><span class="Identifier">PrivateKey</span></a> {.
     <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Defect</span><span class="Other">]</span></span>.}</pre></dt>
 <dd>
 
@@ -1275,8 +1195,8 @@ class="link-seesrc" target="_blank">Source</a>
 
 </dd>
 </div>
-<div id="init,typedesc[PublicKey],SkPublicKey" class="tohide">
-<dt><pre><span class="Keyword">proc</span> <a href="#init%2Ctypedesc%5BPublicKey%5D%2CSkPublicKey"><span class="Identifier">init</span></a><span class="Other">(</span><span class="Identifier">t</span><span class="Other">:</span> <span class="Identifier">typedesc</span><span class="Other">[</span><a href="crypto.html#PublicKey"><span class="Identifier">PublicKey</span></a><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">key</span><span class="Other">:</span> <a href="secp.html#SkPublicKey"><span class="Identifier">SkPublicKey</span></a><span class="Other">)</span><span class="Other">:</span> <a href="crypto.html#PublicKey"><span class="Identifier">PublicKey</span></a> {.
+<div id="init,typedesc[PrivateKey],SkPrivateKey" class="tohide">
+<dt><pre><span class="Keyword">proc</span> <a href="#init%2Ctypedesc%5BPrivateKey%5D%2CSkPrivateKey"><span class="Identifier">init</span></a><span class="Other">(</span><span class="Identifier">t</span><span class="Other">:</span> <span class="Identifier">typedesc</span><span class="Other">[</span><a href="crypto.html#PrivateKey"><span class="Identifier">PrivateKey</span></a><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">key</span><span class="Other">:</span> <a href="secp.html#SkPrivateKey"><span class="Identifier">SkPrivateKey</span></a><span class="Other">)</span><span class="Other">:</span> <a href="crypto.html#PrivateKey"><span class="Identifier">PrivateKey</span></a> {.
     <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Defect</span><span class="Other">]</span></span>.}</pre></dt>
 <dd>
 
@@ -1288,6 +1208,84 @@ class="link-seesrc" target="_blank">Source</a>
 
 </dd>
 </div>
+<div id="init,typedesc[PublicKey],openArray[byte]" class="tohide">
+<dt><pre><span class="Keyword">proc</span> <a href="#init%2Ctypedesc%5BPublicKey%5D%2CopenArray%5Bbyte%5D"><span class="Identifier">init</span></a><span class="Other">(</span><span class="Identifier">t</span><span class="Other">:</span> <span class="Identifier">typedesc</span><span class="Other">[</span><a href="crypto.html#PublicKey"><span class="Identifier">PublicKey</span></a><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">data</span><span class="Other">:</span> <span class="Identifier">openArray</span><span class="Other">[</span><span class="Identifier">byte</span><span class="Other">]</span><span class="Other">)</span><span class="Other">:</span> <a href="crypto.html#CryptoResult"><span class="Identifier">CryptoResult</span></a><span class="Other">[</span><a href="crypto.html#PublicKey"><span class="Identifier">PublicKey</span></a><span class="Other">]</span> {.
+    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Defect</span><span class="Other">]</span></span>.}</pre></dt>
+<dd>
+
+Create new public key from libp2p's protobuf serialized binary form.
+&nbsp;&nbsp;<a
+href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L551"
+class="link-seesrc" target="_blank">Source</a>
+&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L551" class="link-seesrc" target="_blank" >Edit</a>
+
+</dd>
+</div>
+<div id="init,typedesc[PublicKey],string" class="tohide">
+<dt><pre><span class="Keyword">proc</span> <a href="#init%2Ctypedesc%5BPublicKey%5D%2Cstring"><span class="Identifier">init</span></a><span class="Other">(</span><span class="Identifier">t</span><span class="Other">:</span> <span class="Identifier">typedesc</span><span class="Other">[</span><a href="crypto.html#PublicKey"><span class="Identifier">PublicKey</span></a><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">data</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">)</span><span class="Other">:</span> <a href="crypto.html#CryptoResult"><span class="Identifier">CryptoResult</span></a><span class="Other">[</span><a href="crypto.html#PublicKey"><span class="Identifier">PublicKey</span></a><span class="Other">]</span> {.
+    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Defect</span><span class="Other">]</span></span>.}</pre></dt>
+<dd>
+
+Create new public key from libp2p's protobuf serialized hexadecimal string form.
+&nbsp;&nbsp;<a
+href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L598"
+class="link-seesrc" target="_blank">Source</a>
+&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L598" class="link-seesrc" target="_blank" >Edit</a>
+
+</dd>
+</div>
+<div id="init,typedesc[PublicKey],_2" class="tohide">
+<dt><pre><span class="Keyword">proc</span> <a href="#init%2Ctypedesc%5BPublicKey%5D%2C_2"><span class="Identifier">init</span></a><span class="Other">(</span><span class="Identifier">t</span><span class="Other">:</span> <span class="Identifier">typedesc</span><span class="Other">[</span><a href="crypto.html#PublicKey"><span class="Identifier">PublicKey</span></a><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">key</span><span class="Other">:</span> <span class="Identifier">ecnist</span><span class="Other">.</span><span class="Identifier">EcPublicKey</span><span class="Other">)</span><span class="Other">:</span> <a href="crypto.html#PublicKey"><span class="Identifier">PublicKey</span></a> {.
+    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Defect</span><span class="Other">]</span></span>.}</pre></dt>
+<dd>
+
+
+&nbsp;&nbsp;<a
+href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L595"
+class="link-seesrc" target="_blank">Source</a>
+&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L595" class="link-seesrc" target="_blank" >Edit</a>
+
+</dd>
+</div>
+<div id="init,typedesc[PublicKey],EdPublicKey" class="tohide">
+<dt><pre><span class="Keyword">proc</span> <a href="#init%2Ctypedesc%5BPublicKey%5D%2CEdPublicKey"><span class="Identifier">init</span></a><span class="Other">(</span><span class="Identifier">t</span><span class="Other">:</span> <span class="Identifier">typedesc</span><span class="Other">[</span><a href="crypto.html#PublicKey"><span class="Identifier">PublicKey</span></a><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">key</span><span class="Other">:</span> <a href="ed25519/ed25519.html#EdPublicKey"><span class="Identifier">EdPublicKey</span></a><span class="Other">)</span><span class="Other">:</span> <a href="crypto.html#PublicKey"><span class="Identifier">PublicKey</span></a> {.
+    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Defect</span><span class="Other">]</span></span>.}</pre></dt>
+<dd>
+
+
+&nbsp;&nbsp;<a
+href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L583"
+class="link-seesrc" target="_blank">Source</a>
+&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L583" class="link-seesrc" target="_blank" >Edit</a>
+
+</dd>
+</div>
+<div id="init,typedesc[PublicKey]," class="tohide">
+<dt><pre><span class="Keyword">proc</span> <a href="#init%2Ctypedesc%5BPublicKey%5D%2C"><span class="Identifier">init</span></a><span class="Other">(</span><span class="Identifier">t</span><span class="Other">:</span> <span class="Identifier">typedesc</span><span class="Other">[</span><a href="crypto.html#PublicKey"><span class="Identifier">PublicKey</span></a><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">key</span><span class="Other">:</span> <span class="Identifier">rsa</span><span class="Other">.</span><span class="Identifier">RsaPublicKey</span><span class="Other">)</span><span class="Other">:</span> <a href="crypto.html#PublicKey"><span class="Identifier">PublicKey</span></a> {.
+    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Defect</span><span class="Other">]</span></span>.}</pre></dt>
+<dd>
+
+
+&nbsp;&nbsp;<a
+href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L577"
+class="link-seesrc" target="_blank">Source</a>
+&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L577" class="link-seesrc" target="_blank" >Edit</a>
+
+</dd>
+</div>
+<div id="init,typedesc[PublicKey],SkPublicKey" class="tohide">
+<dt><pre><span class="Keyword">proc</span> <a href="#init%2Ctypedesc%5BPublicKey%5D%2CSkPublicKey"><span class="Identifier">init</span></a><span class="Other">(</span><span class="Identifier">t</span><span class="Other">:</span> <span class="Identifier">typedesc</span><span class="Other">[</span><a href="crypto.html#PublicKey"><span class="Identifier">PublicKey</span></a><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">key</span><span class="Other">:</span> <a href="secp.html#SkPublicKey"><span class="Identifier">SkPublicKey</span></a><span class="Other">)</span><span class="Other">:</span> <a href="crypto.html#PublicKey"><span class="Identifier">PublicKey</span></a> {.
+    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Defect</span><span class="Other">]</span></span>.}</pre></dt>
+<dd>
+
+
+&nbsp;&nbsp;<a
+href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L589"
+class="link-seesrc" target="_blank">Source</a>
+&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L589" class="link-seesrc" target="_blank" >Edit</a>
+
+</dd>
+</div>
 <div id="init,typedesc[Signature],openArray[byte]" class="tohide">
 <dt><pre><span class="Keyword">proc</span> <a href="#init%2Ctypedesc%5BSignature%5D%2CopenArray%5Bbyte%5D"><span class="Identifier">init</span></a><span class="Other">(</span><span class="Identifier">t</span><span class="Other">:</span> <span class="Identifier">typedesc</span><span class="Other">[</span><a href="crypto.html#Signature"><span class="Identifier">Signature</span></a><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">data</span><span class="Other">:</span> <span class="Identifier">openArray</span><span class="Other">[</span><span class="Identifier">byte</span><span class="Other">]</span><span class="Other">)</span><span class="Other">:</span> <a href="crypto.html#CryptoResult"><span class="Identifier">CryptoResult</span></a><span class="Other">[</span><a href="crypto.html#Signature"><span class="Identifier">Signature</span></a><span class="Other">]</span> {.
     <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Defect</span><span class="Other">]</span></span>.}</pre></dt>
@@ -1295,9 +1293,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 Create new public key from libp2p's protobuf serialized binary form.
 &nbsp;&nbsp;<a
-href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L558"
+href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L560"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L558" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L560" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -1308,9 +1306,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 Create new signature from serialized hexadecimal string form.
 &nbsp;&nbsp;<a
-href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L601"
+href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L603"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L601" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L603" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -1323,9 +1321,9 @@ class="link-seesrc" target="_blank">Source</a>
 <p>Returns <tt class="docutils literal"><span class="pre">true</span></tt> on success.</p>
 
 &nbsp;&nbsp;<a
-href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L456"
+href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L458"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L456" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L458" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -1338,9 +1336,9 @@ class="link-seesrc" target="_blank">Source</a>
 <p>Returns <tt class="docutils literal"><span class="pre">true</span></tt> on success.</p>
 
 &nbsp;&nbsp;<a
-href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L526"
+href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L528"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L526" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L528" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -1350,9 +1348,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 Get array of bytes with with initial vector.
 &nbsp;&nbsp;<a
-href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L853"
+href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L855"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L853" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L855" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -1363,9 +1361,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 
 &nbsp;&nbsp;<a
-href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L859"
+href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L861"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L859" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L861" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -1376,14 +1374,14 @@ class="link-seesrc" target="_blank">Source</a>
 
 
 &nbsp;&nbsp;<a
-href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L865"
+href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L867"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L865" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L867" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
 <div id="newRng" class="tohide">
-<dt><pre><span class="Keyword">proc</span> <a href="#newRng"><span class="Identifier">newRng</span></a><span class="Other">(</span><span class="Other">)</span><span class="Other">:</span> <span class="Keyword">ref</span> <span class="Identifier">BrHmacDrbgContext</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Defect</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">RootEffect</span><span class="Other">]</span></span>.}</pre></dt>
+<dt><pre><span class="Keyword">proc</span> <a href="#newRng"><span class="Identifier">newRng</span></a><span class="Other">(</span><span class="Other">)</span><span class="Other">:</span> <span class="Keyword">ref</span> <span class="Identifier">HmacDrbgContext</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Defect</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">RootEffect</span><span class="Other">]</span></span>.}</pre></dt>
 <dd>
 
 
@@ -1395,7 +1393,7 @@ class="link-seesrc" target="_blank">Source</a>
 </dd>
 </div>
 <div id="random,typedesc[KeyPair],HmacDrbgContext" class="tohide">
-<dt><pre><span class="Keyword">proc</span> <a href="#random%2Ctypedesc%5BKeyPair%5D%2CHmacDrbgContext"><span class="Identifier">random</span></a><span class="Other">(</span><span class="Identifier">T</span><span class="Other">:</span> <span class="Identifier">typedesc</span><span class="Other">[</span><a href="crypto.html#KeyPair"><span class="Identifier">KeyPair</span></a><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">rng</span><span class="Other">:</span> <span class="Keyword">var</span> <span class="Identifier">BrHmacDrbgContext</span><span class="Other">;</span>
+<dt><pre><span class="Keyword">proc</span> <a href="#random%2Ctypedesc%5BKeyPair%5D%2CHmacDrbgContext"><span class="Identifier">random</span></a><span class="Other">(</span><span class="Identifier">T</span><span class="Other">:</span> <span class="Identifier">typedesc</span><span class="Other">[</span><a href="crypto.html#KeyPair"><span class="Identifier">KeyPair</span></a><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">rng</span><span class="Other">:</span> <span class="Keyword">var</span> <span class="Identifier">HmacDrbgContext</span><span class="Other">;</span>
             <span class="Identifier">bits</span> <span class="Other">=</span> <span class="Identifier">RsaDefaultKeySize</span><span class="Other">)</span><span class="Other">:</span> <a href="crypto.html#CryptoResult"><span class="Identifier">CryptoResult</span></a><span class="Other">[</span><a href="crypto.html#KeyPair"><span class="Identifier">KeyPair</span></a><span class="Other">]</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Defect</span><span class="Other">]</span></span>.}</pre></dt>
 <dd>
 
@@ -1404,14 +1402,14 @@ class="link-seesrc" target="_blank">Source</a>
 <p>So will be used first available (supported) method.</p>
 
 &nbsp;&nbsp;<a
-href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L285"
+href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L287"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L285" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L287" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
 <div id="random,typedesc[KeyPair],PKScheme,HmacDrbgContext" class="tohide">
-<dt><pre><span class="Keyword">proc</span> <a href="#random%2Ctypedesc%5BKeyPair%5D%2CPKScheme%2CHmacDrbgContext"><span class="Identifier">random</span></a><span class="Other">(</span><span class="Identifier">T</span><span class="Other">:</span> <span class="Identifier">typedesc</span><span class="Other">[</span><a href="crypto.html#KeyPair"><span class="Identifier">KeyPair</span></a><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">scheme</span><span class="Other">:</span> <a href="crypto.html#PKScheme"><span class="Identifier">PKScheme</span></a><span class="Other">;</span> <span class="Identifier">rng</span><span class="Other">:</span> <span class="Keyword">var</span> <span class="Identifier">BrHmacDrbgContext</span><span class="Other">;</span>
+<dt><pre><span class="Keyword">proc</span> <a href="#random%2Ctypedesc%5BKeyPair%5D%2CPKScheme%2CHmacDrbgContext"><span class="Identifier">random</span></a><span class="Other">(</span><span class="Identifier">T</span><span class="Other">:</span> <span class="Identifier">typedesc</span><span class="Other">[</span><a href="crypto.html#KeyPair"><span class="Identifier">KeyPair</span></a><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">scheme</span><span class="Other">:</span> <a href="crypto.html#PKScheme"><span class="Identifier">PKScheme</span></a><span class="Other">;</span> <span class="Identifier">rng</span><span class="Other">:</span> <span class="Keyword">var</span> <span class="Identifier">HmacDrbgContext</span><span class="Other">;</span>
             <span class="Identifier">bits</span> <span class="Other">=</span> <span class="Identifier">RsaDefaultKeySize</span><span class="Other">)</span><span class="Other">:</span> <a href="crypto.html#CryptoResult"><span class="Identifier">CryptoResult</span></a><span class="Other">[</span><a href="crypto.html#KeyPair"><span class="Identifier">KeyPair</span></a><span class="Other">]</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Defect</span><span class="Other">]</span></span>.}</pre></dt>
 <dd>
 
@@ -1419,14 +1417,14 @@ class="link-seesrc" target="_blank">Source</a>
 <p><tt class="docutils literal"><span class="pre">bits</span></tt> is number of bits for RSA key, <tt class="docutils literal"><span class="pre">bits</span></tt> value must be in [512, 4096], default value is 2048 bits.</p>
 
 &nbsp;&nbsp;<a
-href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L244"
+href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L246"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L244" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L246" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
 <div id="random,typedesc[PrivateKey],HmacDrbgContext" class="tohide">
-<dt><pre><span class="Keyword">proc</span> <a href="#random%2Ctypedesc%5BPrivateKey%5D%2CHmacDrbgContext"><span class="Identifier">random</span></a><span class="Other">(</span><span class="Identifier">T</span><span class="Other">:</span> <span class="Identifier">typedesc</span><span class="Other">[</span><a href="crypto.html#PrivateKey"><span class="Identifier">PrivateKey</span></a><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">rng</span><span class="Other">:</span> <span class="Keyword">var</span> <span class="Identifier">BrHmacDrbgContext</span><span class="Other">;</span>
+<dt><pre><span class="Keyword">proc</span> <a href="#random%2Ctypedesc%5BPrivateKey%5D%2CHmacDrbgContext"><span class="Identifier">random</span></a><span class="Other">(</span><span class="Identifier">T</span><span class="Other">:</span> <span class="Identifier">typedesc</span><span class="Other">[</span><a href="crypto.html#PrivateKey"><span class="Identifier">PrivateKey</span></a><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">rng</span><span class="Other">:</span> <span class="Keyword">var</span> <span class="Identifier">HmacDrbgContext</span><span class="Other">;</span>
             <span class="Identifier">bits</span> <span class="Other">=</span> <span class="Identifier">RsaDefaultKeySize</span><span class="Other">)</span><span class="Other">:</span> <a href="crypto.html#CryptoResult"><span class="Identifier">CryptoResult</span></a><span class="Other">[</span><a href="crypto.html#PrivateKey"><span class="Identifier">PrivateKey</span></a><span class="Other">]</span> {.
     <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Defect</span><span class="Other">]</span></span>.}</pre></dt>
 <dd>
@@ -1436,25 +1434,25 @@ class="link-seesrc" target="_blank">Source</a>
 <p>So will be used first available (supported) method.</p>
 
 &nbsp;&nbsp;<a
-href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L221"
+href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L223"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L221" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L223" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
 <div id="random,typedesc[PrivateKey],PKScheme,HmacDrbgContext" class="tohide">
-<dt><pre><span class="Keyword">proc</span> <a href="#random%2Ctypedesc%5BPrivateKey%5D%2CPKScheme%2CHmacDrbgContext"><span class="Identifier">random</span></a><span class="Other">(</span><span class="Identifier">T</span><span class="Other">:</span> <span class="Identifier">typedesc</span><span class="Other">[</span><a href="crypto.html#PrivateKey"><span class="Identifier">PrivateKey</span></a><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">scheme</span><span class="Other">:</span> <a href="crypto.html#PKScheme"><span class="Identifier">PKScheme</span></a><span class="Other">;</span>
-            <span class="Identifier">rng</span><span class="Other">:</span> <span class="Keyword">var</span> <span class="Identifier">BrHmacDrbgContext</span><span class="Other">;</span> <span class="Identifier">bits</span> <span class="Other">=</span> <span class="Identifier">RsaDefaultKeySize</span><span class="Other">)</span><span class="Other">:</span> <a href="crypto.html#CryptoResult"><span class="Identifier">CryptoResult</span></a><span class="Other">[</span>
-    <a href="crypto.html#PrivateKey"><span class="Identifier">PrivateKey</span></a><span class="Other">]</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Defect</span><span class="Other">]</span></span>.}</pre></dt>
+<dt><pre><span class="Keyword">proc</span> <a href="#random%2Ctypedesc%5BPrivateKey%5D%2CPKScheme%2CHmacDrbgContext"><span class="Identifier">random</span></a><span class="Other">(</span><span class="Identifier">T</span><span class="Other">:</span> <span class="Identifier">typedesc</span><span class="Other">[</span><a href="crypto.html#PrivateKey"><span class="Identifier">PrivateKey</span></a><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">scheme</span><span class="Other">:</span> <a href="crypto.html#PKScheme"><span class="Identifier">PKScheme</span></a><span class="Other">;</span> <span class="Identifier">rng</span><span class="Other">:</span> <span class="Keyword">var</span> <span class="Identifier">HmacDrbgContext</span><span class="Other">;</span>
+            <span class="Identifier">bits</span> <span class="Other">=</span> <span class="Identifier">RsaDefaultKeySize</span><span class="Other">)</span><span class="Other">:</span> <a href="crypto.html#CryptoResult"><span class="Identifier">CryptoResult</span></a><span class="Other">[</span><a href="crypto.html#PrivateKey"><span class="Identifier">PrivateKey</span></a><span class="Other">]</span> {.
+    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Defect</span><span class="Other">]</span></span>.}</pre></dt>
 <dd>
 
 <p>Generate random private key for scheme <tt class="docutils literal"><span class="pre">scheme</span></tt>.</p>
 <p><tt class="docutils literal"><span class="pre">bits</span></tt> is number of bits for RSA key, <tt class="docutils literal"><span class="pre">bits</span></tt> value must be in [2048, 4096], default value is 3072 bits.</p>
 
 &nbsp;&nbsp;<a
-href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L188"
+href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L190"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L188" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L190" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -1466,9 +1464,9 @@ class="link-seesrc" target="_blank">Source</a>
 <p>Returns empty string if there no algorithms in common.</p>
 
 &nbsp;&nbsp;<a
-href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L924"
+href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L926"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L924" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L926" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -1478,14 +1476,14 @@ class="link-seesrc" target="_blank">Source</a>
 
 Get short string representation of private/public key <tt class="docutils literal"><span class="pre">key</span></tt>.
 &nbsp;&nbsp;<a
-href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L685"
+href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L687"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L685" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L687" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
 <div id="shuffle,ref.HmacDrbgContext,openArray[T]" class="tohide">
-<dt><pre><span class="Keyword">proc</span> <a href="#shuffle%2Cref.HmacDrbgContext%2CopenArray%5BT%5D"><span class="Identifier">shuffle</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span><span class="Other">(</span><span class="Identifier">rng</span><span class="Other">:</span> <span class="Keyword">ref</span> <span class="Identifier">BrHmacDrbgContext</span><span class="Other">;</span> <span class="Identifier">x</span><span class="Other">:</span> <span class="Keyword">var</span> <span class="Identifier">openArray</span><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span><span class="Other">)</span> {.
+<dt><pre><span class="Keyword">proc</span> <a href="#shuffle%2Cref.HmacDrbgContext%2CopenArray%5BT%5D"><span class="Identifier">shuffle</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span><span class="Other">(</span><span class="Identifier">rng</span><span class="Other">:</span> <span class="Keyword">ref</span> <span class="Identifier">HmacDrbgContext</span><span class="Other">;</span> <span class="Identifier">x</span><span class="Other">:</span> <span class="Keyword">var</span> <span class="Identifier">openArray</span><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span><span class="Other">)</span> {.
     <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Defect</span><span class="Other">]</span></span>.}</pre></dt>
 <dd>
 
@@ -1504,9 +1502,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 Sign message <tt class="docutils literal"><span class="pre">data</span></tt> using private key <tt class="docutils literal"><span class="pre">key</span></tt> and return generated signature in raw binary form.
 &nbsp;&nbsp;<a
-href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L713"
+href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L715"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L713" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L715" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -1517,9 +1515,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 Expand shared secret to cryptographic keys.
 &nbsp;&nbsp;<a
-href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L815"
+href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L817"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L815" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L817" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -1532,9 +1530,9 @@ class="link-seesrc" target="_blank">Source</a>
 <p>Returns number of bytes (octets) needed to store private key <tt class="docutils literal"><span class="pre">key</span></tt>.</p>
 
 &nbsp;&nbsp;<a
-href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L398"
+href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L400"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L398" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L400" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -1547,9 +1545,9 @@ class="link-seesrc" target="_blank">Source</a>
 <p>Returns number of bytes (octets) needed to store public key <tt class="docutils literal"><span class="pre">key</span></tt>.</p>
 
 &nbsp;&nbsp;<a
-href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L412"
+href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L414"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L412" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L414" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -1562,9 +1560,9 @@ class="link-seesrc" target="_blank">Source</a>
 <p>Returns number of bytes (octets) needed to store signature <tt class="docutils literal"><span class="pre">sig</span></tt>.</p>
 
 &nbsp;&nbsp;<a
-href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L426"
+href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L428"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L426" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L428" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -1577,9 +1575,9 @@ class="link-seesrc" target="_blank">Source</a>
 <p>Returns number of bytes (octets) needed to store private key <tt class="docutils literal"><span class="pre">key</span></tt>.</p>
 
 &nbsp;&nbsp;<a
-href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L345"
+href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L347"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L345" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L347" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -1590,9 +1588,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 Verify signature <tt class="docutils literal"><span class="pre">sig</span></tt> using message <tt class="docutils literal"><span class="pre">message</span></tt> and public key <tt class="docutils literal"><span class="pre">key</span></tt>. Return <tt class="docutils literal"><span class="pre">true</span></tt> if message signature is valid.
 &nbsp;&nbsp;<a
-href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L748"
+href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L750"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L748" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L750" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -1603,9 +1601,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 
 &nbsp;&nbsp;<a
-href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L1020"
+href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L1022"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L1020" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L1022" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -1616,9 +1614,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 Write PublicKey value <tt class="docutils literal"><span class="pre">pubkey</span></tt> to buffer <tt class="docutils literal"><span class="pre">vb</span></tt>.
 &nbsp;&nbsp;<a
-href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L1000"
+href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L1002"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L1000" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L1002" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -1629,9 +1627,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 Write PrivateKey value <tt class="docutils literal"><span class="pre">seckey</span></tt> to buffer <tt class="docutils literal"><span class="pre">vb</span></tt>.
 &nbsp;&nbsp;<a
-href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L1005"
+href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L1007"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L1005" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L1007" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -1642,9 +1640,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 Write Signature value <tt class="docutils literal"><span class="pre">sig</span></tt> to buffer <tt class="docutils literal"><span class="pre">vb</span></tt>.
 &nbsp;&nbsp;<a
-href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L1010"
+href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L1012"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L1010" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L1012" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -1655,9 +1653,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 
 &nbsp;&nbsp;<a
-href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L1015"
+href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L1017"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L1015" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L1017" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -1672,9 +1670,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 
 &nbsp;&nbsp;<a
-href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L838"
+href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L840"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L838" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L840" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -1684,9 +1682,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 
 &nbsp;&nbsp;<a
-href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L841"
+href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L843"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L841" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L843" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -1696,9 +1694,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 
 &nbsp;&nbsp;<a
-href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L845"
+href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L847"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L845" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L847" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -1708,9 +1706,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 
 &nbsp;&nbsp;<a
-href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L849"
+href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/crypto.nim#L851"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L849" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/crypto.nim#L851" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -1753,7 +1751,7 @@ class="link-seesrc" target="_blank">Source</a>
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br/>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2022-06-10 11:47:41 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2022-07-01 11:11:42 UTC</small>
       </div>
     </div>
   </div>

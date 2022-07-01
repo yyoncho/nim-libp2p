@@ -239,6 +239,10 @@ window.addEventListener('DOMContentLoaded', main);
           <li><a class="reference external"
           data-doc-search-tag="switch: addConnEventHandler(s: Switch; handler: ConnEventHandler; kind: ConnEventKind)" href="libp2p/switch.html#addConnEventHandler%2CSwitch%2CConnEventHandler%2CConnEventKind">switch: addConnEventHandler(s: Switch; handler: ConnEventHandler; kind: ConnEventKind)</a></li>
           </ul></dd>
+<dt><a name="addDirectPeer" href="#addDirectPeer"><span>addDirectPeer:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="gossipsub: addDirectPeer(g: GossipSub; id: PeerId; addrs: seq[MultiAddress]): Future[void]" href="libp2p/protocols/pubsub/gossipsub.html#addDirectPeer%2CGossipSub%2CPeerId%2Cseq%5BMultiAddress%5D">gossipsub: addDirectPeer(g: GossipSub; id: PeerId; addrs: seq[MultiAddress]): Future[void]</a></li>
+          </ul></dd>
 <dt><a name="addedAt" href="#addedAt"><span>addedAt:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="timedcache: addedAt[K](t: TimedCache[K]; k: K): Moment" href="libp2p/protocols/pubsub/timedcache.html#addedAt%2CTimedCache%5BK%5D%2CK">timedcache: addedAt[K](t: TimedCache[K]; k: K): Moment</a></li>
@@ -1233,11 +1237,9 @@ window.addEventListener('DOMContentLoaded', main);
           </ul></dd>
 <dt><a name="ephemeral" href="#ephemeral"><span>ephemeral:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="crypto: ephemeral(scheme: ECDHEScheme; rng: var BrHmacDrbgContext): CryptoResult[
-    EcKeyPair]" href="libp2p/crypto/crypto.html#ephemeral%2CEcCurveKind%2CHmacDrbgContext">crypto: ephemeral(scheme: ECDHEScheme; rng: var BrHmacDrbgContext): CryptoResult[
-    EcKeyPair]</a></li>
+          data-doc-search-tag="crypto: ephemeral(scheme: ECDHEScheme; rng: var HmacDrbgContext): CryptoResult[EcKeyPair]" href="libp2p/crypto/crypto.html#ephemeral%2CEcCurveKind%2CHmacDrbgContext">crypto: ephemeral(scheme: ECDHEScheme; rng: var HmacDrbgContext): CryptoResult[EcKeyPair]</a></li>
           <li><a class="reference external"
-          data-doc-search-tag="crypto: ephemeral(scheme: string; rng: var BrHmacDrbgContext): CryptoResult[EcKeyPair]" href="libp2p/crypto/crypto.html#ephemeral%2Cstring%2CHmacDrbgContext">crypto: ephemeral(scheme: string; rng: var BrHmacDrbgContext): CryptoResult[EcKeyPair]</a></li>
+          data-doc-search-tag="crypto: ephemeral(scheme: string; rng: var HmacDrbgContext): CryptoResult[EcKeyPair]" href="libp2p/crypto/crypto.html#ephemeral%2Cstring%2CHmacDrbgContext">crypto: ephemeral(scheme: string; rng: var HmacDrbgContext): CryptoResult[EcKeyPair]</a></li>
           </ul></dd>
 <dt><a name="Eq" href="#Eq"><span>Eq:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -1756,12 +1758,12 @@ window.addEventListener('DOMContentLoaded', main);
 <dt><a name="hkdf" href="#hkdf"><span>hkdf:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="hkdf: hkdf[T: sha256; len: static int](_: type[T]; salt, ikm, info: openArray[byte];
-                                 outputs: var openArray[HKDFResult[len]])" href="libp2p/crypto/hkdf.html#hkdf%2Ctype%5BT%5D%2CopenArray%5Bbyte%5D%2CopenArray%5Bbyte%5D%2CopenArray%5Bbyte%5D%2CopenArray%5BHKDFResult%5Blen%5D%5D">hkdf: hkdf[T: sha256; len: static int](_: type[T]; salt, ikm, info: openArray[byte];
-                                 outputs: var openArray[HKDFResult[len]])</a></li>
+                                 outputs: var openArray[HkdfResult[len]])" href="libp2p/crypto/hkdf.html#hkdf%2Ctype%5BT%5D%2CopenArray%5Bbyte%5D%2CopenArray%5Bbyte%5D%2CopenArray%5Bbyte%5D%2CopenArray%5BHkdfResult%5Blen%5D%5D">hkdf: hkdf[T: sha256; len: static int](_: type[T]; salt, ikm, info: openArray[byte];
+                                 outputs: var openArray[HkdfResult[len]])</a></li>
           </ul></dd>
-<dt><a name="HKDFResult" href="#HKDFResult"><span>HKDFResult:</span></a></dt><dd><ul class="simple">
+<dt><a name="HkdfResult" href="#HkdfResult"><span>HkdfResult:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="hkdf: HKDFResult" href="libp2p/crypto/hkdf.html#HKDFResult">hkdf: HKDFResult</a></li>
+          data-doc-search-tag="hkdf: HkdfResult" href="libp2p/crypto/hkdf.html#HkdfResult">hkdf: HkdfResult</a></li>
           </ul></dd>
 <dt><a name="Hop" href="#Hop"><span>Hop:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -2087,14 +2089,14 @@ window.addEventListener('DOMContentLoaded', main);
                                verifySignature: bool = true; sign: bool = true;
     msgIdProvider: MsgIdProvider = defaultMsgIdProvider; subscriptionValidator: SubscriptionValidator = nil;
                                maxMessageSize: int = 1024 * 1024;
-                               rng: ref BrHmacDrbgContext = newRng();
+                               rng: ref HmacDrbgContext = newRng();
                                parameters: PubParams = false): P:type" href="libp2p/protocols/pubsub/pubsub.html#init%2Ctypedesc%5BPubSub%5D%2CSwitch%2Cbool%2Cbool%2Cbool%2Cbool%2CMsgIdProvider%2CSubscriptionValidator%2Cint%2Cref.HmacDrbgContext%2CPubParams">pubsub: init[PubParams: object | bool](P: typedesc[PubSub]; switch: Switch;
                                triggerSelf: bool = false;
                                anonymize: bool = false;
                                verifySignature: bool = true; sign: bool = true;
     msgIdProvider: MsgIdProvider = defaultMsgIdProvider; subscriptionValidator: SubscriptionValidator = nil;
                                maxMessageSize: int = 1024 * 1024;
-                               rng: ref BrHmacDrbgContext = newRng();
+                               rng: ref HmacDrbgContext = newRng();
                                parameters: PubParams = false): P:type</a></li>
           <li><a class="reference external"
           data-doc-search-tag="message: init(T: type Message; peer: Option[PeerInfo]; data: seq[byte]; topic: string;
@@ -2778,8 +2780,8 @@ window.addEventListener('DOMContentLoaded', main);
           data-doc-search-tag="identify: new(T: typedesc[IdentifyPush]; handler: IdentifyPushHandler = nil): T:type" href="libp2p/protocols/identify.html#new%2Ctypedesc%5BIdentifyPush%5D%2CIdentifyPushHandler">identify: new(T: typedesc[IdentifyPush]; handler: IdentifyPushHandler = nil): T:type</a></li>
           <li><a class="reference external"
           data-doc-search-tag="ping: new(T: typedesc[Ping]; handler: PingHandler = nil;
-    rng: ref BrHmacDrbgContext = newRng()): T:type" href="libp2p/protocols/ping.html#new%2Ctypedesc%5BPing%5D%2CPingHandler%2Cref.HmacDrbgContext">ping: new(T: typedesc[Ping]; handler: PingHandler = nil;
-    rng: ref BrHmacDrbgContext = newRng()): T:type</a></li>
+    rng: ref HmacDrbgContext = newRng()): T:type" href="libp2p/protocols/ping.html#new%2Ctypedesc%5BPing%5D%2CPingHandler%2Cref.HmacDrbgContext">ping: new(T: typedesc[Ping]; handler: PingHandler = nil;
+    rng: ref HmacDrbgContext = newRng()): T:type</a></li>
           <li><a class="reference external"
           data-doc-search-tag="pubsubpeer: new(T: typedesc[PubSubPeer]; peerId: PeerId; getConn: GetConn;
     dropConn: DropConn; onEvent: OnEvent; codec: string; maxMessageSize: int): T:type" href="libp2p/protocols/pubsub/pubsubpeer.html#new%2Ctypedesc%5BPubSubPeer%5D%2CPeerId%2CGetConn%2CDropConn%2COnEvent%2Cstring%2Cint">pubsubpeer: new(T: typedesc[PubSubPeer]; peerId: PeerId; getConn: GetConn;
@@ -2789,8 +2791,8 @@ window.addEventListener('DOMContentLoaded', main);
           <li><a class="reference external"
           data-doc-search-tag="relay: new(T: typedesc[RelayTransport]; relay: Relay; upgrader: Upgrade): T:type" href="libp2p/protocols/relay.html#new%2Ctypedesc%5BRelayTransport%5D%2CRelay%2CUpgrade">relay: new(T: typedesc[RelayTransport]; relay: Relay; upgrader: Upgrade): T:type</a></li>
           <li><a class="reference external"
-          data-doc-search-tag="noise: new(T: typedesc[Noise]; rng: ref BrHmacDrbgContext; privateKey: PrivateKey;
-    outgoing: bool = true; commonPrologue: seq[byte] = @[]): T:type" href="libp2p/protocols/secure/noise.html#new%2Ctypedesc%5BNoise%5D%2Cref.HmacDrbgContext%2CPrivateKey%2Cbool%2Cseq%5Bbyte%5D">noise: new(T: typedesc[Noise]; rng: ref BrHmacDrbgContext; privateKey: PrivateKey;
+          data-doc-search-tag="noise: new(T: typedesc[Noise]; rng: ref HmacDrbgContext; privateKey: PrivateKey;
+    outgoing: bool = true; commonPrologue: seq[byte] = @[]): T:type" href="libp2p/protocols/secure/noise.html#new%2Ctypedesc%5BNoise%5D%2Cref.HmacDrbgContext%2CPrivateKey%2Cbool%2Cseq%5Bbyte%5D">noise: new(T: typedesc[Noise]; rng: ref HmacDrbgContext; privateKey: PrivateKey;
     outgoing: bool = true; commonPrologue: seq[byte] = @[]): T:type</a></li>
           <li><a class="reference external"
           data-doc-search-tag="secure: new(T: type SecureConn; conn: Connection; peerId: PeerId;
@@ -2875,7 +2877,7 @@ window.addEventListener('DOMContentLoaded', main);
           </ul></dd>
 <dt><a name="newRng" href="#newRng"><span>newRng:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="crypto: newRng(): ref BrHmacDrbgContext" href="libp2p/crypto/crypto.html#newRng">crypto: newRng(): ref BrHmacDrbgContext</a></li>
+          data-doc-search-tag="crypto: newRng(): ref HmacDrbgContext" href="libp2p/crypto/crypto.html#newRng">crypto: newRng(): ref HmacDrbgContext</a></li>
           </ul></dd>
 <dt><a name="newStandardSwitch" href="#newStandardSwitch"><span>newStandardSwitch:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -2982,14 +2984,6 @@ window.addEventListener('DOMContentLoaded', main);
 <dt><a name="orError" href="#orError"><span>orError:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="crypto: orError(exp: untyped; err: untyped): untyped" href="libp2p/crypto/crypto.html#orError.t%2Cuntyped%2Cuntyped">crypto: orError(exp: untyped; err: untyped): untyped</a></li>
-          </ul></dd>
-<dt><a name="ourPoly1305CtmulRun" href="#ourPoly1305CtmulRun"><span>ourPoly1305CtmulRun:</span></a></dt><dd><ul class="simple">
-<li><a class="reference external"
-          data-doc-search-tag="chacha20poly1305: ourPoly1305CtmulRun(key: pointer; iv: pointer; data: pointer; len: int;
-                    aad: pointer; aadLen: int; tag: pointer; ichacha: pointer;
-                    encrypt: cint)" href="libp2p/crypto/chacha20poly1305.html#ourPoly1305CtmulRun%2Cpointer%2Cpointer%2Cpointer%2Cint%2Cpointer%2Cint%2Cpointer%2Cpointer%2Ccint">chacha20poly1305: ourPoly1305CtmulRun(key: pointer; iv: pointer; data: pointer; len: int;
-                    aad: pointer; aadLen: int; tag: pointer; ichacha: pointer;
-                    encrypt: cint)</a></li>
           </ul></dd>
 <dt><a name="outbound" href="#outbound"><span>outbound:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -3293,45 +3287,45 @@ window.addEventListener('DOMContentLoaded', main);
           </ul></dd>
 <dt><a name="random" href="#random"><span>random:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="crypto: random(T: typedesc[KeyPair]; rng: var BrHmacDrbgContext;
-       bits = RsaDefaultKeySize): CryptoResult[KeyPair]" href="libp2p/crypto/crypto.html#random%2Ctypedesc%5BKeyPair%5D%2CHmacDrbgContext">crypto: random(T: typedesc[KeyPair]; rng: var BrHmacDrbgContext;
+          data-doc-search-tag="crypto: random(T: typedesc[KeyPair]; rng: var HmacDrbgContext; bits = RsaDefaultKeySize): CryptoResult[
+    KeyPair]" href="libp2p/crypto/crypto.html#random%2Ctypedesc%5BKeyPair%5D%2CHmacDrbgContext">crypto: random(T: typedesc[KeyPair]; rng: var HmacDrbgContext; bits = RsaDefaultKeySize): CryptoResult[
+    KeyPair]</a></li>
+          <li><a class="reference external"
+          data-doc-search-tag="crypto: random(T: typedesc[KeyPair]; scheme: PKScheme; rng: var HmacDrbgContext;
+       bits = RsaDefaultKeySize): CryptoResult[KeyPair]" href="libp2p/crypto/crypto.html#random%2Ctypedesc%5BKeyPair%5D%2CPKScheme%2CHmacDrbgContext">crypto: random(T: typedesc[KeyPair]; scheme: PKScheme; rng: var HmacDrbgContext;
        bits = RsaDefaultKeySize): CryptoResult[KeyPair]</a></li>
           <li><a class="reference external"
-          data-doc-search-tag="crypto: random(T: typedesc[KeyPair]; scheme: PKScheme; rng: var BrHmacDrbgContext;
-       bits = RsaDefaultKeySize): CryptoResult[KeyPair]" href="libp2p/crypto/crypto.html#random%2Ctypedesc%5BKeyPair%5D%2CPKScheme%2CHmacDrbgContext">crypto: random(T: typedesc[KeyPair]; scheme: PKScheme; rng: var BrHmacDrbgContext;
-       bits = RsaDefaultKeySize): CryptoResult[KeyPair]</a></li>
-          <li><a class="reference external"
-          data-doc-search-tag="crypto: random(T: typedesc[PrivateKey]; rng: var BrHmacDrbgContext;
-       bits = RsaDefaultKeySize): CryptoResult[PrivateKey]" href="libp2p/crypto/crypto.html#random%2Ctypedesc%5BPrivateKey%5D%2CHmacDrbgContext">crypto: random(T: typedesc[PrivateKey]; rng: var BrHmacDrbgContext;
+          data-doc-search-tag="crypto: random(T: typedesc[PrivateKey]; rng: var HmacDrbgContext;
+       bits = RsaDefaultKeySize): CryptoResult[PrivateKey]" href="libp2p/crypto/crypto.html#random%2Ctypedesc%5BPrivateKey%5D%2CHmacDrbgContext">crypto: random(T: typedesc[PrivateKey]; rng: var HmacDrbgContext;
        bits = RsaDefaultKeySize): CryptoResult[PrivateKey]</a></li>
           <li><a class="reference external"
-          data-doc-search-tag="crypto: random(T: typedesc[PrivateKey]; scheme: PKScheme; rng: var BrHmacDrbgContext;
-       bits = RsaDefaultKeySize): CryptoResult[PrivateKey]" href="libp2p/crypto/crypto.html#random%2Ctypedesc%5BPrivateKey%5D%2CPKScheme%2CHmacDrbgContext">crypto: random(T: typedesc[PrivateKey]; scheme: PKScheme; rng: var BrHmacDrbgContext;
+          data-doc-search-tag="crypto: random(T: typedesc[PrivateKey]; scheme: PKScheme; rng: var HmacDrbgContext;
+       bits = RsaDefaultKeySize): CryptoResult[PrivateKey]" href="libp2p/crypto/crypto.html#random%2Ctypedesc%5BPrivateKey%5D%2CPKScheme%2CHmacDrbgContext">crypto: random(T: typedesc[PrivateKey]; scheme: PKScheme; rng: var HmacDrbgContext;
        bits = RsaDefaultKeySize): CryptoResult[PrivateKey]</a></li>
           <li><a class="reference external"
-          data-doc-search-tag="curve25519: random(_: type[Curve25519Key]; rng: var BrHmacDrbgContext): Curve25519Key" href="libp2p/crypto/curve25519.html#random%2Ctype%5BCurve25519Key%5D%2CHmacDrbgContext">curve25519: random(_: type[Curve25519Key]; rng: var BrHmacDrbgContext): Curve25519Key</a></li>
+          data-doc-search-tag="curve25519: random(_: type[Curve25519Key]; rng: var HmacDrbgContext): Curve25519Key" href="libp2p/crypto/curve25519.html#random%2Ctype%5BCurve25519Key%5D%2CHmacDrbgContext">curve25519: random(_: type[Curve25519Key]; rng: var HmacDrbgContext): Curve25519Key</a></li>
           <li><a class="reference external"
-          data-doc-search-tag="ecnist: random(T: typedesc[EcKeyPair]; kind: EcCurveKind; rng: var BrHmacDrbgContext): EcResult[
-    T]" href="libp2p/crypto/ecnist.html#random%2Ctypedesc%5BEcKeyPair%5D%2CEcCurveKind%2CHmacDrbgContext">ecnist: random(T: typedesc[EcKeyPair]; kind: EcCurveKind; rng: var BrHmacDrbgContext): EcResult[
+          data-doc-search-tag="ecnist: random(T: typedesc[EcKeyPair]; kind: EcCurveKind; rng: var HmacDrbgContext): EcResult[
+    T]" href="libp2p/crypto/ecnist.html#random%2Ctypedesc%5BEcKeyPair%5D%2CEcCurveKind%2CHmacDrbgContext">ecnist: random(T: typedesc[EcKeyPair]; kind: EcCurveKind; rng: var HmacDrbgContext): EcResult[
     T]</a></li>
           <li><a class="reference external"
-          data-doc-search-tag="ecnist: random(T: typedesc[EcPrivateKey]; kind: EcCurveKind; rng: var BrHmacDrbgContext): EcResult[
-    EcPrivateKey]" href="libp2p/crypto/ecnist.html#random%2Ctypedesc%5BEcPrivateKey%5D%2CEcCurveKind%2CHmacDrbgContext">ecnist: random(T: typedesc[EcPrivateKey]; kind: EcCurveKind; rng: var BrHmacDrbgContext): EcResult[
+          data-doc-search-tag="ecnist: random(T: typedesc[EcPrivateKey]; kind: EcCurveKind; rng: var HmacDrbgContext): EcResult[
+    EcPrivateKey]" href="libp2p/crypto/ecnist.html#random%2Ctypedesc%5BEcPrivateKey%5D%2CEcCurveKind%2CHmacDrbgContext">ecnist: random(T: typedesc[EcPrivateKey]; kind: EcCurveKind; rng: var HmacDrbgContext): EcResult[
     EcPrivateKey]</a></li>
           <li><a class="reference external"
-          data-doc-search-tag="ed25519: random(t: typedesc[EdKeyPair]; rng: var BrHmacDrbgContext): EdKeyPair" href="libp2p/crypto/ed25519/ed25519.html#random%2Ctypedesc%5BEdKeyPair%5D%2CHmacDrbgContext">ed25519: random(t: typedesc[EdKeyPair]; rng: var BrHmacDrbgContext): EdKeyPair</a></li>
+          data-doc-search-tag="ed25519: random(t: typedesc[EdKeyPair]; rng: var HmacDrbgContext): EdKeyPair" href="libp2p/crypto/ed25519/ed25519.html#random%2Ctypedesc%5BEdKeyPair%5D%2CHmacDrbgContext">ed25519: random(t: typedesc[EdKeyPair]; rng: var HmacDrbgContext): EdKeyPair</a></li>
           <li><a class="reference external"
-          data-doc-search-tag="ed25519: random(t: typedesc[EdPrivateKey]; rng: var BrHmacDrbgContext): EdPrivateKey" href="libp2p/crypto/ed25519/ed25519.html#random%2Ctypedesc%5BEdPrivateKey%5D%2CHmacDrbgContext">ed25519: random(t: typedesc[EdPrivateKey]; rng: var BrHmacDrbgContext): EdPrivateKey</a></li>
+          data-doc-search-tag="ed25519: random(t: typedesc[EdPrivateKey]; rng: var HmacDrbgContext): EdPrivateKey" href="libp2p/crypto/ed25519/ed25519.html#random%2Ctypedesc%5BEdPrivateKey%5D%2CHmacDrbgContext">ed25519: random(t: typedesc[EdPrivateKey]; rng: var HmacDrbgContext): EdPrivateKey</a></li>
           <li><a class="reference external"
-          data-doc-search-tag="rsa: random[T: RsaKP](t: typedesc[T]; rng: var BrHmacDrbgContext;
+          data-doc-search-tag="rsa: random[T: RsaKP](t: typedesc[T]; rng: var HmacDrbgContext;
                  bits = DefaultKeySize; pubexp = DefaultPublicExponent): RsaResult[
-    T]" href="libp2p/crypto/rsa.html#random%2Ctypedesc%5BT%5D%2CHmacDrbgContext">rsa: random[T: RsaKP](t: typedesc[T]; rng: var BrHmacDrbgContext;
+    T]" href="libp2p/crypto/rsa.html#random%2Ctypedesc%5BT%5D%2CHmacDrbgContext">rsa: random[T: RsaKP](t: typedesc[T]; rng: var HmacDrbgContext;
                  bits = DefaultKeySize; pubexp = DefaultPublicExponent): RsaResult[
     T]</a></li>
           <li><a class="reference external"
-          data-doc-search-tag="secp: random(t: typedesc[SkKeyPair]; rng: var BrHmacDrbgContext): SkKeyPair" href="libp2p/crypto/secp.html#random%2Ctypedesc%5BSkKeyPair%5D%2CHmacDrbgContext">secp: random(t: typedesc[SkKeyPair]; rng: var BrHmacDrbgContext): SkKeyPair</a></li>
+          data-doc-search-tag="secp: random(t: typedesc[SkKeyPair]; rng: var HmacDrbgContext): SkKeyPair" href="libp2p/crypto/secp.html#random%2Ctypedesc%5BSkKeyPair%5D%2CHmacDrbgContext">secp: random(t: typedesc[SkKeyPair]; rng: var HmacDrbgContext): SkKeyPair</a></li>
           <li><a class="reference external"
-          data-doc-search-tag="secp: random(t: typedesc[SkPrivateKey]; rng: var BrHmacDrbgContext): SkPrivateKey" href="libp2p/crypto/secp.html#random%2Ctypedesc%5BSkPrivateKey%5D%2CHmacDrbgContext">secp: random(t: typedesc[SkPrivateKey]; rng: var BrHmacDrbgContext): SkPrivateKey</a></li>
+          data-doc-search-tag="secp: random(t: typedesc[SkPrivateKey]; rng: var HmacDrbgContext): SkPrivateKey" href="libp2p/crypto/secp.html#random%2Ctypedesc%5BSkPrivateKey%5D%2CHmacDrbgContext">secp: random(t: typedesc[SkPrivateKey]; rng: var HmacDrbgContext): SkPrivateKey</a></li>
           </ul></dd>
 <dt><a name="read" href="#read"><span>read:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -3781,7 +3775,7 @@ window.addEventListener('DOMContentLoaded', main);
           </ul></dd>
 <dt><a name="shuffle" href="#shuffle"><span>shuffle:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="crypto: shuffle[T](rng: ref BrHmacDrbgContext; x: var openArray[T])" href="libp2p/crypto/crypto.html#shuffle%2Cref.HmacDrbgContext%2CopenArray%5BT%5D">crypto: shuffle[T](rng: ref BrHmacDrbgContext; x: var openArray[T])</a></li>
+          data-doc-search-tag="crypto: shuffle[T](rng: ref HmacDrbgContext; x: var openArray[T])" href="libp2p/crypto/crypto.html#shuffle%2Cref.HmacDrbgContext%2CopenArray%5BT%5D">crypto: shuffle[T](rng: ref HmacDrbgContext; x: var openArray[T])</a></li>
           </ul></dd>
 <dt><a name="Sig256Length" href="#Sig256Length"><span>Sig256Length:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -3871,9 +3865,11 @@ window.addEventListener('DOMContentLoaded', main);
           </ul></dd>
 <dt><a name="start" href="#start"><span>start:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="gossipsub: start(g: GossipSub): Future[void]" href="libp2p/protocols/pubsub/gossipsub.html#start.e%2CGossipSub">gossipsub: start(g: GossipSub): Future[void]</a></li>
+          data-doc-search-tag="multistream: start(m: MultistreamSelect): Future[void]" href="libp2p/multistream.html#start%2CMultistreamSelect">multistream: start(m: MultistreamSelect): Future[void]</a></li>
           <li><a class="reference external"
-          data-doc-search-tag="pubsub: start(p: PubSub): Future[void]" href="libp2p/protocols/pubsub/pubsub.html#start.e%2CPubSub">pubsub: start(p: PubSub): Future[void]</a></li>
+          data-doc-search-tag="protocol: start(p: LPProtocol): Future[void]" href="libp2p/protocols/protocol.html#start.e%2CLPProtocol">protocol: start(p: LPProtocol): Future[void]</a></li>
+          <li><a class="reference external"
+          data-doc-search-tag="gossipsub: start(g: GossipSub): Future[void]" href="libp2p/protocols/pubsub/gossipsub.html#start.e%2CGossipSub">gossipsub: start(g: GossipSub): Future[void]</a></li>
           <li><a class="reference external"
           data-doc-search-tag="relay: start(self: RelayTransport; ma: seq[MultiAddress]): Future[void]" href="libp2p/protocols/relay.html#start.e%2CRelayTransport%2Cseq%5BMultiAddress%5D">relay: start(self: RelayTransport; ma: seq[MultiAddress]): Future[void]</a></li>
           <li><a class="reference external"
@@ -3895,9 +3891,11 @@ window.addEventListener('DOMContentLoaded', main);
           </ul></dd>
 <dt><a name="stop" href="#stop"><span>stop:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="gossipsub: stop(g: GossipSub): Future[void]" href="libp2p/protocols/pubsub/gossipsub.html#stop.e%2CGossipSub">gossipsub: stop(g: GossipSub): Future[void]</a></li>
+          data-doc-search-tag="multistream: stop(m: MultistreamSelect): Future[void]" href="libp2p/multistream.html#stop%2CMultistreamSelect">multistream: stop(m: MultistreamSelect): Future[void]</a></li>
           <li><a class="reference external"
-          data-doc-search-tag="pubsub: stop(p: PubSub): Future[void]" href="libp2p/protocols/pubsub/pubsub.html#stop.e%2CPubSub">pubsub: stop(p: PubSub): Future[void]</a></li>
+          data-doc-search-tag="protocol: stop(p: LPProtocol): Future[void]" href="libp2p/protocols/protocol.html#stop.e%2CLPProtocol">protocol: stop(p: LPProtocol): Future[void]</a></li>
+          <li><a class="reference external"
+          data-doc-search-tag="gossipsub: stop(g: GossipSub): Future[void]" href="libp2p/protocols/pubsub/gossipsub.html#stop.e%2CGossipSub">gossipsub: stop(g: GossipSub): Future[void]</a></li>
           </ul></dd>
 <dt><a name="Stop" href="#Stop"><span>Stop:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -4445,7 +4443,7 @@ window.addEventListener('DOMContentLoaded', main);
           </ul></dd>
 <dt><a name="withRng" href="#withRng"><span>withRng:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="builders: withRng(b: SwitchBuilder; rng: ref BrHmacDrbgContext): SwitchBuilder" href="libp2p/builders.html#withRng%2CSwitchBuilder%2Cref.HmacDrbgContext">builders: withRng(b: SwitchBuilder; rng: ref BrHmacDrbgContext): SwitchBuilder</a></li>
+          data-doc-search-tag="builders: withRng(b: SwitchBuilder; rng: ref HmacDrbgContext): SwitchBuilder" href="libp2p/builders.html#withRng%2CSwitchBuilder%2Cref.HmacDrbgContext">builders: withRng(b: SwitchBuilder; rng: ref HmacDrbgContext): SwitchBuilder</a></li>
           </ul></dd>
 <dt><a name="withSignedPeerRecord" href="#withSignedPeerRecord"><span>withSignedPeerRecord:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -4624,7 +4622,7 @@ window.addEventListener('DOMContentLoaded', main);
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br/>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2022-06-10 11:47:44 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2022-07-01 11:11:47 UTC</small>
       </div>
     </div>
   </div>

@@ -199,8 +199,8 @@ window.addEventListener("DOMContentLoaded", main2);
 <li>
   <a class="reference reference-toplevel" href="#7" id="57">Types</a>
   <ul class="simple simple-toc-section">
-      <li><a class="reference" href="#HKDFResult"
-    title="HKDFResult[len] = array[len, byte]">HKDFResult</a></li>
+      <li><a class="reference" href="#HkdfResult"
+    title="HkdfResult[len] = array[len, byte]">HkdfResult</a></li>
 
   </ul>
 </li>
@@ -208,10 +208,10 @@ window.addEventListener("DOMContentLoaded", main2);
   <a class="reference reference-toplevel" href="#12" id="62">Procs</a>
   <ul class="simple simple-toc-section">
       <ul class="simple nested-toc-section">hkdf
-      <li><a class="reference" href="#hkdf%2Ctype%5BT%5D%2CopenArray%5Bbyte%5D%2CopenArray%5Bbyte%5D%2CopenArray%5Bbyte%5D%2CopenArray%5BHKDFResult%5Blen%5D%5D"
+      <li><a class="reference" href="#hkdf%2Ctype%5BT%5D%2CopenArray%5Bbyte%5D%2CopenArray%5Bbyte%5D%2CopenArray%5Bbyte%5D%2CopenArray%5BHkdfResult%5Blen%5D%5D"
     title="hkdf[T: sha256; len: static int](_: type[T]; salt, ikm, info: openArray[byte];
-                                 outputs: var openArray[HKDFResult[len]])">hkdf[T: sha256; len: static int](_: type[T]; salt, ikm, info: openArray[byte];
-                                 outputs: var openArray[HKDFResult[len]])</a></li>
+                                 outputs: var openArray[HkdfResult[len]])">hkdf[T: sha256; len: static int](_: type[T]; salt, ikm, info: openArray[byte];
+                                 outputs: var openArray[HkdfResult[len]])</a></li>
 
   </ul>
 
@@ -233,15 +233,15 @@ class="link-seesrc" target="_blank">Source</a>
   <div class="section" id="7">
 <h1><a class="toc-backref" href="#7">Types</a></h1>
 <dl class="item">
-<div id="HKDFResult" class="tohide">
-<dt><pre><a href="hkdf.html#HKDFResult"><span class="Identifier">HKDFResult</span></a><span class="Other">[</span><span class="Identifier">len</span><span class="Other">]</span> <span class="Other">=</span> <span class="Identifier">array</span><span class="Other">[</span><span class="Identifier">len</span><span class="Other">,</span> <span class="Identifier">byte</span><span class="Other">]</span></pre></dt>
+<div id="HkdfResult" class="tohide">
+<dt><pre><a href="hkdf.html#HkdfResult"><span class="Identifier">HkdfResult</span></a><span class="Other">[</span><span class="Identifier">len</span><span class="Other">]</span> <span class="Other">=</span> <span class="Identifier">array</span><span class="Other">[</span><span class="Identifier">len</span><span class="Other">,</span> <span class="Identifier">byte</span><span class="Other">]</span></pre></dt>
 <dd>
 
 
 &nbsp;&nbsp;<a
-href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/hkdf.nim#L19"
+href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/hkdf.nim#L17"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/hkdf.nim#L19" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/hkdf.nim#L17" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -250,18 +250,18 @@ class="link-seesrc" target="_blank">Source</a>
 <div class="section" id="12">
 <h1><a class="toc-backref" href="#12">Procs</a></h1>
 <dl class="item">
-<div id="hkdf,type[T],openArray[byte],openArray[byte],openArray[byte],openArray[HKDFResult[len]]" class="tohide">
-<dt><pre><span class="Keyword">proc</span> <a href="#hkdf%2Ctype%5BT%5D%2CopenArray%5Bbyte%5D%2CopenArray%5Bbyte%5D%2CopenArray%5Bbyte%5D%2CopenArray%5BHKDFResult%5Blen%5D%5D"><span class="Identifier">hkdf</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">:</span> <span class="Identifier">sha256</span><span class="Other">;</span> <span class="Identifier">len</span><span class="Other">:</span> <span class="Identifier">static</span> <span class="Identifier">int</span><span class="Other">]</span><span class="Other">(</span><span class="Operator">_</span><span class="Other">:</span> <span class="Identifier">type</span><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span><span class="Other">;</span>
+<div id="hkdf,type[T],openArray[byte],openArray[byte],openArray[byte],openArray[HkdfResult[len]]" class="tohide">
+<dt><pre><span class="Keyword">proc</span> <a href="#hkdf%2Ctype%5BT%5D%2CopenArray%5Bbyte%5D%2CopenArray%5Bbyte%5D%2CopenArray%5Bbyte%5D%2CopenArray%5BHkdfResult%5Blen%5D%5D"><span class="Identifier">hkdf</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">:</span> <span class="Identifier">sha256</span><span class="Other">;</span> <span class="Identifier">len</span><span class="Other">:</span> <span class="Identifier">static</span> <span class="Identifier">int</span><span class="Other">]</span><span class="Other">(</span><span class="Operator">_</span><span class="Other">:</span> <span class="Identifier">type</span><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span><span class="Other">;</span>
                                       <span class="Identifier">salt</span><span class="Other">,</span> <span class="Identifier">ikm</span><span class="Other">,</span> <span class="Identifier">info</span><span class="Other">:</span> <span class="Identifier">openArray</span><span class="Other">[</span><span class="Identifier">byte</span><span class="Other">]</span><span class="Other">;</span>
-                                      <span class="Identifier">outputs</span><span class="Other">:</span> <span class="Keyword">var</span> <span class="Identifier">openArray</span><span class="Other">[</span><a href="hkdf.html#HKDFResult"><span class="Identifier">HKDFResult</span></a><span class="Other">[</span><span class="Identifier">len</span><span class="Other">]</span><span class="Other">]</span><span class="Other">)</span> {.
+                                      <span class="Identifier">outputs</span><span class="Other">:</span> <span class="Keyword">var</span> <span class="Identifier">openArray</span><span class="Other">[</span><a href="hkdf.html#HkdfResult"><span class="Identifier">HkdfResult</span></a><span class="Other">[</span><span class="Identifier">len</span><span class="Other">]</span><span class="Other">]</span><span class="Other">)</span> {.
     <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Defect</span><span class="Other">]</span></span>.}</pre></dt>
 <dd>
 
 
 &nbsp;&nbsp;<a
-href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/hkdf.nim#L26"
+href="https://github.com/status-im/nim-libp2p/tree/documentation/libp2p/crypto/hkdf.nim#L19"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/hkdf.nim#L26" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/status-im/nim-libp2p/edit/devel/libp2p/crypto/hkdf.nim#L19" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -275,7 +275,7 @@ class="link-seesrc" target="_blank">Source</a>
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br/>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2022-06-10 11:47:42 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2022-07-01 11:11:44 UTC</small>
       </div>
     </div>
   </div>

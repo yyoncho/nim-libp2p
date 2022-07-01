@@ -220,12 +220,12 @@ window.addEventListener("DOMContentLoaded", main2);
     title="EcPKI = EcPrivateKey | EcPublicKey | EcSignature">EcPKI</a></li>
   <li><a class="reference" href="#EcPrivateKey"
     title="EcPrivateKey = ref object
-  buffer*: array[BR_EC_KBUF_PRIV_MAX_SIZE, byte]
-  key*: BrEcPrivateKey">EcPrivateKey</a></li>
+  buffer*: array[EC_KBUF_PRIV_MAX_SIZE, byte]
+  key*: ec.EcPrivateKey">EcPrivateKey</a></li>
   <li><a class="reference" href="#EcPublicKey"
     title="EcPublicKey = ref object
-  buffer*: array[BR_EC_KBUF_PUB_MAX_SIZE, byte]
-  key*: BrEcPublicKey">EcPublicKey</a></li>
+  buffer*: array[EC_KBUF_PUB_MAX_SIZE, byte]
+  key*: ec.EcPublicKey">EcPublicKey</a></li>
   <li><a class="reference" href="#EcResult"
     title="EcResult[T] = Result[T, EcError]">EcResult</a></li>
   <li><a class="reference" href="#EcSignature"
@@ -367,12 +367,12 @@ window.addEventListener("DOMContentLoaded", main2);
   </ul>
   <ul class="simple nested-toc-section">random
       <li><a class="reference" href="#random%2Ctypedesc%5BEcKeyPair%5D%2CEcCurveKind%2CHmacDrbgContext"
-    title="random(T: typedesc[EcKeyPair]; kind: EcCurveKind; rng: var BrHmacDrbgContext): EcResult[
-    T]">random(T: typedesc[EcKeyPair]; kind: EcCurveKind; rng: var BrHmacDrbgContext): EcResult[
+    title="random(T: typedesc[EcKeyPair]; kind: EcCurveKind; rng: var HmacDrbgContext): EcResult[
+    T]">random(T: typedesc[EcKeyPair]; kind: EcCurveKind; rng: var HmacDrbgContext): EcResult[
     T]</a></li>
   <li><a class="reference" href="#random%2Ctypedesc%5BEcPrivateKey%5D%2CEcCurveKind%2CHmacDrbgContext"
-    title="random(T: typedesc[EcPrivateKey]; kind: EcCurveKind; rng: var BrHmacDrbgContext): EcResult[
-    EcPrivateKey]">random(T: typedesc[EcPrivateKey]; kind: EcCurveKind; rng: var BrHmacDrbgContext): EcResult[
+    title="random(T: typedesc[EcPrivateKey]; kind: EcCurveKind; rng: var HmacDrbgContext): EcResult[
+    EcPrivateKey]">random(T: typedesc[EcPrivateKey]; kind: EcCurveKind; rng: var HmacDrbgContext): EcResult[
     EcPrivateKey]</a></li>
 
   </ul>
@@ -522,8 +522,8 @@ class="link-seesrc" target="_blank">Source</a>
 </div>
 <div id="EcPrivateKey" class="tohide">
 <dt><pre><a href="ecnist.html#EcPrivateKey"><span class="Identifier">EcPrivateKey</span></a> <span class="Other">=</span> <span class="Keyword">ref</span> <span class="Keyword">object</span>
-  <span class="Identifier">buffer</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">array</span><span class="Other">[</span><span class="Identifier">BR_EC_KBUF_PRIV_MAX_SIZE</span><span class="Other">,</span> <span class="Identifier">byte</span><span class="Other">]</span>
-  <span class="Identifier">key</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">BrEcPrivateKey</span>
+  <span class="Identifier">buffer</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">array</span><span class="Other">[</span><span class="Identifier">EC_KBUF_PRIV_MAX_SIZE</span><span class="Other">,</span> <span class="Identifier">byte</span><span class="Other">]</span>
+  <span class="Identifier">key</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">ec</span><span class="Other">.</span><span class="Identifier">EcPrivateKey</span>
 </pre></dt>
 <dd>
 
@@ -537,8 +537,8 @@ class="link-seesrc" target="_blank">Source</a>
 </div>
 <div id="EcPublicKey" class="tohide">
 <dt><pre><a href="ecnist.html#EcPublicKey"><span class="Identifier">EcPublicKey</span></a> <span class="Other">=</span> <span class="Keyword">ref</span> <span class="Keyword">object</span>
-  <span class="Identifier">buffer</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">array</span><span class="Other">[</span><span class="Identifier">BR_EC_KBUF_PUB_MAX_SIZE</span><span class="Other">,</span> <span class="Identifier">byte</span><span class="Other">]</span>
-  <span class="Identifier">key</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">BrEcPublicKey</span>
+  <span class="Identifier">buffer</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">array</span><span class="Other">[</span><span class="Identifier">EC_KBUF_PUB_MAX_SIZE</span><span class="Other">,</span> <span class="Identifier">byte</span><span class="Other">]</span>
+  <span class="Identifier">key</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">ec</span><span class="Other">.</span><span class="Identifier">EcPublicKey</span>
 </pre></dt>
 <dd>
 
@@ -1186,8 +1186,8 @@ class="link-seesrc" target="_blank">Source</a>
 </dd>
 </div>
 <div id="random,typedesc[EcKeyPair],EcCurveKind,HmacDrbgContext" class="tohide">
-<dt><pre><span class="Keyword">proc</span> <a href="#random%2Ctypedesc%5BEcKeyPair%5D%2CEcCurveKind%2CHmacDrbgContext"><span class="Identifier">random</span></a><span class="Other">(</span><span class="Identifier">T</span><span class="Other">:</span> <span class="Identifier">typedesc</span><span class="Other">[</span><a href="ecnist.html#EcKeyPair"><span class="Identifier">EcKeyPair</span></a><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">kind</span><span class="Other">:</span> <a href="ecnist.html#EcCurveKind"><span class="Identifier">EcCurveKind</span></a><span class="Other">;</span>
-            <span class="Identifier">rng</span><span class="Other">:</span> <span class="Keyword">var</span> <span class="Identifier">BrHmacDrbgContext</span><span class="Other">)</span><span class="Other">:</span> <a href="ecnist.html#EcResult"><span class="Identifier">EcResult</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Defect</span><span class="Other">]</span></span>.}</pre></dt>
+<dt><pre><span class="Keyword">proc</span> <a href="#random%2Ctypedesc%5BEcKeyPair%5D%2CEcCurveKind%2CHmacDrbgContext"><span class="Identifier">random</span></a><span class="Other">(</span><span class="Identifier">T</span><span class="Other">:</span> <span class="Identifier">typedesc</span><span class="Other">[</span><a href="ecnist.html#EcKeyPair"><span class="Identifier">EcKeyPair</span></a><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">kind</span><span class="Other">:</span> <a href="ecnist.html#EcCurveKind"><span class="Identifier">EcCurveKind</span></a><span class="Other">;</span> <span class="Identifier">rng</span><span class="Other">:</span> <span class="Keyword">var</span> <span class="Identifier">HmacDrbgContext</span><span class="Other">)</span><span class="Other">:</span> <a href="ecnist.html#EcResult"><span class="Identifier">EcResult</span></a><span class="Other">[</span>
+    <span class="Identifier">T</span><span class="Other">]</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Defect</span><span class="Other">]</span></span>.}</pre></dt>
 <dd>
 
 <p>Generate new random EC private and public keypair using BearSSL's HMAC-SHA256-DRBG algorithm.</p>
@@ -1202,8 +1202,7 @@ class="link-seesrc" target="_blank">Source</a>
 </div>
 <div id="random,typedesc[EcPrivateKey],EcCurveKind,HmacDrbgContext" class="tohide">
 <dt><pre><span class="Keyword">proc</span> <a href="#random%2Ctypedesc%5BEcPrivateKey%5D%2CEcCurveKind%2CHmacDrbgContext"><span class="Identifier">random</span></a><span class="Other">(</span><span class="Identifier">T</span><span class="Other">:</span> <span class="Identifier">typedesc</span><span class="Other">[</span><a href="ecnist.html#EcPrivateKey"><span class="Identifier">EcPrivateKey</span></a><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">kind</span><span class="Other">:</span> <a href="ecnist.html#EcCurveKind"><span class="Identifier">EcCurveKind</span></a><span class="Other">;</span>
-            <span class="Identifier">rng</span><span class="Other">:</span> <span class="Keyword">var</span> <span class="Identifier">BrHmacDrbgContext</span><span class="Other">)</span><span class="Other">:</span> <a href="ecnist.html#EcResult"><span class="Identifier">EcResult</span></a><span class="Other">[</span><a href="ecnist.html#EcPrivateKey"><span class="Identifier">EcPrivateKey</span></a><span class="Other">]</span> {.
-    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Defect</span><span class="Other">]</span></span>.}</pre></dt>
+            <span class="Identifier">rng</span><span class="Other">:</span> <span class="Keyword">var</span> <span class="Identifier">HmacDrbgContext</span><span class="Other">)</span><span class="Other">:</span> <a href="ecnist.html#EcResult"><span class="Identifier">EcResult</span></a><span class="Other">[</span><a href="ecnist.html#EcPrivateKey"><span class="Identifier">EcPrivateKey</span></a><span class="Other">]</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Defect</span><span class="Other">]</span></span>.}</pre></dt>
 <dd>
 
 <p>Generate new random EC private key using BearSSL's HMAC-SHA256-DRBG algorithm.</p>
@@ -1411,7 +1410,7 @@ class="link-seesrc" target="_blank">Source</a>
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br/>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2022-06-10 11:47:39 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2022-07-01 11:11:39 UTC</small>
       </div>
     </div>
   </div>
