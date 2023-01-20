@@ -112,7 +112,7 @@ Clone and Install dependencies:
 ```sh
 git clone https://github.com/status-im/nim-libp2p
 cd nim-libp2p
-# to use dependencies computed by nimble
+# to use dependencies from the lock file
 nimble install -dy
 # OR to install the dependencies versions used in CI
 nimble install_pinned
