@@ -131,7 +131,7 @@ runs:
           QUICK_AND_DIRTY_COMPILER=1 QUICK_AND_DIRTY_NIMBLE=1 CC=gcc \
           bash build_nim.sh nim csources dist/nimble NimBinaries
 
-        git clone https://github.com/nim-lang/nimble
+        git clone https://github.com/yyoncho/nimble
         cd nimble
-        git checkout 1df4a0dad3d24ef7aa424ebce0fe7d476e1069ee
+        git checkout nim-as-dep-plus
         nim -d:release -o:nimble --skipParentCfg c src/nimble.nim

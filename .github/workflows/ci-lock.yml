@@ -72,16 +72,7 @@ jobs:
       - name: Install p2pd
         run: |
           V=1 bash scripts/build_p2pd.sh p2pdCache 124530a3
-
-      - name: Install deps
-        run: |
-          nimble --version
-          which nimble
-          echo PATH=$PATH
-          nimble -y --lock-file=nimble-lock.lock install
-
       - name: Run tests
         run: |
-          nim --version
-          nimble setup --lock-file=nimble-lock.lock
-          nimble test
+          nimble --version
+          nimble --lock-file=nimble-{{ matrix.branch }}.lock test

@@ -17,7 +17,10 @@ requires "nim >= 1.2.0",
          "secp256k1",
          "stew#head",
          "websock",
-         "unittest2 >= 0.0.5 & < 0.1.0"
+         "unittest2"
+
+if (NimMajor, NimMinor) > (1, 2):
+  requires "nimpng#HEAD", "nico"
 
 import hashes
 proc runTest(filename: string, verify: bool = true, sign: bool = true,
@@ -26,6 +29,7 @@ proc runTest(filename: string, verify: bool = true, sign: bool = true,
   excstr.add(" -d:chronicles_sinks=textlines[stdout],json[dynamic] -d:chronicles_log_level=TRACE ")
   excstr.add(" -d:chronicles_runtime_filtering=TRUE ")
   excstr.add(" " & getEnv("NIMFLAGS") & " ")
+  excstr.add(getPathsClause())
   excstr.add(" --verbosity:0 --hints:off ")
   excstr.add(" -d:libp2p_pubsub_sign=" & $sign)
   excstr.add(" -d:libp2p_pubsub_verify=" & $verify)
@@ -36,7 +40,7 @@ proc runTest(filename: string, verify: bool = true, sign: bool = true,
   rmFile "tests/" & filename.toExe
 
 proc buildSample(filename: string, run = false, extraFlags = "") =
-  var excstr = "nim c --opt:speed --threads:on -d:debug --verbosity:0 --hints:off -p:. " & extraFlags
+  var excstr = "nim c --opt:speed --threads:on -d:debug --verbosity:0 --hints:off -p:. " & extraFlags & " " & getPathsClause()
   excstr.add(" examples/" & filename)
   exec excstr
   if run:
@@ -102,62 +106,14 @@ task website, "Build the website":
 
 task examples_build, "Build the samples":
   discard
-  # buildSample("directchat")
-  # buildSample("helloworld", true)
-  # buildSample("circuitrelay", true)
-  # buildSample("tutorial_1_connect", true)
-  # buildSample("tutorial_2_customproto", true)
-  # if (NimMajor, NimMinor) > (1, 2):
-  #   # These tutorials relies on post 1.4 exception tracking
-  #   buildSample("tutorial_3_protobuf", true)
-  #   buildSample("tutorial_4_gossipsub", true)
-  #   buildSample("tutorial_5_discovery", true)
-  #   # Nico doesn't work in 1.2
-  #   exec "nimble install -y nimpng@#HEAD" # this is to fix broken build on 1.7.3, remove it when nimpng version 0.3.2 or later is released
-  #   exec "nimble install -y nico"
-  #   buildSample("tutorial_6_game", false, "--styleCheck:off")
-
-# pin system
-# while nimble lockfile
-# isn't available
-
-const PinFile = ".pinned"
-task pin, "Create a lockfile":
-  # pinner.nim was originally here
-  # but you can't read output from
-  # a command in a nimscript
-  exec "nim c -r tools/pinner.nim"
-
-import sequtils
-import os
-task install_pinned, "Reads the lockfile":
-  let toInstall = readFile(PinFile).splitWhitespace().mapIt((it.split(";", 1)[0], it.split(";", 1)[1]))
-  # [('packageName', 'packageFullUri')]
-
-  rmDir("nimbledeps")
-  mkDir("nimbledeps")
-  exec "nimble install -y " & toInstall.mapIt(it[1]).join(" ")
-
-  # Remove the automatically installed deps
-  # (inefficient you say?)
-  let nimblePkgs =
-    if system.dirExists("nimbledeps/pkgs"): "nimbledeps/pkgs"
-    else: "nimbledeps/pkgs2"
-  for dependency in listDirs(nimblePkgs):
-    let
-      fileName = dependency.extractFilename
-      fileContent = readFile(dependency & "/nimblemeta.json")
-      packageName = fileName.split('-')[0]
-
-    if toInstall.anyIt(
-        it[0] == packageName and
-        (
-          it[1].split('#')[^1] in fileContent or # nimble for nim 2.X
-          fileName.endsWith(it[1].split('#')[^1]) # nimble for nim 1.X
-        )
-      ) == false or
-      fileName.split('-')[^1].len < 20: # safegard for nimble for nim 1.X
-        rmDir(dependency)
-
-task unpin, "Restore global package use":
-  rmDir("nimbledeps")
+  buildSample("directchat")
+  buildSample("helloworld", true)
+  buildSample("circuitrelay", true)
+  buildSample("tutorial_1_connect", true)
+  buildSample("tutorial_2_customproto", true)
+  if (NimMajor, NimMinor) > (1, 2):
+    # These tutorials relies on post 1.4 exception tracking
+    buildSample("tutorial_3_protobuf", true)
+    buildSample("tutorial_4_gossipsub", true)
+    buildSample("tutorial_5_discovery", true)
+    buildSample("tutorial_6_game", false, "--styleCheck:off")
